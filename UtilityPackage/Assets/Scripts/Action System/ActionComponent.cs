@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace FickleFrames.Action
+namespace FickleFrames.ActionSystem
 {
     /// <summary>
     /// This component should be attached to any GameObject that employs custom behaviours

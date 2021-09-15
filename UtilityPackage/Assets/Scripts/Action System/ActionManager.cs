@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace FickleFrames.Action
+namespace FickleFrames.ActionSystem
 {
     /// <summary>
     /// This class is used to register custom behaviours without using action component and
