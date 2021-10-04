@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using UnityEditor;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,17 +11,16 @@ namespace FickleFrames
 
         #region Internals
 
-        [Space(5)]
-        [Header("-Level Manager Settings-")]
-        [Tooltip("Store every level controllers in a single folder as prefabs and provide the path here")]
-        [SerializeField]
-        private string levelControllerPath = "";
 
+        [SerializeField] private string levelControllerPath;
+        [SerializeField] private LevelControllerData[] levelsData;
+
+        private Dictionary<string, LevelController> singleLevels = new Dictionary<string, LevelController>();
+        private Dictionary<string, LevelController> additiveLevels = new Dictionary<string, LevelController>();
         private List<string> loadedAdditiveLevels = new List<string>();
-        private Dictionary<string, LevelController> singleLevelControllers = new Dictionary<string, LevelController>();
-        private Dictionary<string, LevelController> additiveLevelControllers = new Dictionary<string, LevelController>();
         private string currentSingleLevel = "";
         private string previousSingleLevel = "";
+
 
         private new void Awake()
         {
@@ -31,22 +29,14 @@ namespace FickleFrames
         }
 
 
-        /// <summary>
-        /// Loads all the LevelController prefabs and childs it to this gameObject
-        /// </summary>
         private void bootstrapper()
         {
-            // Get all level controller prefabs from the filepath
-            foreach (string filePath in Directory.GetFiles(levelControllerPath, "*.asset"))
+            foreach (LevelControllerData data in levelsData)
             {
-                LevelController levelController = AssetDatabase.LoadAssetAtPath<LevelController>(filePath);
-                if (levelController.IsControllerUsable())
-                {
-                    if (levelController.IsAdditive())
-                        additiveLevelControllers.TryAdd(levelController.GetLevelName(), levelController);
-                    else
-                        singleLevelControllers.TryAdd(levelController.GetLevelName(), levelController);
-                }
+                if (data.controller.IsAdditive())
+                    additiveLevels.TryAdd(data.levelName, data.controller);
+                else
+                    singleLevels.TryAdd(data.levelName, data.controller);
             }
             currentSingleLevel = SceneManager.GetActiveScene().name;
         }
@@ -61,13 +51,10 @@ namespace FickleFrames
         /// <param name="levelName">Name of the level</param>
         public LevelController GetLevelController(string levelName)
         {
-            // Check inside singleLevelController
-            if (singleLevelControllers.ContainsKey(levelName))
-                return singleLevelControllers[levelName];
-            // Check inside additiveLevelController
-            else if (additiveLevelControllers.ContainsKey(levelName))
-                return additiveLevelControllers[levelName];
-            // Return null otherwise
+            if (singleLevels.ContainsKey(levelName))
+                return singleLevels[levelName];
+            else if (additiveLevels.ContainsKey(levelName))
+                return additiveLevels[levelName];
             return null;
         }
 
@@ -117,14 +104,14 @@ namespace FickleFrames
         public void LoadPreviousLevel()
         {
             // Check if there's valid controllers or check if the controller has the level loaded already
-            if (!singleLevelControllers.ContainsKey(previousSingleLevel) || singleLevelControllers[previousSingleLevel].IsLoaded())
+            if (!singleLevels.ContainsKey(previousSingleLevel) || singleLevels[previousSingleLevel].IsLoaded())
                 return;
             // Swap values
             string temp = previousSingleLevel;
             previousSingleLevel = currentSingleLevel;
             currentSingleLevel = temp;
             // Load the previous single level
-            StartCoroutine(singleLevelControllers[currentSingleLevel].LoadLevel());
+            StartCoroutine(singleLevels[currentSingleLevel].LoadLevel());
         }
 
 
@@ -135,18 +122,18 @@ namespace FickleFrames
         public void UnloadLevel(string levelName)
         {
             // Only check in additive scenes as you cannot unload a single scene
-            if (additiveLevelControllers.ContainsKey(levelName))
+            if (additiveLevels.ContainsKey(levelName))
             {
                 // Check if it's unloaded already if yes then try to remove the value if the value exists inside
                 // loadedAdditvieLevels list
-                if (!additiveLevelControllers[levelName].IsLoaded())
+                if (!additiveLevels[levelName].IsLoaded())
                 {
                     loadedAdditiveLevels.TryRemove(levelName);
                     return;
                 }
                 // Remove the level from list and call unloading routine
                 loadedAdditiveLevels.TryRemove(levelName);
-                StartCoroutine(additiveLevelControllers[levelName].UnloadLevel());
+                StartCoroutine(additiveLevels[levelName].UnloadLevel());
             }
         }
 
@@ -170,7 +157,7 @@ namespace FickleFrames
         /// </summary>
         public string[] GetAllActiveAdditiveLevels()
         {
-            return loadedAdditiveLevels.ToArray();
+            return loadedAdditiveLevels.ToList().FindAll(x => additiveLevels[x].IsLoaded()).ToArray();
         }
     }
 }

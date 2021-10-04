@@ -11,33 +11,13 @@ namespace FickleFrames
     public class AnimationController : MonoBehaviour
     {
 
-        #region EditorOnly
-#if UNITY_EDITOR
-
-        /// <summary>
-        /// Method used only by editor do not call this method anywhere else
-        /// </summary>
-        public ref Dictionary<string, AnimationClip> GetClips()
-        {
-            return ref animationClipsLookup;
-        }
-
-#endif
-        #endregion
-
-
         #region Internals
 
-        // Editor fields
-        [SerializeField] private string animationClipsSourcePath = "Assets/Animations/Clips/";
-        [SerializeField] private string animatorControllerSavePath = "Assets/Animations/Controllers/";
-        [SerializeField] private bool canEditController = false;
 
         [SerializeField] protected Animator animator;
         [SerializeField] private bool enableAutoUpdate = false;
         [SerializeField] private bool canUseAnimator = false;
 
-        private Dictionary<string, AnimationClip> animationClipsLookup = new Dictionary<string, AnimationClip>();
         private string currentState;
         protected StateControllerComponent stateController;
 
@@ -56,10 +36,6 @@ namespace FickleFrames
         /// </summary>
         private void bootStrapper()
         {
-            // Check if the animator controller exists and initialize it
-            if (animator != null)
-                canUseAnimator = true;
-
             stateController = gameObject.GetComponent<StateControllerComponent>();
 
             if (stateController == null)

@@ -4,27 +4,28 @@ using System.IO;
 using System.Collections.Generic;
 using FickleFrames;
 using UnityEditor.Animations;
-
+using System;
 
 [CustomEditor(typeof(AnimationController))]
 public class Editor_AnimationController : Editor
 {
     #region Attributes
 
-    // Cached attributes
-    GameObject gameObject = null;
-    AnimationController controller = null;
-    AnimatorController animatorController = null;
+    // Static attributes
+    static AnimationController controller = null;
+    static GameObject gameObject = null;
+    static Animator animator = null;
+    static AnimatorController animatorController = null;
+    static bool canEditController = false;
+    static string animationClipsSourcePath = "Assets/Animations/Clips/";
+    static string animatorControllerSavePath = "Assets/Animations/Controllers/";
 
-    // Serialized attributes
-    Animator animator = null;
-    Dictionary<string, AnimationClip> clips = new Dictionary<string, AnimationClip>();
-    bool canEditController;
+    static List<string> popUps = new List<string>();
+    static Dictionary<string, AnimationClip> clips = new Dictionary<string, AnimationClip>();
 
     // Other attributes
     int index = 0;
     string currentSelection = "";
-    List<string> popUps = new List<string>();
 
     #endregion
 
@@ -42,7 +43,6 @@ public class Editor_AnimationController : Editor
     /// </summary>
     private void propertyUpdate()
     {
-        // Load values
         loadValues();
 
         // Create animator
@@ -59,20 +59,36 @@ public class Editor_AnimationController : Editor
     }
 
 
-    /// <summary>
-    /// Loads controller and gameObject
-    /// </summary>
     private void loadValues()
     {
         if (controller == null)
             controller = (AnimationController)target;
-        gameObject = controller.gameObject;
+        if (gameObject == null)
+            gameObject = controller.gameObject;
     }
 
 
-    /// <summary>
-    /// GUI update for autoUpdateAnimation
-    /// </summary>
+    private void property_createAnimator()
+    {
+        if (animator == null)
+            if (gameObject.TryGetComponent(out animator) == false)
+            {
+                GUILayout.BeginHorizontal();
+
+                EditorGUILayout.HelpBox("MISSING COMPONENT! : ANIMATOR", MessageType.Error);
+
+                if (GUILayout.Button("Attach Animator?", GUILayout.Height(37.5f)))
+                {
+                    serializedObject.FindProperty("animator").objectReferenceValue = gameObject.AddComponent<Animator>();
+                    serializedObject.FindProperty("canUseAnimator").boolValue = true;
+                    animator = (Animator)serializedObject.FindProperty("animator").objectReferenceValue;
+                }
+
+                GUILayout.EndHorizontal();
+            }
+    }
+
+
     private void property_autoUpdateAnimation()
     {
         if (gameObject.GetComponent<StateControllerComponent>() == null)
@@ -94,44 +110,38 @@ public class Editor_AnimationController : Editor
     }
 
 
-    /// <summary>
-    /// GUI update for loading animation clips
-    /// </summary>
     private void property_animationClips()
     {
-        string filePath = serializedObject.FindProperty("animationClipsSourcePath").stringValue;
-
-        serializedObject.FindProperty("animationClipsSourcePath").stringValue = EditorGUILayout.TextField
+        animationClipsSourcePath = EditorGUILayout.TextField
             (
                 new GUIContent
                     (
                      "Animation Clips Filepath",
                      "Filepath from where animation clips for this gameObject should be loaded"
                      ),
-                filePath
+                animationClipsSourcePath
             );
 
-        if (!Directory.Exists(filePath))
+        if (!Directory.Exists(animationClipsSourcePath))
         {
-            if (GUILayout.Button($"Create directory : {filePath}", GUILayout.Height(25)))
-                Directory.CreateDirectory(filePath);
+            if (GUILayout.Button($"Create directory : {animationClipsSourcePath}", GUILayout.Height(25)))
+                Directory.CreateDirectory(animationClipsSourcePath);
         }
         else
         {
-            clips = controller.GetClips();
-
             if (GUILayout.Button("Refresh clip database", GUILayout.Height(20)))
             {
                 clips.Clear();
                 popUps.Clear();
                 popUps.Add("None");
-                foreach (string path in Directory.EnumerateFiles(filePath, "*.anim"))
+
+                foreach (string path in Directory.EnumerateFiles(animationClipsSourcePath, "*.anim"))
                 {
                     AnimationClip clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
                     if (clip != null)
                     {
-                        clips.Add(clip.name, clip);
                         popUps.Add(clip.name);
+                        clips.Add(clip.name, clip);
                     }
                 }
             }
@@ -139,62 +149,33 @@ public class Editor_AnimationController : Editor
     }
 
 
-    /// <summary>
-    /// GUI update for creating animator
-    /// </summary>
-    private void property_createAnimator()
-    {
-        if (animator == null)
-        {
-            if (gameObject.TryGetComponent(out animator) == false)
-            {
-                GUILayout.BeginHorizontal();
-
-                EditorGUILayout.HelpBox("MISSING COMPONENT! : ANIMATOR", MessageType.Error);
-                if (GUILayout.Button("Attach Animator?", GUILayout.Height(37.5f)))
-                {
-                    animator = gameObject.AddOrGetComponent<Animator>();
-                    serializedObject.FindProperty("animator").objectReferenceValue = animator;
-                    serializedObject.FindProperty("canUseAnimator").boolValue = true;
-                }
-
-                GUILayout.EndHorizontal();
-            }
-        }
-
-    }
-
-
-    /// <summary>
-    /// GUI update for creating animator controller and updating states and motion
-    /// </summary>
     private void property_animationController()
     {
-        string controllerFilepath = serializedObject.FindProperty("animatorControllerSavePath").stringValue;
-        serializedObject.FindProperty("animatorControllerSavePath").stringValue = EditorGUILayout.TextField
+        animatorControllerSavePath = EditorGUILayout.TextField
             (
                 new GUIContent
                     (
                      "Animator Controller Filepath",
                      "This is the target filepath for new or existing animator controller"
                      ),
-                controllerFilepath
+                animatorControllerSavePath
             );
 
-        if (!Directory.Exists(controllerFilepath))
+
+        if (!Directory.Exists(animatorControllerSavePath))
         {
-            if (GUILayout.Button($"Create directory : {controllerFilepath}", GUILayout.Height(25)))
+            if (GUILayout.Button($"Create directory : {animatorControllerSavePath}", GUILayout.Height(25)))
             {
-                Directory.CreateDirectory(controllerFilepath);
-                animatorController = AnimatorController.CreateAnimatorControllerAtPath(controllerFilepath + $"/{gameObject.name}.controller");
+                Directory.CreateDirectory(animatorControllerSavePath);
+                animatorController = AnimatorController.CreateAnimatorControllerAtPath(animatorControllerSavePath + $"/{gameObject.name}.controller");
             }
         }
         else
         {
-            animatorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(controllerFilepath + $"/{gameObject.name}.controller");
+            animatorController = AssetDatabase.LoadAssetAtPath<AnimatorController>(animatorControllerSavePath + $"/{gameObject.name}.controller");
             if (animatorController == null)
                 if (GUILayout.Button("Create animator controller at path"))
-                    animatorController = AnimatorController.CreateAnimatorControllerAtPath(controllerFilepath + $"/{gameObject.name}.controller");
+                    animatorController = AnimatorController.CreateAnimatorControllerAtPath(animatorControllerSavePath + $"/{gameObject.name}.controller");
         }
 
         if (animator != null)
@@ -246,7 +227,8 @@ public class Editor_AnimationController : Editor
                     root.defaultState = states[currentSelection];
                 }
             }
-            if (root.states.Length > 0 && GUILayout.Button("Update motion for states"))
+
+            if (GUILayout.Button("Update motion for states"))
             {
                 foreach (var state in root.states)
                     if (state.state.motion == null)

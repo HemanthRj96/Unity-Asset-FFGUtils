@@ -1,4 +1,5 @@
-﻿using System;
+﻿using UnityEditor;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,12 +10,24 @@ using UnityEngine.SceneManagement;
 public class LevelController : ScriptableObject
 {
 
+    #region Editor Only
+
+#if UNITY_EDITOR
+
+    [SerializeField] SceneAsset serializedScene;
+
+#endif
+
+#endregion
+
+
     #region Internals
 
 
-    [Header("Level Controller Settings")]
-    [SerializeField]
-    private LevelSettings levelSettings = null;
+    [SerializeField] public string levelName = default;
+    [SerializeField] public LoadSceneMode loadMode = LoadSceneMode.Single;
+    [SerializeField] public LocalPhysicsMode physicsMode = LocalPhysicsMode.None;
+    [SerializeField] private bool isControllerReady = false;
 
     private AsyncOperation loadOperation;
     private AsyncOperation unloadOperation;
@@ -51,7 +64,7 @@ public class LevelController : ScriptableObject
     public bool IsLoaded()
     {
         for (int i = 0; i < SceneManager.sceneCount; ++i)
-            if (GetLevelName() == SceneManager.GetSceneAt(i).name)
+            if (levelName == SceneManager.GetSceneAt(i).name)
                 return true;
         return false;
     }
@@ -62,18 +75,7 @@ public class LevelController : ScriptableObject
     /// </summary>
     public bool IsControllerUsable()
     {
-        if (levelSettings == null || levelSettings.targetLevel == null)
-            return false;
-        return true;
-    }
-
-
-    /// <summary>
-    /// Returns the level controller name
-    /// </summary>
-    public string GetLevelName()
-    {
-        return levelSettings.targetLevel.name; ;
+        return isControllerReady;
     }
 
 
@@ -82,7 +84,7 @@ public class LevelController : ScriptableObject
     /// </summary>
     public bool IsAdditive()
     {
-        return levelSettings.sceneLoadParameters.loadSceneMode == LoadSceneMode.Additive;
+        return loadMode == LoadSceneMode.Additive;
     }
 
 
@@ -120,8 +122,8 @@ public class LevelController : ScriptableObject
     /// </summary>
     public IEnumerator LoadLevel()
     {
-        string levelName = levelSettings.targetLevel.name;
-        loadOperation = SceneManager.LoadSceneAsync(levelName, levelSettings.sceneLoadParameters);
+        LoadSceneParameters parameters = new LoadSceneParameters(loadMode, physicsMode);
+        loadOperation = SceneManager.LoadSceneAsync(levelName, parameters);
         while (!loadOperation.isDone)
             yield return null;
         onLevelLoad(levelName);
@@ -133,7 +135,6 @@ public class LevelController : ScriptableObject
     /// </summary>
     public IEnumerator UnloadLevel()
     {
-        string levelName = levelSettings.targetLevel.name;
         unloadOperation = SceneManager.UnloadSceneAsync(levelName);
         while (!unloadOperation.isDone)
             yield return null;
@@ -146,7 +147,11 @@ public class LevelController : ScriptableObject
     /// </summary>
     public float GetProgress()
     {
-        return loadOperation != null ? loadOperation.progress : (unloadOperation != null ? unloadOperation.progress : -1);
+        if (loadOperation != null)
+            return loadOperation.progress;
+        if (unloadOperation != null)
+            return unloadOperation.progress;
+        return -1;
     }
 
 
