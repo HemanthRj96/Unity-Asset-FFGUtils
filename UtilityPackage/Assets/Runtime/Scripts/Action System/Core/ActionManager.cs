@@ -2,43 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace FickleFrames
+
+namespace FickleFrames.ActionSystem
 {
-    /// <summary>
-    /// Manager class used to call invoke a custom action or add a custom action
-    /// </summary>
     public static class ActionManager
     {
-        #region Internals
+        #region Private Fields
 
-
-        private static ActionParameters cachedActionData = null;
         private static Dictionary<string, Action<IActionParameters>> actionDictionary = new Dictionary<string, Action<IActionParameters>>();
-        private static Dictionary<string, ActionComponent> componentDictionary = new Dictionary<string, ActionComponent>();
+
+        #endregion Private Fields
+
+        #region Public Methods
 
         /// <summary>
-        /// ActionParameter data cacher
-        /// </summary>
-        private static void ConstructData(ActionParameters data) => cachedActionData = data;
-
-
-        #endregion Internals
-
-
-        /// <summary>
-        /// Extension method for component class
-        /// </summary>
-        public static void RegisterComponent(this ActionComponent component, string componentName)
-        {
-            componentDictionary.TryAdd(componentName, component);
-        }
-
-
-        /// <summary>
-        /// Adds a custom action to be called later
+        /// Extension method for all the actions with IActionParameters
         /// </summary>
         /// <param name="shouldSubscribe">Set this as true if you want to subsribe multiple actions under same tag</param>
-        public static void RegisterAction(string tagID, Action<IActionParameters> targetAction, bool shouldSubscribe = false)
+        public static void RegisterAction(Action<IActionParameters> targetAction, string tagID, bool shouldSubscribe = false)
         {
             if (actionDictionary.ContainsKey(tagID) && shouldSubscribe)
                 actionDictionary[tagID] += targetAction;
@@ -59,7 +40,7 @@ namespace FickleFrames
             // Check if the tag exists
             if (actionDictionary.ContainsKey(tagID))
             {
-                if(actionDictionary[tagID] == null)
+                if (actionDictionary[tagID] == null)
                 {
                     actionDictionary.Remove(tagID);
                     return;
@@ -71,11 +52,9 @@ namespace FickleFrames
 
             // Construct data if there's any data available otherwise flush the cached data
             if (data != null || source != null)
-                ConstructData(new ActionParameters(data, source));
+                cachedAction.Invoke(new ActionParameters(data, source));
             else
-                cachedActionData = null;
-
-            cachedAction.Invoke(cachedActionData);
+                cachedAction.Invoke(null);
         }
 
 
@@ -90,5 +69,7 @@ namespace FickleFrames
                 actionDictionary.Remove(tagID);
             }
         }
+
+        #endregion Public Methods
     }
 }

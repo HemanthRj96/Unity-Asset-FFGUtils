@@ -1,7 +1,8 @@
-﻿using FickleFrames;
-
-public interface IActionSlave
+﻿namespace FickleFrames.ActionSystem
 {
-    ActionComponent component { set; }
-    void doAction(IActionParameters parameters);
+    public interface IActionSlave
+    {
+        ActionComponent usingComponent { set; }
+        void doAction(IActionParameters parameters);
+    }
 }

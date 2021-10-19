@@ -1,13 +1,25 @@
 ﻿using UnityEngine;
 
-public class ActionParameters : IActionParameters
-{
-    public ActionParameters(object data = null, GameObject source = null)
-    {
-        this.data = data;
-        this.source = source;
-    }
 
-    public object data { get; set; }
-    public GameObject source { get; set; }
+namespace FickleFrames.ActionSystem
+{
+    public class ActionParameters : IActionParameters
+    {
+        #region Public Constructors
+
+        public ActionParameters(object data = null, GameObject source = null)
+        {
+            this.data = data;
+            this.source = source;
+        }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        public object data { get; set; }
+        public GameObject source { get; set; }
+
+        #endregion Public Properties
+    }
 }

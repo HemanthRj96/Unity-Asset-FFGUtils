@@ -1,13 +1,11 @@
 ﻿using FickleFrames;
+using FickleFrames.ActionSystem;
 using System.Collections;
 using UnityEngine;
 
-public class Testing_03 : MonoBehaviour
+public class Testing_03 : ActionSlave
 {
-
-    // Use this for initialization
-    void Start()
+    public override void doAction(IActionParameters parameters = null)
     {
-
     }
 }

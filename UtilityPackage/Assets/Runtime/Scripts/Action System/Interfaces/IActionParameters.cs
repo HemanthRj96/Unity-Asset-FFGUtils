@@ -1,7 +1,11 @@
 ﻿using UnityEngine;
 
-public interface IActionParameters
+
+namespace FickleFrames.ActionSystem
 {
-    object data { get; set; }
-    GameObject source { get; set; }
+    public interface IActionParameters
+    {
+        object data { get; set; }
+        GameObject source { get; set; }
+    } 
 }

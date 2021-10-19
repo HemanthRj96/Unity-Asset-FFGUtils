@@ -1,14 +1,17 @@
-﻿public enum EOnActionBegin
+﻿namespace FickleFrames.ActionSystem.Internal
 {
-    ExecuteOnStart,
-    ExecuteOnUpdate,
-    ExecuteOnFixedUpdate,
-    ExecuteExternally,
-}
+    public enum EOnActionBegin
+    {
+        ExecuteOnStart,
+        ExecuteOnUpdate,
+        ExecuteOnFixedUpdate,
+        ExecuteExternally,
+    }
 
-public enum EOnActionEnd
-{
-    DoNothing,
-    ExecuteAnotherAction,
-    DestroySelf,
+    public enum EOnActionEnd
+    {
+        DoNothing,
+        ExecuteAnotherAction,
+        DestroySelf,
+    } 
 }

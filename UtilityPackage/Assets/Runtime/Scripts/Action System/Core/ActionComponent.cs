@@ -1,28 +1,63 @@
-﻿using System.Collections;
+﻿using FickleFrames.ActionSystem.Internal;
+using System.Collections;
 using UnityEngine;
 
-namespace FickleFrames
+
+namespace FickleFrames.ActionSystem
 {
     public sealed class ActionComponent : MonoBehaviour
     {
-        #region Editor Only
-
+        #region Editor
 #if UNITY_EDITOR
 
-        public bool isChained = false;
+
+        [SerializeField] private bool isChained = false;
 
 #endif
+        #endregion Editor
 
-        #endregion
+        #region Private Fields
 
+        [SerializeField] private string actionName;
+        [SerializeField] private ActionSlave slave;
+        [SerializeField] private EOnActionBegin onActionBegin;
+        [SerializeField] private bool shouldRegister;
+        [SerializeField] private float actionDelay;
+        [SerializeField] private EOnActionEnd onActionEnd;
+        [SerializeField] private string nextActionName;
+        [SerializeField] private ActionComponent nextAction;
+        [SerializeField] private float destroyDelay;
 
-        #region Internals
+        #endregion Private Fields
 
-
-        [SerializeField] private ActionDataStruct actionData;
+        #region Private Properties
 
         private IActionParameters passingParams { get; set; } = null;
 
+        #endregion Private Properties
+
+        #region Public Methods
+
+        /// <summary>
+        /// Call this method to set the data that has to passed to a chained action
+        /// </summary>
+        /// <param name="data">Data to be passed</param>
+        public void SetPassingParameters(object data = null, GameObject source = null)
+        {
+            passingParams = new ActionParameters(data, source);
+        }
+
+        /// <summary>
+        /// Returns the slave controlled by this Component
+        /// </summary>
+        public ActionSlave GetSlave()
+        {
+            return slave;
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         /// <summary>
         /// Call base method to prevent unknown behaviour
@@ -38,7 +73,7 @@ namespace FickleFrames
         /// </summary>
         private void OnDestroy()
         {
-            ActionManager.DeleteAction(actionData.actionName);
+            ActionManager.DeleteAction(actionName);
         }
 
 
@@ -47,7 +82,7 @@ namespace FickleFrames
         /// </summary>
         private void Start()
         {
-            if (actionData.onActionBegin == EOnActionBegin.ExecuteOnStart)
+            if (onActionBegin == EOnActionBegin.ExecuteOnStart)
                 invokeAction();
         }
 
@@ -57,7 +92,7 @@ namespace FickleFrames
         /// </summary>
         private void Update()
         {
-            if (actionData.onActionBegin == EOnActionBegin.ExecuteOnUpdate)
+            if (onActionBegin == EOnActionBegin.ExecuteOnUpdate)
                 invokeAction();
         }
 
@@ -67,7 +102,7 @@ namespace FickleFrames
         /// </summary>
         private void FixedUpdate()
         {
-            if (actionData.onActionBegin == EOnActionBegin.ExecuteOnFixedUpdate)
+            if (onActionBegin == EOnActionBegin.ExecuteOnFixedUpdate)
                 invokeAction();
         }
 
@@ -77,11 +112,8 @@ namespace FickleFrames
         /// </summary>
         private void bootstrapper()
         {
-            this.RegisterComponent(actionData.actionName);
-
-            // Register action if necessary
-            if (actionData.onActionBegin == EOnActionBegin.ExecuteExternally || actionData.shouldAddToRegistry)
-                ActionManager.RegisterAction(actionData.actionName, invokeAction);
+            if (onActionBegin == EOnActionBegin.ExecuteExternally || shouldRegister)
+                ActionManager.RegisterAction(invokeAction, actionName);
         }
 
 
@@ -90,7 +122,6 @@ namespace FickleFrames
         /// </summary>
         private void invokeAction(IActionParameters actionParameters = null)
         {
-            // Invoke self
             StartCoroutine(invokeSelf(actionParameters));
         }
 
@@ -100,20 +131,17 @@ namespace FickleFrames
         /// </summary>
         private IEnumerator invokeSelf(IActionParameters parameters)
         {
-            if (actionData.onActionBegin == EOnActionBegin.ExecuteOnStart || actionData.onActionBegin == EOnActionBegin.ExecuteExternally)
-            {
-                yield return new WaitForSeconds(actionData.delayBeforeCurrentAction);
-                actionData.slave.doAction(parameters);
-            }
-            else
-                actionData.slave.doAction(parameters);
+            if (actionDelay > 0)
+                yield return new WaitForSeconds(actionDelay);
 
-            if (actionData.onActionEnd == EOnActionEnd.ExecuteAnotherAction)
-                invokeNext(passingParams);
-            else if (actionData.onActionEnd == EOnActionEnd.DestroySelf)
+            slave.doAction(parameters);
+
+            if (onActionEnd == EOnActionEnd.ExecuteAnotherAction)
+                invokeNext();
+            else if (onActionEnd == EOnActionEnd.DestroySelf)
             {
-                ActionManager.DeleteAction(actionData.actionName);
-                Destroy(gameObject, actionData.delayBeforeDestroy);
+                ActionManager.DeleteAction(actionName);
+                Destroy(gameObject, destroyDelay);
             }
         }
 
@@ -121,34 +149,14 @@ namespace FickleFrames
         /// <summary>
         /// Coroutine to invoke next action
         /// </summary>
-        private void invokeNext(IActionParameters parameters)
+        private void invokeNext()
         {
-            if (actionData.nextCustomAction != null)
-                actionData.nextCustomAction.invokeAction(parameters);
+            if (nextAction != null)
+                nextAction.invokeAction(passingParams);
             else
-                ActionManager.ExecuteAction(actionData.nextCustomActionName, parameters.data, parameters.source);
+                ActionManager.ExecuteAction(nextActionName, passingParams.data, passingParams.source);
         }
 
-
-        #endregion Internals
-
-
-        /// <summary>
-        /// Call this method to set the data that has to passed to a chained action
-        /// </summary>
-        /// <param name="data">Data to be passed</param>
-        public void SetPassingParameters(object data = null, GameObject source = null)
-        {
-            passingParams = new ActionParameters(data, source);
-        }
-
-
-        /// <summary>
-        /// Returns the slave controlled by this Component
-        /// </summary>
-        public ActionSlave GetSlave()
-        {
-            return actionData.slave;
-        }
+        #endregion Private Methods
     }
 }
