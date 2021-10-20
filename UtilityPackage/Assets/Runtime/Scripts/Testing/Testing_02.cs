@@ -1,11 +1,12 @@
 ﻿using FickleFrames.ActionSystem;
 using UnityEngine;
 
-public class Testing_03 : MonoBehaviour
+
+public class Testing_02 : MonoBehaviour
 {
     private void Awake()
     {
-        ActionManager.RegisterAction(action, "Hemanth");
+        ActionManager.RegisterAction(action, "Appu");
     }
 
     private void action(IActionParameters parameters)
@@ -16,7 +17,7 @@ public class Testing_03 : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-            ActionManager.ExecuteAction("Appu", $"Data from {gameObject.name}");
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            ActionManager.ExecuteAction("Hemanth", $"Data from {gameObject.name}");
     }
 }

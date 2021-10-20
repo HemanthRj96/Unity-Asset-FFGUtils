@@ -3,6 +3,9 @@
 
 namespace FickleFrames.ActionSystem
 {
+    /// <summary>
+    /// Container class used to parse data that has to be passed
+    /// </summary>
     public class ActionParameters : IActionParameters
     {
         #region Public Constructors

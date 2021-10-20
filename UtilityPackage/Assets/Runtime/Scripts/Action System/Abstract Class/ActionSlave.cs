@@ -3,18 +3,13 @@
 
 namespace FickleFrames.ActionSystem
 {
+    /// <summary>
+    /// This abstract class should be inherited to create prefab slaves or scene object slaves for the 
+    /// action component
+    /// </summary>
     public abstract class ActionSlave : MonoBehaviour, IActionSlave
     {
-        #region Public Properties
-
-        public ActionComponent usingComponent { protected get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
-
-        public abstract void doAction(IActionParameters parameters = null);
-
-        #endregion Public Methods
+        public ActionComponent component { get; set; }
+        public abstract void doAction(IActionParameters parameters);
     }
 }
