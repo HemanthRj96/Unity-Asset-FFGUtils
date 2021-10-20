@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace FickleFrames.ActionSystem
+namespace FickleFrames.Systems
 {
     /// <summary>
     /// Manager class used to register/deregister/execute custom actions

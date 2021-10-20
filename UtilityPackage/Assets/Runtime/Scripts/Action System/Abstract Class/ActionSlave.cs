@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace FickleFrames.ActionSystem
+namespace FickleFrames.Systems
 {
     /// <summary>
     /// This abstract class should be inherited to create prefab slaves or scene object slaves for the 

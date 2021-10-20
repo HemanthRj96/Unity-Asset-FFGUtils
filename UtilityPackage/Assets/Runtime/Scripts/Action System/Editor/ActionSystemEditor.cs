@@ -1,9 +1,9 @@
-﻿using FickleFrames.ActionSystem.Internal;
+﻿using FickleFrames.Systems.Internal;
 using UnityEditor;
 using UnityEngine;
 
 
-namespace FickleFrames.ActionSystem.Editor_
+namespace FickleFrames.Systems.ActionSystemEditor_
 {
     [CustomEditor(typeof(ActionComponent))]
     public class ActionSystemEditor : CustomInspector<ActionComponent>
@@ -18,7 +18,7 @@ namespace FickleFrames.ActionSystem.Editor_
         private void InpectorUpdate()
         {
             space(5);
-            label("-Action Defaults-");
+            heading("-Action Defaults-");
             space(5);
 
 
@@ -37,7 +37,7 @@ namespace FickleFrames.ActionSystem.Editor_
 
 
             space(10);
-            label("-Action Begin Settings-");
+            heading("-Action Begin Settings-");
             space(5);
 
 
@@ -78,7 +78,7 @@ namespace FickleFrames.ActionSystem.Editor_
 
 
             space(10);
-            label("-Action End Settings-");
+            heading("-Action End Settings-");
             space(5);
 
 

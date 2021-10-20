@@ -1,26 +1,41 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace FickleFrames
+
+namespace FickleFrames.Controllers
 {
     /// <summary>
     /// Inherit this class if manual animation update is required
     /// </summary>
     public class AnimationController : MonoBehaviour
     {
+        #region Editor
+#if UNITY_EDITOR
+#pragma warning disable 0649, 0414
+        [SerializeField] private int selection = 0;
+#pragma warning restore 0649, 0414
+#endif
+#endregion Editor
 
-        #region Internals
+        #region Private Fields
+#pragma warning disable 0649, 0414
 
-
-        [SerializeField] protected Animator animator;
+        [SerializeField] private string animationClipSource = "";
+        [SerializeField] private string animationControllerSavePath = "";
         [SerializeField] private bool enableAutoUpdate = false;
-        [SerializeField] private bool canUseAnimator = false;
-
+        [SerializeField] private Animator animator;
+        [SerializeField] private StateControllerComponent stateController;
         private string currentState;
-        protected StateControllerComponent stateController;
 
+#pragma warning restore 0649, 0414
+        #endregion Private Fields
+
+        #region Private Properties
+
+        private bool validAnimator => animator != null;
+
+        #endregion Private Properties
+
+        #region Private Methods
 
         /// <summary>
         /// Bootstraps on start
@@ -36,8 +51,6 @@ namespace FickleFrames
         /// </summary>
         private void bootStrapper()
         {
-            stateController = gameObject.GetComponent<StateControllerComponent>();
-
             if (stateController == null)
                 return;
 
@@ -54,7 +67,7 @@ namespace FickleFrames
         /// </summary>
         private void animationPlayer(string state)
         {
-            if (canUseAnimator == false || currentState == state)
+            if (validAnimator == false || currentState == state)
                 return;
 
             animator.Play(state);
@@ -70,26 +83,26 @@ namespace FickleFrames
             animationPlayer(newState);
         }
 
+        #endregion Private Methods
 
-        #endregion Internals
-
+        #region Protected Methods
 
         /// <summary>
         /// Override this method to extend functionality
         /// </summary>
-        protected virtual void manualAnimationUpdate(string stateName)
-        {
+        protected virtual void manualAnimationUpdate(string stateName) { }
 
-        }
+        #endregion Protected Methods
 
+        #region Public Methods
 
         /// <summary>
         /// Method to play an animation
         /// </summary>
-        /// <param name="newState">Target animation state to be played</param>
-        public virtual void PlayAnimation(string newState)
+        /// <param name="state">Target animation state to be played</param>
+        public virtual void PlayState(string state)
         {
-            animationPlayer(newState);
+            animationPlayer(state);
         }
 
 
@@ -97,11 +110,13 @@ namespace FickleFrames
         /// Plays animation if the condition is true
         /// </summary>
         /// <param name="condition">Should be true to play animation</param>
-        /// <param name="newState">Target animation state to be played</param>
-        public virtual void PlayAnimationIf(bool condition, string newState)
+        /// <param name="state">Target animation state to be played</param>
+        public virtual void PlayStateIf(bool condition, string state)
         {
             if (condition)
-                animationPlayer(newState);
+                animationPlayer(state);
         }
+
+        #endregion Public Methods
     }
 }

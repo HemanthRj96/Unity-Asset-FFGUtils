@@ -1,6 +1,6 @@
 ﻿
 
-namespace FickleFrames.ActionSystem
+namespace FickleFrames.Systems
 {
     public interface IActionSlave
     {

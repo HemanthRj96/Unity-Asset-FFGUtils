@@ -1,4 +1,4 @@
-﻿namespace FickleFrames.ActionSystem.Internal
+﻿namespace FickleFrames.Systems.Internal
 {
     public enum EOnActionBegin
     {

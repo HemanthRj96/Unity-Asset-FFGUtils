@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace FickleFrames.ActionSystem
+namespace FickleFrames.Systems
 {
     /// <summary>
     /// Container class used to parse data that has to be passed

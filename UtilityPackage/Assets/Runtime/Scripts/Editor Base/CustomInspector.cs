@@ -11,7 +11,7 @@ public class CustomInspector<TType> : Editor where TType : MonoBehaviour
     public void info(string info, MessageType type = MessageType.Info) => EditorGUILayout.HelpBox(info, type);
     public void propertySlider(SerializedProperty property, float min, float max, string label)=> EditorGUILayout.Slider(property, min, max, label);
     public void space(float val) => GUILayout.Space(val);
-    public void label(string label)
+    public void heading(string label)
     {
         var style = new GUIStyle(GUI.skin.label) 
         { 
@@ -20,4 +20,6 @@ public class CustomInspector<TType> : Editor where TType : MonoBehaviour
         };
         EditorGUILayout.LabelField(label, style, GUILayout.ExpandWidth(true));
     }
+    public bool button(string content, float height = 10) => GUILayout.Button(content, GUILayout.Height(height));
+    public int dropdownList(string label, int index, string[] choices) => EditorGUILayout.Popup(label, index, choices);
 }

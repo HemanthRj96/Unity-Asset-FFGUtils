@@ -1,9 +1,9 @@
-﻿using FickleFrames.ActionSystem.Internal;
+﻿using FickleFrames.Systems.Internal;
 using System.Collections;
 using UnityEngine;
 
 
-namespace FickleFrames.ActionSystem
+namespace FickleFrames.Systems
 {
     /// <summary>
     /// Component class which should be attached to gameObjects that provides multiple ways of running custom codes and 

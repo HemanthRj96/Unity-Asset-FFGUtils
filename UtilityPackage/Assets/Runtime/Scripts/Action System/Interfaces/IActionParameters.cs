@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace FickleFrames.ActionSystem
+namespace FickleFrames.Systems
 {
     public interface IActionParameters
     {
