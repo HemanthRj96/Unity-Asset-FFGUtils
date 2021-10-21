@@ -23,7 +23,7 @@ namespace FickleFrames.Controllers
         [SerializeField] private string animationControllerSavePath = "";
         [SerializeField] private bool enableAutoUpdate = false;
         [SerializeField] private Animator animator;
-        [SerializeField] private StateControllerComponent stateController;
+        [SerializeField] private StateController stateController;
         private string currentState;
 
 #pragma warning restore 0649, 0414

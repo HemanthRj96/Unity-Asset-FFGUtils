@@ -15,7 +15,7 @@ namespace FickleFrames.Controllers.AnimationControllerEditor_
         AnimatorController controller;
         string animationClipSource;
         string animationControllerSavePath;
-        StateControllerComponent stateController;
+        StateController stateController;
         bool shouldEnableAutoUpdate = false;
 
         private void InpectorUpdate()
@@ -134,7 +134,7 @@ namespace FickleFrames.Controllers.AnimationControllerEditor_
             else
             {
                 shouldEnableAutoUpdate = true;
-                stateController = (StateControllerComponent)getProperty("stateController").objectReferenceValue;
+                stateController = (StateController)getProperty("stateController").objectReferenceValue;
             }
 
             EditorGUI.BeginDisabledGroup(!shouldEnableAutoUpdate);

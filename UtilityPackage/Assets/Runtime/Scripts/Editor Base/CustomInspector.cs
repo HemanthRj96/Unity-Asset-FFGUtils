@@ -19,6 +19,6 @@ public class CustomInspector<TType> : Editor where TType : Object
         };
         EditorGUILayout.LabelField(label, style, GUILayout.ExpandWidth(true));
     }
-    public bool button(string content, float height = 10) => GUILayout.Button(content, GUILayout.Height(height));
+    public bool button(string content, float height = 20) => GUILayout.Button(content, GUILayout.Height(height));
     public int dropdownList(string label, int index, string[] choices) => EditorGUILayout.Popup(label, index, choices);
 }

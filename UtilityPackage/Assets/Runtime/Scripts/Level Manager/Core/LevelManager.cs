@@ -8,6 +8,7 @@ namespace FickleFrames
     public class LevelManager : Singleton<LevelManager>
     {
         #region Private Fields
+#pragma warning disable 0649, 0414
 
         [SerializeField] private string levelControllerPath;
         [SerializeField] private LevelController[] levelControllers;
@@ -18,6 +19,7 @@ namespace FickleFrames
         private string currentSingleLevel = "";
         private string previousSingleLevel = "";
 
+#pragma warning restore 0649, 0414
         #endregion Private Fields
 
         #region Private Methods

@@ -1,10 +1,12 @@
-﻿using FickleFrames.Systems;
-using UnityEngine;
+﻿using System.IO;
+using System.Reflection;
 using UnityEditor;
-using UnityEngine.SceneManagement;
-using System.Collections.Generic;
-using System.IO;
+using UnityEngine;
 
 public class Testing_02 : MonoBehaviour
 {
+    private void Start()
+    {
+        Debug.Log(Directory.GetCurrentDirectory());
+    }
 }

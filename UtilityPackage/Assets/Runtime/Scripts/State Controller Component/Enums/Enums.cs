@@ -1,5 +1,8 @@
-﻿public enum EStateUpdateMode
+﻿namespace FickleFrames.Controllers.Internals
 {
-    Update,
-    FixedUpdate
+    public enum EStateUpdateMode
+    {
+        Update,
+        FixedUpdate
+    } 
 }
