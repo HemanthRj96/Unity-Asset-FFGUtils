@@ -9,25 +9,13 @@ using UnityEngine.SceneManagement;
 [CreateAssetMenu(fileName = "Level_Controller", menuName = "Scriptable Objects/Level Controller")]
 public class LevelController : ScriptableObject
 {
-
-    #region Editor Only
-
+    #region Editor
 #if UNITY_EDITOR
-
-    [SerializeField] SceneAsset serializedScene;
-
+    [SerializeField] public SceneAsset serializedScene;
 #endif
+    #endregion Editor
 
-#endregion
-
-
-    #region Internals
-
-
-    [SerializeField] public string levelName = default;
-    [SerializeField] public LoadSceneMode loadMode = LoadSceneMode.Single;
-    [SerializeField] public LocalPhysicsMode physicsMode = LocalPhysicsMode.None;
-    [SerializeField] private bool isControllerReady = false;
+    #region Private Fields
 
     private AsyncOperation loadOperation;
     private AsyncOperation unloadOperation;
@@ -35,6 +23,19 @@ public class LevelController : ScriptableObject
     private Action<string> onLevelUnload = delegate { };
     private Dictionary<string, UnityEngine.Object> gameAssets = new Dictionary<string, UnityEngine.Object>();
 
+    #endregion Private Fields
+
+    #region Public Fields
+#pragma warning disable 0649, 0414
+
+    [SerializeField] public string levelName;
+    [SerializeField] public LoadSceneMode loadMode = LoadSceneMode.Single;
+    [SerializeField] public LocalPhysicsMode physicsMode = LocalPhysicsMode.None;
+
+#pragma warning restore 0649, 0414
+    #endregion Public Fields
+
+    #region Private Methods
 
     /// <summary>
     /// Release game assets on destroy
@@ -54,9 +55,9 @@ public class LevelController : ScriptableObject
             Destroy(asset.Value);
     }
 
+    #endregion Private Methods
 
-    #endregion Internals
-
+    #region Public Methods
 
     /// <summary>
     /// Returns true if the scene associated with this controller is loaded
@@ -67,15 +68,6 @@ public class LevelController : ScriptableObject
             if (levelName == SceneManager.GetSceneAt(i).name)
                 return true;
         return false;
-    }
-
-
-    /// <summary>
-    /// Returns true if this controller can be used
-    /// </summary>
-    public bool IsControllerUsable()
-    {
-        return isControllerReady;
     }
 
 
@@ -165,4 +157,6 @@ public class LevelController : ScriptableObject
         if (onLevelUnload != null)
             this.onLevelUnload += onLevelUnload;
     }
+
+    #endregion Public Methods
 }

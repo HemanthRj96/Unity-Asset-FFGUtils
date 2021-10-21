@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,12 +7,10 @@ namespace FickleFrames
 {
     public class LevelManager : Singleton<LevelManager>
     {
-
-        #region Internals
-
+        #region Private Fields
 
         [SerializeField] private string levelControllerPath;
-        [SerializeField] private LevelControllerData[] levelsData;
+        [SerializeField] private LevelController[] levelControllers;
 
         private Dictionary<string, LevelController> singleLevels = new Dictionary<string, LevelController>();
         private Dictionary<string, LevelController> additiveLevels = new Dictionary<string, LevelController>();
@@ -21,6 +18,9 @@ namespace FickleFrames
         private string currentSingleLevel = "";
         private string previousSingleLevel = "";
 
+        #endregion Private Fields
+
+        #region Private Methods
 
         private new void Awake()
         {
@@ -28,22 +28,24 @@ namespace FickleFrames
             bootstrapper();
         }
 
-
+        /// <summary>
+        /// Creates collections for quick actions
+        /// </summary>
         private void bootstrapper()
         {
-            foreach (LevelControllerData data in levelsData)
+            for (int i = 0; i < levelControllers.Length; ++i)
             {
-                if (data.controller.IsAdditive())
-                    additiveLevels.TryAdd(data.levelName, data.controller);
+                if (levelControllers[i].IsAdditive())
+                    additiveLevels.TryAdd(levelControllers[i].levelName, levelControllers[i]);
                 else
-                    singleLevels.TryAdd(data.levelName, data.controller);
+                    singleLevels.TryAdd(levelControllers[i].levelName, levelControllers[i]);
             }
             currentSingleLevel = SceneManager.GetActiveScene().name;
         }
 
+        #endregion Private Methods
 
-        #endregion Internals
-
+        #region Public Methods
 
         /// <summary>
         /// Returns a level controller
@@ -124,8 +126,7 @@ namespace FickleFrames
             // Only check in additive scenes as you cannot unload a single scene
             if (additiveLevels.ContainsKey(levelName))
             {
-                // Check if it's unloaded already if yes then try to remove the value if the value exists inside
-                // loadedAdditvieLevels list
+                // Check if it's unloaded already if yes then try to remove the value
                 if (!additiveLevels[levelName].IsLoaded())
                 {
                     loadedAdditiveLevels.TryRemove(levelName);
@@ -157,7 +158,9 @@ namespace FickleFrames
         /// </summary>
         public string[] GetAllActiveAdditiveLevels()
         {
-            return loadedAdditiveLevels.ToList().FindAll(x => additiveLevels[x].IsLoaded()).ToArray();
+            return loadedAdditiveLevels.ToArray();
         }
+
+        #endregion Public Methods
     }
 }

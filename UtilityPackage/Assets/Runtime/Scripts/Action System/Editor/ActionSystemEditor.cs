@@ -26,7 +26,7 @@ namespace FickleFrames.Systems.ActionSystemEditor_
             propertyField(getProperty("actionName"), "Name for this action", "This will be the name that will be used to add this component to ActionManager");
             actionName = getProperty("actionName").stringValue;
             if (actionName == "")
-                getProperty("actionName").stringValue = gameobject.name;
+                getProperty("actionName").stringValue = root.gameObject.name;
 
 
             // Action slave

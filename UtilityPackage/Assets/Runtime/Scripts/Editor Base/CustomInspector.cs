@@ -2,10 +2,9 @@
 using UnityEngine;
 
 
-public class CustomInspector<TType> : Editor where TType : MonoBehaviour 
+public class CustomInspector<TType> : Editor where TType : Object 
 {
     public TType root => (TType)target;
-    public GameObject gameobject => ((TType)target).gameObject;
     public SerializedProperty getProperty(string propertyName) => serializedObject.FindProperty(propertyName);
     public void propertyField(SerializedProperty property, string propertyName, string tooltip) => EditorGUILayout.PropertyField(property, new GUIContent(propertyName, tooltip));
     public void info(string info, MessageType type = MessageType.Info) => EditorGUILayout.HelpBox(info, type);

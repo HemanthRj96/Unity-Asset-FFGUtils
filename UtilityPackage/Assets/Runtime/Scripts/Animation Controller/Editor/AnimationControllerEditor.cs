@@ -98,7 +98,7 @@ namespace FickleFrames.Controllers.AnimationControllerEditor_
                 info("Directory is empty, no controller found", MessageType.Warning);
                 if (button("Create controller?", 37.5f))
                 {
-                    controller = AnimatorController.CreateAnimatorControllerAtPath($"{animationControllerSavePath}/{gameobject.name}.controller");
+                    controller = AnimatorController.CreateAnimatorControllerAtPath($"{animationControllerSavePath}/{root.gameObject.name}.controller");
                     animator.runtimeAnimatorController = controller;
                 }
                 GUILayout.EndHorizontal();
