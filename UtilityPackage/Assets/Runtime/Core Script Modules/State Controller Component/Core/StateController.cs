@@ -15,12 +15,15 @@ namespace FickleFrames.Controllers
     {
         #region Editor
 #if UNITY_EDITOR
+#pragma warning disable 0649,0414
         [SerializeField] private string stateControllerFilepath;
         [SerializeField] private string scriptSuffix;
+#pragma warning restore 0649,0414
 #endif
         #endregion Editor
 
         #region Private Fields
+#pragma warning disable 0649,0414
 
         [SerializeField] private StateContainer[] states;
         [SerializeField] private string defaultStateName = "";
@@ -29,6 +32,7 @@ namespace FickleFrames.Controllers
         private string currentStateName = "";
         private Action<string> onStateChangeEvent = delegate { };
 
+#pragma warning restore 0649,0414
         #endregion Private Fields
 
         #region Private Methods

@@ -3,6 +3,7 @@ using UnityEditor;
 using System.IO;
 using System;
 
+
 namespace FickleFrames.Controllers.StateControllerEditor_
 {
     [CustomEditor(typeof(StateController))]
