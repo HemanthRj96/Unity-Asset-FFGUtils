@@ -18,6 +18,9 @@ namespace FickleFrames.Controllers.AnimationControllerEditor_
         StateController stateController;
         bool shouldEnableAutoUpdate = false;
 
+        bool validClipDirectory => Directory.Exists(animationClipSource);
+        bool validControllerDirectory => Directory.Exists(animationControllerSavePath);
+
         private void InpectorUpdate()
         {
             // animator
@@ -34,7 +37,7 @@ namespace FickleFrames.Controllers.AnimationControllerEditor_
 
 
             space(10);
-            heading("-Controller Settings-");
+            heading("Animation Clip Settings");
             space(5);
 
 
@@ -46,9 +49,8 @@ namespace FickleFrames.Controllers.AnimationControllerEditor_
             {
                 space(5);
                 info("This field cannot be empty!!", MessageType.Error);
-                return;
             }
-            else if (!Directory.Exists(animationClipSource))
+            else if (!validClipDirectory)
             {
                 space(5);
                 GUILayout.BeginHorizontal();
@@ -59,13 +61,17 @@ namespace FickleFrames.Controllers.AnimationControllerEditor_
                     AssetDatabase.Refresh();
                 }
                 GUILayout.EndHorizontal();
-                return;
             }
             else if (Directory.GetFiles(animationClipSource, "*.anim").Length == 0)
             {
                 space(5);
                 info("Directory is empty, no animation clips found", MessageType.Warning);
             }
+
+
+            space(10);
+            heading("Animator Controller Settings");
+            space(5);
 
 
             // animationControllerSavePath
@@ -78,7 +84,7 @@ namespace FickleFrames.Controllers.AnimationControllerEditor_
                 info("This field cannot be empty!!", MessageType.Error);
                 return;
             }
-            else if (!Directory.Exists(animationControllerSavePath))
+            else if (!validControllerDirectory)
             {
                 space(5);
                 GUILayout.BeginHorizontal();
@@ -117,6 +123,8 @@ namespace FickleFrames.Controllers.AnimationControllerEditor_
 
 
             // enableAutoUpdate
+            if (controller == null)
+                return;
             if (getProperty("stateController").objectReferenceValue == null)
             {
                 if (root.TryGetComponent(out stateController))
@@ -136,18 +144,14 @@ namespace FickleFrames.Controllers.AnimationControllerEditor_
                 shouldEnableAutoUpdate = true;
                 stateController = (StateController)getProperty("stateController").objectReferenceValue;
             }
-
             EditorGUI.BeginDisabledGroup(!shouldEnableAutoUpdate);
             propertyField(getProperty("enableAutoUpdate"), "Enable Auto Update", "If set then this animation controller will work automatically with a state controller component");
             EditorGUI.EndDisabledGroup();
 
 
-            space(10);
-            heading("-Animator Controller Settings-");
-            space(5);
-
-
             // Updating animator controller
+            if (!validClipDirectory)
+                return;
             List<AnimationClip> clips = new List<AnimationClip>();
             List<string> dropDown = new List<string>() { "None" };
             AnimatorStateMachine rootState = controller.layers[0].stateMachine;

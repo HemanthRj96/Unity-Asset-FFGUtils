@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.IO;
+using System;
 
 namespace FickleFrames.Controllers.StateControllerEditor_
 {
@@ -9,8 +10,8 @@ namespace FickleFrames.Controllers.StateControllerEditor_
     {
         string controllerFilepath;
         string scriptSuffix;
+        bool validScript = false;
         bool validDirectory => Directory.Exists(controllerFilepath);
-        bool validScript => !string.IsNullOrEmpty(scriptSuffix);
         SerializedProperty stateArray(int index) => getProperty("states").GetArrayElementAtIndex(index);
 
         private void InspectorUpdate()
@@ -24,7 +25,10 @@ namespace FickleFrames.Controllers.StateControllerEditor_
             if (controllerFilepath == "")
                 info("Cannot create or load states statically", MessageType.Warning);
             else if (!validDirectory && button($"Create directory {controllerFilepath}", 25))
+            {
                 Directory.CreateDirectory(controllerFilepath);
+                AssetDatabase.Refresh();
+            }
 
 
             // Load controllers from directory
@@ -50,12 +54,25 @@ namespace FickleFrames.Controllers.StateControllerEditor_
                                     currentIndex = i;
                                     break;
                                 }
+                                else if (sn == state.name || s == state)
+                                {
+                                    currentIndex = -2;
+                                    break;
+                                }
                             }
+
+                            if (currentIndex == -2)
+                            {
+                                currentIndex = -1;
+                                continue;
+                            }
+
                             if (currentIndex == -1)
                             {
                                 currentIndex = getProperty("states").arraySize;
                                 getProperty("states").InsertArrayElementAtIndex(currentIndex);
                             }
+
                             stateArray(currentIndex).FindPropertyRelative("stateName").stringValue = state.name;
                             stateArray(currentIndex).FindPropertyRelative("state").objectReferenceValue = state;
                             currentIndex = -1;
@@ -71,9 +88,20 @@ namespace FickleFrames.Controllers.StateControllerEditor_
             {
                 propertyField(getProperty("scriptSuffix"), "Script Suffix", "Suffix added to script files as a unique identifier");
                 scriptSuffix = getProperty("scriptSuffix").stringValue;
+
+                if (string.IsNullOrEmpty(scriptSuffix))
+                {
+                    info("Field empty! Cannot create code file from template!", MessageType.Warning);
+                    validScript = false;
+                }
+                else if (Char.IsDigit(scriptSuffix[0]))
+                {
+                    info("Cannot begin with number!", MessageType.Error);
+                    validScript = false;
+                }
+                else
+                    validScript = true;
             }
-            if (string.IsNullOrEmpty(scriptSuffix))
-                info("Field empty! Cannot create code file from template!", MessageType.Warning);
 
 
             // state array manipulator
@@ -100,7 +128,7 @@ namespace FickleFrames.Controllers.StateControllerEditor_
 
                 propertyField(stateArray(i).FindPropertyRelative("stateName"), "", "");
                 propertyField(stateArray(i).FindPropertyRelative("state"), "", "");
-                if(GUILayout.Button("X", GUILayout.Width(20)))
+                if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
                     getProperty("states").DeleteArrayElementAtIndex(i);
                     continue;
@@ -114,8 +142,11 @@ namespace FickleFrames.Controllers.StateControllerEditor_
                 // check if all conditions for script creation is met
                 if (validDirectory && validScript && !string.IsNullOrEmpty(stateName) && state == null)
                 {
+                    var style = new GUIStyle(GUI.skin.button);
+                    style.normal.textColor = Color.green;
+
                     // create code file
-                    if (!File.Exists($"{controllerFilepath}/{stateName}_{scriptSuffix}.cs") && button($"Create {stateName} from code template"))
+                    if (!File.Exists($"{controllerFilepath}/{stateName}_{scriptSuffix}.cs") && GUILayout.Button($"Create {stateName} from code template", style))
                     {
                         string templateContent;
                         string templateFilepath = new System.Diagnostics.StackTrace(true).GetFrame(0).GetFileName().Substring(Directory.GetCurrentDirectory().Length + 1);
@@ -135,12 +166,13 @@ namespace FickleFrames.Controllers.StateControllerEditor_
                         AssetDatabase.Refresh();
                     }
 
+                    style.normal.textColor = Color.cyan;
                     // create scriptable object
                     if (
                         !EditorApplication.isCompiling &&
                         File.Exists($"{controllerFilepath}/{stateName}_{scriptSuffix}.cs") &&
                         !File.Exists($"{controllerFilepath}/{stateName}.asset") &&
-                        button($"Construct {stateName} object from code file")
+                        GUILayout.Button($"Construct {stateName} object from code file", style)
                         )
                     {
                         State instance = (State)CreateInstance($"{stateName}_{scriptSuffix}");
@@ -157,7 +189,7 @@ namespace FickleFrames.Controllers.StateControllerEditor_
                         }
                     }
                 }
-                space(7.5f);
+                space(5);
             }
         }
 
