@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FickleFrames.Controllers.Internals;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,13 +16,13 @@ namespace FickleFrames.Controllers
         #region Editor
 #if UNITY_EDITOR
         [SerializeField] private string stateControllerFilepath;
+        [SerializeField] private string scriptSuffix;
 #endif
         #endregion Editor
 
         #region Private Fields
 
-        [SerializeField] private string[] stateNames = new string[] { };
-        [SerializeField] private State[] states = new State[] { };
+        [SerializeField] private StateContainer[] states;
         [SerializeField] private string defaultStateName = "";
 
         private Dictionary<string, IState> stateLookup = new Dictionary<string, IState>();
@@ -43,9 +44,9 @@ namespace FickleFrames.Controllers
         /// </summary>
         private void bootstrapper()
         {
-            for (int i = 0; i < stateNames.Length; ++i)
-                if (!string.IsNullOrEmpty(stateNames[i]) && states[i] != null)
-                    stateLookup.Add(stateNames[i], states[i]);
+            foreach (StateContainer state in states)
+                if (state.stateName != "" && state.state != null)
+                    stateLookup.Add(state.stateName, state.state);
         }
 
 

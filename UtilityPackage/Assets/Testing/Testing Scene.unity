@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateControllerFilepath: Assets/Testing/StateController
-  stateNames: []
+  scriptSuffix: 
   states: []
   defaultStateName: 
 --- !u!4 &896302280
