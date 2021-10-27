@@ -3,9 +3,6 @@
 
 namespace FickleFrames.Controllers
 {
-    /// <summary>
-    /// Inherit this class if manual animation update is required
-    /// </summary>
     public class AnimationController : MonoBehaviour
     {
         #region Editor

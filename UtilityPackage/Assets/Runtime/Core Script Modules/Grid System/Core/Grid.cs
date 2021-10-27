@@ -11,12 +11,7 @@ namespace FickleFrames
     public class Grid<TGridType>
     {
 
-        #region Internals
-
-
-        public int height { private set; get; }
-        public int width { private set; get; }
-        public float cellSize { private set; get; }
+        #region Private Fields
 
         private Vector3 offset;
         private TGridType[,] grid;
@@ -24,6 +19,10 @@ namespace FickleFrames
         private SpriteRenderer[,] spriteGrid;
         bool shouldUseText = true;
         bool shouldUseRenderer = true;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         /// <summary>
         /// If you don't want to use text object or sprite renderers then set the last two parameters as false
@@ -52,9 +51,17 @@ namespace FickleFrames
                 spriteGrid = new SpriteRenderer[width, height];
         }
 
+        #endregion Public Constructors
 
-        #endregion Internals
+        #region Public Properties
 
+        public int height { private set; get; }
+        public int width { private set; get; }
+        public float cellSize { private set; get; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         /// Converts world position into grid sections
@@ -173,7 +180,7 @@ namespace FickleFrames
         /// <param name="duration">Default duration is 0 i.e., the grid will be drawn for a single frame</param>
         public void DrawGrid(Color color, float duration = 0)
         {
-            Utilities.DrawGrid(offset, height, width, cellSize, duration, color);
+            UtilityMethods.DrawGrid(offset, height, width, cellSize, duration, color);
         }
 
 
@@ -191,7 +198,7 @@ namespace FickleFrames
 
             for (int x = 0; x < width; ++x)
                 for (int y = 0; y < height; ++y)
-                    textGrid[x, y] = Utilities.CreateWorldText("", grid[x, y].ToString(), parentTransform, GetWorldPosition(x, y) + (Vector3.one * cellSize / 2), Vector2.one * cellSize, color);
+                    textGrid[x, y] = UtilityMethods.CreateWorldText("", grid[x, y].ToString(), parentTransform, GetWorldPosition(x, y) + (Vector3.one * cellSize / 2), Vector2.one * cellSize, color);
         }
 
 
@@ -212,7 +219,9 @@ namespace FickleFrames
 
             for (int x = 0; x < width; ++x)
                 for (int y = 0; y < height; ++y)
-                    spriteGrid[x, y] = Utilities.CreateRenderer("", parent, sprite, GetWorldPosition(x, y) + (Vector3.one * cellSize / 2), Vector3.one * cellSize, color);
+                    spriteGrid[x, y] = UtilityMethods.CreateRenderer("", parent, sprite, GetWorldPosition(x, y) + (Vector3.one * cellSize / 2), Vector3.one * cellSize, color);
         }
-    } 
+
+        #endregion Public Methods
+    }
 }

@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using FickleFrames.Managers.Internal;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
-namespace FickleFrames
+namespace FickleFrames.Managers
 {
     public class LevelManager : Singleton<LevelManager>
     {
@@ -165,4 +166,4 @@ namespace FickleFrames
 
         #endregion Public Methods
     }
-}
+}   

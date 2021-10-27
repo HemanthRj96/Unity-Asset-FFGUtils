@@ -3,10 +3,10 @@ using UnityEditor;
 using UnityEngine;
 
 
-namespace FickleFrames.Systems.ActionSystemEditor_
+namespace FickleFrames.Systems.Editor_
 {
     [CustomEditor(typeof(ActionComponent))]
-    public class ActionSystemEditor : CustomInspector<ActionComponent>
+    public class ActionSystemEditor : BaseEditor<ActionComponent>
     {
         string actionName;
         ActionSlave slave;

@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-namespace FickleFrames.Controllers.AnimationControllerEditor_
+namespace FickleFrames.Controllers.Editor_
 {
     [CustomEditor(typeof(AnimationController))]
-    public class AnimationControllerEditor : CustomInspector<AnimationController>
+    public class AnimationControllerEditor : BaseEditor<AnimationController>
     {
         Animator animator;
         AnimatorController controller;

@@ -1,10 +1,11 @@
-﻿using UnityEditor;
+﻿using FickleFrames.Managers.Internal;
+using UnityEditor;
 
 
-namespace FickleFrames.Managers.LevelControllerEditor_
+namespace FickleFrames.Managers.Editor_
 {
     [CustomEditor(typeof(LevelController))]
-    public class LevelControllerEditor : CustomInspector<LevelController>
+    public class LevelControllerEditor : BaseEditor<LevelController>
     {
         SceneAsset scene;
 
