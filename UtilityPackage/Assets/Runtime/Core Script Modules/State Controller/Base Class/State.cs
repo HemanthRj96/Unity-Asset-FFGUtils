@@ -10,37 +10,37 @@ namespace FickleFrames.Controllers
     /// </summary>
     public abstract class State : ScriptableObject, IState
     {
-        #region Private Fields
+        #region Internal
 
+        //********************************************Serialized Fields**************************************************
         [Header("-Base State Settings-")]
-        [SerializeField] private EStateUpdateMode updateMode = EStateUpdateMode.Update;
+        [SerializeField] private EStateUpdateMode _updateMode = EStateUpdateMode.Update;
 
+        //*********************************************Private Fields****************************************************
         private Action _stateUpdate = delegate { };
         private Action _stateFixedUpdate = delegate { };
 
-        #endregion Private Fields
-
-        #region Public Properties
-
-        public Action onStateUpdate { get { return _stateUpdate; } }
-        public Action onStateFixedUpdate { get { return _stateFixedUpdate; } }
-
-        #endregion Public Properties
+        //***********************************************Properties******************************************************
+        public Action OnStateUpdate { get { return _stateUpdate; } }
+        public Action OnStateFixedUpdate { get { return _stateFixedUpdate; } }
 
         #region Private Methods
 
+        //*********************************************Private Methods***************************************************
         /// <summary>
         /// Change the way how the state will be updated
         /// </summary>
         private void OnEnable()
         {
-            if (updateMode == EStateUpdateMode.Update)
+            if (_updateMode == EStateUpdateMode.Update)
                 _stateUpdate = StateUpdate;
             else
                 _stateFixedUpdate = StateUpdate;
         }
 
         #endregion Private Methods
+
+        #endregion Internal
 
         #region Public Methods
 

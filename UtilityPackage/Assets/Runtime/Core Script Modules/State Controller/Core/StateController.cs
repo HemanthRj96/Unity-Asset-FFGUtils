@@ -22,21 +22,22 @@ namespace FickleFrames.Controllers
 #endif
         #endregion Editor
 
-        #region Private Fields
+        #region Internal
+
 #pragma warning disable 0649,0414
+        //********************************************Serialized Fields**************************************************
+        [SerializeField] private StateContainer[] _states;
+        [SerializeField] private string _defaultStateName = "";
 
-        [SerializeField] private StateContainer[] states;
-        [SerializeField] private string defaultStateName = "";
-
-        private Dictionary<string, IState> stateLookup = new Dictionary<string, IState>();
-        private string currentStateName = "";
-        private Action<string> onStateChangeEvent = delegate { };
-
+        //*********************************************Private Fields****************************************************
+        private Dictionary<string, IState> _stateLookup = new Dictionary<string, IState>();
+        private string _currentStateName = "";
+        private Action<string> _onStateChangeEvent = delegate { };
 #pragma warning restore 0649,0414
-        #endregion Private Fields
 
         #region Private Methods
 
+        //*********************************************Private Methods***************************************************
         private void Awake()
         {
             bootstrapper();
@@ -48,9 +49,9 @@ namespace FickleFrames.Controllers
         /// </summary>
         private void bootstrapper()
         {
-            foreach (StateContainer state in states)
-                if (state.stateName != "" && state.state != null)
-                    stateLookup.Add(state.stateName, state.state);
+            foreach (StateContainer state in _states)
+                if (state.StateName != "" && state.State != null)
+                    _stateLookup.Add(state.StateName, state.State);
         }
 
 
@@ -59,23 +60,23 @@ namespace FickleFrames.Controllers
         /// </summary>
         private IState getActiveState()
         {
-            if (stateLookup.Count == 0)
+            if (_stateLookup.Count == 0)
                 return null;
 
             // This shouldn't happen
-            if (defaultStateName == "")
-                defaultStateName = stateLookup.Keys.ToList()[0];
-            if (currentStateName == "")
-                currentStateName = defaultStateName;
+            if (_defaultStateName == "")
+                _defaultStateName = _stateLookup.Keys.ToList()[0];
+            if (_currentStateName == "")
+                _currentStateName = _defaultStateName;
 
-            string newStateName = stateLookup[currentStateName]?.GetState();
+            string newStateName = _stateLookup[_currentStateName]?.GetState();
 
-            if (currentStateName != newStateName)
-                onStateChangeEvent(newStateName);
+            if (_currentStateName != newStateName)
+                _onStateChangeEvent(newStateName);
 
-            currentStateName = newStateName;
+            _currentStateName = newStateName;
 
-            return stateLookup[currentStateName];
+            return _stateLookup[_currentStateName];
         }
 
 
@@ -84,8 +85,8 @@ namespace FickleFrames.Controllers
         /// </summary>
         private void Update()
         {
-            _Update();
-            getActiveState()?.onStateUpdate();
+            NewUpdate();
+            getActiveState()?.OnStateUpdate();
         }
 
 
@@ -94,28 +95,32 @@ namespace FickleFrames.Controllers
         /// </summary>
         private void FixedUpdate()
         {
-            _FixedUpdate();
-            getActiveState()?.onStateFixedUpdate();
+            NewFixedUpdate();
+            getActiveState()?.OnStateFixedUpdate();
         }
 
         #endregion Private Methods
 
         #region Protected Methods
 
+        //********************************************Protected Methods**************************************************
         /// <summary>
         /// This method must be implemented since there's no other reason for inheriting this component
         /// </summary>
-        protected virtual void _Update() { }
+        protected virtual void NewUpdate() { }
 
         /// <summary>
         /// This method must be implemented since there's no other reason for inheriting this component
         /// </summary>
-        protected virtual void _FixedUpdate() { }
+        protected virtual void NewFixedUpdate() { }
 
         #endregion Protected Methods
 
+        #endregion Internal
+
         #region Public Methods
 
+        //*********************************************Public Methods****************************************************
         /// <summary>
         /// Use this method to attach and subscribe to stateChangeEvent
         /// </summary>
@@ -123,7 +128,7 @@ namespace FickleFrames.Controllers
         public void AttachStateChangeEvent(Action<string> targetEvent)
         {
             if (targetEvent != null)
-                onStateChangeEvent += targetEvent;
+                _onStateChangeEvent += targetEvent;
         }
 
         #endregion Public Methods

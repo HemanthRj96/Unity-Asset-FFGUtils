@@ -6,17 +6,31 @@ namespace FickleFrames.Systems
 {
     public class PoolSlave : MonoBehaviour, IPoolSlave
     {
-
         #region Private Methods
 
-        private void OnEnable() { OnUse(); }
+        //*********************************************Private Methods***************************************************
+        /// <summary>
+        /// Call OnUse() on enable
+        /// </summary>
+        private void OnEnable() 
+        { 
+            OnUse(); 
+        }
 
-        private void OnDisable() { OnRelease(); }
+
+        /// <summary>
+        /// Call OnRelease() upon deactivation
+        /// </summary>
+        private void OnDisable() 
+        { 
+            OnRelease(); 
+        }
 
         #endregion Private Methods
 
         #region Public Methods
 
+        //*********************************************Public Methods****************************************************
         /// <summary>
         /// This method is invoked when this gameObject becomes enabled in the scene
         /// </summary>

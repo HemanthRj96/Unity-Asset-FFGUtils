@@ -11,28 +11,26 @@ namespace FickleFrames.Systems
     /// </summary>
     public class Pooler : MonoBehaviour
     {
+        #region Internal
 
-        #region Private Fields
-
-        [Header("-Pooler Settings-")]
-
-        [SerializeField] private string poolerName = default;
-        [SerializeField] private bool doNotDestroyOnLoad = false;
+        //********************************************Serialized Fields**************************************************
+        [Header("Pooler Settings")]
+        [SerializeField] private string _poolerName = default;
+        [SerializeField] private bool _doNotDestroyOnLoad = false;
         [Tooltip("If true then the pool gets created on Awake")]
-        [SerializeField] private bool shouldWarmPoolOnAwake = false;
+        [SerializeField] private bool _shouldWarmPoolOnAwake = false;
 
-        [Header("-Pool Settings-")]
+        [Header("Pool Settings")]
+        [SerializeField] private List<Pool> _pools = new List<Pool>();
 
-        [SerializeField] private List<Pool> pools = new List<Pool>();
-
-        private List<ObjectPool> objectPools = new List<ObjectPool>();
-        private Dictionary<string, Queue<GameObject>> mainPoolLookup = new Dictionary<string, Queue<GameObject>>();
-        private Dictionary<string, Queue<UnityEngine.Object>> objectPoolLookup = new Dictionary<string, Queue<UnityEngine.Object>>();
-
-        #endregion Private Fields
+        //*********************************************Private Fields****************************************************
+        private List<ObjectPool> _objectPools = new List<ObjectPool>();
+        private Dictionary<string, Queue<GameObject>> _mainPoolLookup = new Dictionary<string, Queue<GameObject>>();
+        private Dictionary<string, Queue<UnityEngine.Object>> _objectPoolLookup = new Dictionary<string, Queue<UnityEngine.Object>>();
 
         #region Private Methods
 
+        //*********************************************Private Methods***************************************************
         /// <summary>
         /// Calls bootstrapper
         /// </summary>
@@ -47,7 +45,7 @@ namespace FickleFrames.Systems
         /// </summary>
         private void OnDestroy()
         {
-            PoolManager.DeletePooler(poolerName);
+            PoolManager.DeletePooler(_poolerName);
             ReleaseAllPools();
         }
 
@@ -58,19 +56,19 @@ namespace FickleFrames.Systems
         private void bootstrapper()
         {
             // Change poolerName if poolerName is empty
-            if (poolerName == "")
-                poolerName = gameObject.name;
+            if (_poolerName == "")
+                _poolerName = gameObject.name;
 
             // Change pool values to default values
-            for (int i = 0; i < pools.Count; ++i)
-                pools[i] = new Pool(pools[i].poolName, pools[i].prefab, pools[i].poolSize);
+            for (int i = 0; i < _pools.Count; ++i)
+                _pools[i] = new Pool(_pools[i].PoolName, _pools[i].Prefab, _pools[i].PoolSize);
 
             // Add this pooler to pool manager
-            PoolManager.AddPooler(poolerName, this);
+            PoolManager.AddPooler(_poolerName, this);
 
-            if (doNotDestroyOnLoad)
+            if (_doNotDestroyOnLoad)
                 DontDestroyOnLoad(this);
-            if (shouldWarmPoolOnAwake)
+            if (_shouldWarmPoolOnAwake)
                 WarmPool();
         }
 
@@ -80,7 +78,7 @@ namespace FickleFrames.Systems
         /// </summary>
         private GameObject getFromPool(string poolTag)
         {
-            return mainPoolLookup[poolTag].Dequeue();
+            return _mainPoolLookup[poolTag].Dequeue();
         }
 
 
@@ -89,7 +87,7 @@ namespace FickleFrames.Systems
         /// </summary>
         private UnityEngine.Object getFromObjectPool(string poolTag)
         {
-            return objectPoolLookup[poolTag].Dequeue();
+            return _objectPoolLookup[poolTag].Dequeue();
         }
 
         /// <summary>
@@ -97,7 +95,7 @@ namespace FickleFrames.Systems
         /// </summary>
         private void loadIntoPool(string poolTag, GameObject entity)
         {
-            mainPoolLookup[poolTag].Enqueue(entity);
+            _mainPoolLookup[poolTag].Enqueue(entity);
         }
 
         /// <summary>
@@ -105,7 +103,7 @@ namespace FickleFrames.Systems
         /// </summary>
         private void loadIntoObjectPool(string poolTag, UnityEngine.Object entity)
         {
-            objectPoolLookup[poolTag].Enqueue(entity);
+            _objectPoolLookup[poolTag].Enqueue(entity);
         }
 
         /// <summary>
@@ -113,7 +111,7 @@ namespace FickleFrames.Systems
         /// </summary>
         private bool checkIfPoolExists(string poolTag)
         {
-            return mainPoolLookup.ContainsKey(poolTag);
+            return _mainPoolLookup.ContainsKey(poolTag);
         }
 
         /// <summary>
@@ -121,10 +119,12 @@ namespace FickleFrames.Systems
         /// </summary>
         private bool checkIfObjectPoolExists(string poolTag)
         {
-            return objectPoolLookup.ContainsKey(poolTag);
+            return _objectPoolLookup.ContainsKey(poolTag);
         }
 
         #endregion Private Methods
+
+        #endregion Internal
 
         #region Public Methods
 
@@ -133,14 +133,14 @@ namespace FickleFrames.Systems
         /// </summary>
         public UnityEngine.Object UseObject(string poolTag)
         {
-            if (!objectPoolLookup.ContainsKey(poolTag))
+            if (!_objectPoolLookup.ContainsKey(poolTag))
             {
                 Debug.LogError("Pool tag not found!!");
                 return null;
             }
 
-            UnityEngine.Object obj = objectPoolLookup[poolTag].Dequeue();
-            objectPoolLookup[poolTag].Enqueue(obj);
+            UnityEngine.Object obj = _objectPoolLookup[poolTag].Dequeue();
+            _objectPoolLookup[poolTag].Enqueue(obj);
             return obj;
         }
 
@@ -179,33 +179,33 @@ namespace FickleFrames.Systems
         public void WarmPool()
         {
             // Loadup main pool
-            foreach (var pool in pools)
+            foreach (var pool in _pools)
             {
                 Queue<GameObject> tempQueue = new Queue<GameObject>();
                 // Duplicate guard
-                if (checkIfPoolExists(pool.poolName))
+                if (checkIfPoolExists(pool.PoolName))
                     continue;
-                for (int i = 0; i < pool.poolSize; ++i)
+                for (int i = 0; i < pool.PoolSize; ++i)
                 {
-                    GameObject instance = Instantiate(pool.prefab);
+                    GameObject instance = Instantiate(pool.Prefab);
                     instance.SetActive(false);
                     tempQueue.Enqueue(instance);
                 }
-                mainPoolLookup.Add(pool.poolName, tempQueue);
+                _mainPoolLookup.Add(pool.PoolName, tempQueue);
             }
             // Loadup object pool
-            foreach (var pool in objectPools)
+            foreach (var pool in _objectPools)
             {
                 Queue<UnityEngine.Object> tempQueue = new Queue<UnityEngine.Object>();
                 // Duplicate guard
-                if (checkIfObjectPoolExists(pool.poolTag))
+                if (checkIfObjectPoolExists(pool.PoolTag))
                     continue;
-                for (int i = 0; i < pool.poolSize; ++i)
+                for (int i = 0; i < pool.PoolSize; ++i)
                 {
-                    UnityEngine.Object instance = Instantiate(pool.entity);
+                    UnityEngine.Object instance = Instantiate(pool.Entity);
                     tempQueue.Enqueue(instance);
                 }
-                objectPoolLookup.Add(pool.poolTag, tempQueue);
+                _objectPoolLookup.Add(pool.PoolTag, tempQueue);
             }
         }
 
@@ -219,13 +219,13 @@ namespace FickleFrames.Systems
                 return;
             if (entity is GameObject)
             {
-                pools.Add(new Pool(poolTag, (GameObject)entity, size));
+                _pools.Add(new Pool(poolTag, (GameObject)entity, size));
                 if (shouldWarm)
                     WarmPool();
             }
             else
             {
-                objectPools.Add(new ObjectPool(poolTag, entity, size));
+                _objectPools.Add(new ObjectPool(poolTag, entity, size));
                 if (shouldWarm)
                     WarmPool();
             }
@@ -239,17 +239,17 @@ namespace FickleFrames.Systems
         {
             if (checkIfPoolExists(poolTag))
             {
-                GameObject[] entities = mainPoolLookup[poolTag].ToArray();
+                GameObject[] entities = _mainPoolLookup[poolTag].ToArray();
                 foreach (var entity in entities)
                     Destroy(entity);
-                mainPoolLookup.Remove(poolTag);
+                _mainPoolLookup.Remove(poolTag);
             }
             else if (checkIfObjectPoolExists(poolTag))
             {
-                UnityEngine.Object[] entities = objectPoolLookup[poolTag].ToArray();
+                UnityEngine.Object[] entities = _objectPoolLookup[poolTag].ToArray();
                 foreach (var entity in entities)
                     Destroy(entity);
-                objectPoolLookup.Remove(poolTag);
+                _objectPoolLookup.Remove(poolTag);
             }
         }
 
@@ -259,19 +259,19 @@ namespace FickleFrames.Systems
         /// </summary>
         public void ReleaseAllPools()
         {
-            if (mainPoolLookup.Count != 0)
+            if (_mainPoolLookup.Count != 0)
             {
                 // Release main pool
-                foreach (string key in mainPoolLookup.Keys.ToList())
+                foreach (string key in _mainPoolLookup.Keys.ToList())
                     ReleasePool(key);
-                mainPoolLookup.Clear();
+                _mainPoolLookup.Clear();
             }
-            if (objectPoolLookup.Count != 0)
+            if (_objectPoolLookup.Count != 0)
             {
                 // Release alternate pool
-                foreach (string key in objectPoolLookup.Keys.ToList())
+                foreach (string key in _objectPoolLookup.Keys.ToList())
                     ReleasePool(key);
-                objectPoolLookup.Clear();
+                _objectPoolLookup.Clear();
             }
         }
 

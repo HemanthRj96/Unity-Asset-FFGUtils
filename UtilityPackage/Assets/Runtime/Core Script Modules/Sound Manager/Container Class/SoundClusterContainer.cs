@@ -3,7 +3,7 @@
     [System.Serializable]
     public class SoundClusterContainer
     {
-        public string soundClusterName;
-        public SoundClipClusters soundClips;
+        public string SoundClusterName;
+        public SoundClipClusters SoundClipClusters;
     }
 }

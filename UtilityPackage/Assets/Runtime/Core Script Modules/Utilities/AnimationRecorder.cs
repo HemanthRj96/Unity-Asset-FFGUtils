@@ -6,67 +6,56 @@ using System.IO;
 
 namespace FickleFrames.Utility
 {
-    public class AnimationRecorderBuildExcluded : Singleton<AnimationRecorderBuildExcluded>
+    public enum ERecorderAction
     {
-        #region Private Fields
+        StartRecording,
+        StopRecording,
+        DeleteRecording
+    }
 
-        private const string DEFAULT_KEY_SUFFIX = "Animation_Recorder";
+    public class AnimationRecorder : Singleton<AnimationRecorder>
+    {
+        #region Internals
 
+        //********************************************Serialized Fields**************************************************
         [Space(3)]
         [Header("-Save Settings-")]
         [Tooltip("Input a unique that will be used to save data into PlayerPrefs")]
-        [SerializeField]
-        private string playerPrefsKey = "";
+        [SerializeField] private string _playerPrefsKey = "";
         [Tooltip("Set this as true if you want to reset PlayerPrefs key, use it if you delete all animations")]
-        [SerializeField]
-        private bool resetIndex = false;
-
+        [SerializeField] private bool _resetIndex = false;
         [Space(3)]
         [Header("-Recorder Settings-")]
         [Tooltip("This is the target GameObject we want to record")]
-        [SerializeField]
-        private GameObject targetGameObject = null;
+        [SerializeField] private GameObject _targetGameObject = null;
         [Tooltip("Save file name that must be used")]
-        [SerializeField]
-        private string clipFileSaveName = "";
+        [SerializeField] private string _clipFileSaveName = "";
         [Tooltip("Do not modify it unless necessary")]
-        [SerializeField]
-        private string saveAnimationClipsTo = "Assets/Animation Recordings/Clips/";
+        [SerializeField] private string _saveAnimationClipsTo = "Assets/Animation Recordings/Clips/";
         [Tooltip("Do not modify it unless necessary")]
-        [SerializeField]
-        private string saveAnimationControllerTo = "Assets/Animation Recordings/Controllers/";
-        [SerializeField]
-        float frameRate = 24;
-
+        [SerializeField] private string _saveAnimationControllerTo = "Assets/Animation Recordings/Controllers/";
+        [SerializeField] float _frameRate = 24;
         [Space(3)]
         [Header("-Recorder Key Bindings-")]
         [Tooltip("Set this as true if you want trigger the recording and deletion from a script")]
-        [SerializeField]
-        private bool useExternalTrigger = false;
-        [SerializeField]
-        private KeyCode startRecord = KeyCode.Mouse0;
-        [SerializeField]
-        private KeyCode stopRecord = KeyCode.Mouse1;
-        [SerializeField]
-        private KeyCode deleteRecord = KeyCode.Mouse2;
-        private bool shouldRecord = false;
-        private bool isRecorderReady = false;
-        private int index = 0;
-        private GameObjectRecorder recorder = null;
-        private AnimationClip cachedClip = null;
-        private bool animatorLoaded = false;
+        [SerializeField] private bool _useExternalTrigger = false;
+        [SerializeField] private KeyCode _startRecord = KeyCode.Mouse0;
+        [SerializeField] private KeyCode _stopRecord = KeyCode.Mouse1;
+        [SerializeField] private KeyCode _deleteRecord = KeyCode.Mouse2;
 
-        #endregion Private Fields
+        //*********************************************Private Fields****************************************************
+        private bool _shouldRecord = false;
+        private bool _isRecorderReady = false;
+        private int _index = 0;
+        private GameObjectRecorder _recorder = null;
+        private AnimationClip _cachedClip = null;
+        private bool _animatorLoaded = false;
+        private const string DEFAULT_KEY_SUFFIX = "Animation_Recorder";
 
-
-        #region Private Properties
-
-        private bool subjectReady => targetGameObject != null;
-        private string key => DEFAULT_KEY_SUFFIX + $"_{playerPrefsKey}";
-        private string saveName => clipFileSaveName + $"_{index}";
-
-        #endregion Private Properties
-
+        //***********************************************Properties******************************************************
+        private bool subjectReady => _targetGameObject != null;
+        private string key => DEFAULT_KEY_SUFFIX + $"_{_playerPrefsKey}";
+        private string saveName => _clipFileSaveName + $"_{_index}";
 
         #region Private Methods
 
@@ -76,12 +65,12 @@ namespace FickleFrames.Utility
         private void OnEnable()
         {
             // Initialize clipFileSaveName if empty
-            if (clipFileSaveName == "")
-                clipFileSaveName = gameObject.name;
+            if (_clipFileSaveName == "")
+                _clipFileSaveName = gameObject.name;
 
             // Check if key has to reset
-            if (resetIndex == false)
-                index = PlayerPrefs.GetInt(key, 0);
+            if (_resetIndex == false)
+                _index = PlayerPrefs.GetInt(key, 0);
             else
                 PlayerPrefs.DeleteKey(key);
         }
@@ -93,10 +82,10 @@ namespace FickleFrames.Utility
         private void OnDisable()
         {
             // Stop recording and save clip if recorder is recording
-            if (shouldRecord)
+            if (_shouldRecord)
                 stopRecording();
             // Save index to playerPrefs
-            PlayerPrefs.SetInt(key, index);
+            PlayerPrefs.SetInt(key, _index);
         }
 
 
@@ -118,7 +107,7 @@ namespace FickleFrames.Utility
         private void Update()
         {
             // If using external trigger then don't check for inputs
-            if (useExternalTrigger == false && isRecorderReady)
+            if (_useExternalTrigger == false && _isRecorderReady)
                 inputUpdate();
         }
 
@@ -128,7 +117,7 @@ namespace FickleFrames.Utility
         /// </summary>
         private void LateUpdate()
         {
-            if (isRecorderReady && subjectReady)
+            if (_isRecorderReady && subjectReady)
                 tryRecord();
         }
 
@@ -138,11 +127,11 @@ namespace FickleFrames.Utility
         /// </summary>
         private void initializeRecorder()
         {
-            if (targetGameObject != null)
+            if (_targetGameObject != null)
             {
-                recorder = new GameObjectRecorder(targetGameObject);
-                recorder.BindComponentsOfType<Component>(targetGameObject, true);
-                isRecorderReady = true;
+                _recorder = new GameObjectRecorder(_targetGameObject);
+                _recorder.BindComponentsOfType<Component>(_targetGameObject, true);
+                _isRecorderReady = true;
             }
         }
 
@@ -152,10 +141,10 @@ namespace FickleFrames.Utility
         /// </summary>
         private void initializeDirectories()
         {
-            if (!Directory.Exists(saveAnimationClipsTo))
-                Directory.CreateDirectory(saveAnimationClipsTo);
-            if (!Directory.Exists(saveAnimationControllerTo))
-                Directory.CreateDirectory(saveAnimationControllerTo);
+            if (!Directory.Exists(_saveAnimationClipsTo))
+                Directory.CreateDirectory(_saveAnimationClipsTo);
+            if (!Directory.Exists(_saveAnimationControllerTo))
+                Directory.CreateDirectory(_saveAnimationControllerTo);
         }
 
 
@@ -165,14 +154,14 @@ namespace FickleFrames.Utility
         private void tryRecord()
         {
             // Check if there's a clip
-            if (cachedClip == null)
+            if (_cachedClip == null)
             {
-                cachedClip = createNewAnimationClip(saveName, frameRate);
-                ++index;
+                _cachedClip = createNewAnimationClip(saveName, _frameRate);
+                ++_index;
             }
             // Record is recorder is ready and shouldRecord is enabled
-            if (shouldRecord)
-                recorder.TakeSnapshot(Time.deltaTime);
+            if (_shouldRecord)
+                _recorder.TakeSnapshot(Time.deltaTime);
         }
 
 
@@ -181,11 +170,11 @@ namespace FickleFrames.Utility
         /// </summary>
         private void inputUpdate()
         {
-            if (Input.GetKeyDown(startRecord))
+            if (Input.GetKeyDown(_startRecord))
                 startRecording();
-            else if (Input.GetKeyDown(stopRecord))
+            else if (Input.GetKeyDown(_stopRecord))
                 stopRecording();
-            else if (Input.GetKeyDown(deleteRecord))
+            else if (Input.GetKeyDown(_deleteRecord))
                 deleteRecording();
         }
 
@@ -195,10 +184,10 @@ namespace FickleFrames.Utility
         /// </summary>
         private void startRecording()
         {
-            if (shouldRecord == true)
+            if (_shouldRecord == true)
                 return;
             Debug.Log("RECORDING");
-            shouldRecord = true;
+            _shouldRecord = true;
         }
 
 
@@ -207,18 +196,18 @@ namespace FickleFrames.Utility
         /// </summary>
         private void stopRecording()
         {
-            if (shouldRecord == false)
+            if (_shouldRecord == false)
                 return;
 
-            shouldRecord = false;
+            _shouldRecord = false;
             Debug.Log("STOP RECORDING");
             // Save recording to the animation clip
-            recorder.SaveToClip(cachedClip);
+            _recorder.SaveToClip(_cachedClip);
             // Save the animation clip locally
-            saveRecording(cachedClip);
-            cachedClip = null;
+            saveRecording(_cachedClip);
+            _cachedClip = null;
             // Create or load animator and animator controller
-            if (animatorLoaded == false)
+            if (_animatorLoaded == false)
                 loadAnimatorAndController();
         }
 
@@ -229,10 +218,10 @@ namespace FickleFrames.Utility
         private void deleteRecording()
         {
             // If currently recording then wait until it stops
-            if (shouldRecord == true)
+            if (_shouldRecord == true)
                 return;
             Debug.LogWarning("DELETING LAST RECORDING");
-            deleteRecording(cachedClip);
+            deleteRecording(_cachedClip);
         }
 
 
@@ -255,13 +244,13 @@ namespace FickleFrames.Utility
         {
             Animator animator;
             AnimatorController controller;
-            if (targetGameObject.GetComponent<Animator>() == null)
+            if (_targetGameObject.GetComponent<Animator>() == null)
             {
-                animator = targetGameObject.AddComponent<Animator>();
-                controller = AnimatorController.CreateAnimatorControllerAtPath(saveAnimationControllerTo + targetGameObject.name + ".controller");
+                animator = _targetGameObject.AddComponent<Animator>();
+                controller = AnimatorController.CreateAnimatorControllerAtPath(_saveAnimationControllerTo + _targetGameObject.name + ".controller");
                 animator.runtimeAnimatorController = controller;
             }
-            animatorLoaded = true;
+            _animatorLoaded = true;
         }
 
 
@@ -270,7 +259,7 @@ namespace FickleFrames.Utility
         /// </summary>
         private void saveRecording(AnimationClip clip)
         {
-            AssetDatabase.CreateAsset(clip, saveAnimationClipsTo + clip.name + ".anim");
+            AssetDatabase.CreateAsset(clip, _saveAnimationClipsTo + clip.name + ".anim");
             AssetDatabase.SaveAssets();
         }
 
@@ -281,11 +270,12 @@ namespace FickleFrames.Utility
         private void deleteRecording(AnimationClip clip)
         {
             if (AssetDatabase.Contains(clip))
-                AssetDatabase.DeleteAsset(saveAnimationClipsTo + clip.name + ".anim");
+                AssetDatabase.DeleteAsset(_saveAnimationClipsTo + clip.name + ".anim");
         }
 
-        #endregion Private Methods
+        #endregion Private Method
 
+        #endregion Internals
 
         #region Public Methods
 
@@ -294,7 +284,7 @@ namespace FickleFrames.Utility
         /// </summary>
         public void ExternalRecorderInput(ERecorderAction action)
         {
-            if (useExternalTrigger)
+            if (_useExternalTrigger)
             {
                 switch (action)
                 {
@@ -319,7 +309,7 @@ namespace FickleFrames.Utility
         public void ChangeTarget(GameObject targetGameObject)
         {
             if (targetGameObject != null)
-                this.targetGameObject = targetGameObject;
+                this._targetGameObject = targetGameObject;
         }
 
         #endregion Public Methods

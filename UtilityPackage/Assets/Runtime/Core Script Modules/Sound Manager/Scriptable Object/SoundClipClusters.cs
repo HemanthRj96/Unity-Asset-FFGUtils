@@ -7,6 +7,6 @@ namespace FickleFrames.Managers.Internal
     [CreateAssetMenu(fileName = "New SoundClips", menuName = "Scriptable Objects/SoundClips")]
     public class SoundClipClusters : ScriptableObject
     {
-        public List<Sound> sounds = new List<Sound>();
+        public List<Sound> Sounds = new List<Sound>();
     }
 }

@@ -12,14 +12,14 @@ namespace FickleFrames.Systems.Internal
             if (poolName == "")
                 poolName = prefab.name + "_" + poolSize.ToString();
 
-            this.poolName = poolName;
-            this.prefab = prefab;
-            this.poolSize = poolSize;
+            PoolName = poolName;
+            Prefab = prefab;
+            PoolSize = poolSize;
         }
 
-        public string poolName;
-        public GameObject prefab;
-        public int poolSize;
+        public string PoolName;
+        public GameObject Prefab;
+        public int PoolSize;
     }
 
     [System.Serializable]
@@ -27,13 +27,13 @@ namespace FickleFrames.Systems.Internal
     {
         public ObjectPool(string poolTag, Object entity, int poolSize)
         {
-            this.poolTag = poolTag;
-            this.entity = entity;
-            this.poolSize = poolSize;
+            PoolTag = poolTag;
+            Entity = entity;
+            PoolSize = poolSize;
         }
 
-        public string poolTag;
-        public Object entity;
-        public int poolSize;
+        public string PoolTag;
+        public Object Entity;
+        public int PoolSize;
     } 
 }

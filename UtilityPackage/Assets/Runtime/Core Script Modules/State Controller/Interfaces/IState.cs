@@ -5,8 +5,8 @@ namespace FickleFrames.Controllers
 {
     public interface IState
     {
-        Action onStateUpdate { get; }
-        Action onStateFixedUpdate { get; }
+        Action OnStateUpdate { get; }
+        Action OnStateFixedUpdate { get; }
 
         string GetState();
         void StateUpdate();

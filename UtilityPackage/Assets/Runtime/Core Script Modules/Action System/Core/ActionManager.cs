@@ -47,11 +47,15 @@ namespace FickleFrames.Systems
         /// <summary>
         /// Method to register an action
         /// </summary>
-        /// <param name="shouldSubscribe">Set this as true if you want to subsribe multiple actions under same tag</param>
-        public static void RegisterAction(Action<IActionParameters> targetAction, string actionName, bool shouldSubscribe = false)
+        /// <param name="multipleSubscription">Set this as true if you want to subsribe multiple actions under same tag</param>
+        public static void RegisterAction(Action<IActionParameters> targetAction, string actionName, bool multipleSubscription = false)
         {
-            if (s_actionCollection.ContainsKey(actionName) && shouldSubscribe)
-                s_actionCollection[actionName] += targetAction;
+            if (s_actionCollection.ContainsKey(actionName))
+            {
+                if (multipleSubscription)
+                    s_actionCollection[actionName] += targetAction;
+                return;
+            }
             else
                 s_actionCollection.Add(actionName, targetAction);
         }
@@ -70,14 +74,9 @@ namespace FickleFrames.Systems
             if (s_actionCollection.ContainsKey(actionName))
             {
                 if (s_actionCollection[actionName] == null)
-                {
                     s_actionCollection.Remove(actionName);
-                    return;
-                }
                 cachedAction = s_actionCollection[actionName];
             }
-            else
-                return;
 
             // Construct data if there's any data available otherwise flush the cached data
             if (data != null || source != null)
@@ -88,8 +87,9 @@ namespace FickleFrames.Systems
 
 
         /// <summary>
-        /// Removes action
+        /// Deregister action from actionManager
         /// </summary>
+        /// <param name="actionName">Target action name</param>
         public static void DeregisterAction(string actionName)
         {
             if (s_actionCollection.ContainsKey(actionName))
@@ -103,7 +103,7 @@ namespace FickleFrames.Systems
         /// <summary>
         /// Function that returns an action component during runtime
         /// </summary>
-        /// <param name="actionName">Name of the action component</param>
+        /// <param name="actionName">Target action component name</param>
         public static ActionComponent FetchActionComponent(string actionName)
         {
             if (s_componentCollection.ContainsKey(actionName))
@@ -111,6 +111,6 @@ namespace FickleFrames.Systems
             return null;
         }
 
-        #endregion Public
+        #endregion Public Methods
     }
 }

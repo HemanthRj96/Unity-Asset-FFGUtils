@@ -1,5 +1,4 @@
-﻿using FickleFrames.Utility;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 namespace FickleFrames
@@ -10,20 +9,22 @@ namespace FickleFrames
     /// <typeparam name="TGridType">Type of grid i.e., int, float, bool etc</typeparam>
     public class Grid<TGridType>
     {
+        #region Internals
 
-        #region Private Fields
+        //*********************************************Private Fields****************************************************
+        private Vector3 _offset;
+        private TGridType[,] _grid;
+        private TextMeshPro[,] _textGrid;
+        private SpriteRenderer[,] _spriteGrid;
+        bool _shouldUseText = true;
+        bool _shouldUseRenderer = true;
 
-        private Vector3 offset;
-        private TGridType[,] grid;
-        private TextMeshPro[,] textGrid;
-        private SpriteRenderer[,] spriteGrid;
-        bool shouldUseText = true;
-        bool shouldUseRenderer = true;
+        //***********************************************Properties******************************************************
+        public int Height { private set; get; }
+        public int Width { private set; get; }
+        public float CellSize { private set; get; }
 
-        #endregion Private Fields
-
-        #region Public Constructors
-
+        //**********************************************Constructor******************************************************
         /// <summary>
         /// If you don't want to use text object or sprite renderers then set the last two parameters as false
         /// </summary>
@@ -36,33 +37,26 @@ namespace FickleFrames
             width = Mathf.Max(width, 0);
             cellSize = Mathf.Max(cellSize, 0.1f);
 
-            this.offset = offset;
-            this.height = height;
-            this.width = width;
-            this.cellSize = cellSize;
+            this._offset = offset;
+            this.Height = height;
+            this.Width = width;
+            this.CellSize = cellSize;
 
-            this.shouldUseText = shouldUseText;
-            this.shouldUseRenderer = shouldUseRenderer;
+            this._shouldUseText = shouldUseText;
+            this._shouldUseRenderer = shouldUseRenderer;
 
-            grid = new TGridType[width, height];
+            _grid = new TGridType[width, height];
             if (shouldUseText)
-                textGrid = new TextMeshPro[width, height];
+                _textGrid = new TextMeshPro[width, height];
             if (shouldUseRenderer)
-                spriteGrid = new SpriteRenderer[width, height];
+                _spriteGrid = new SpriteRenderer[width, height];
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
-        public int height { private set; get; }
-        public int width { private set; get; }
-        public float cellSize { private set; get; }
-
-        #endregion Public Properties
+        #endregion Internals
 
         #region Public Methods
 
+        //*********************************************Public Methods****************************************************
         /// <summary>
         /// Converts world position into grid sections
         /// </summary>
@@ -71,8 +65,8 @@ namespace FickleFrames
         /// <param name="y">Out parameter for y</param>
         public void GetXY(Vector3 worldPosition, out int x, out int y)
         {
-            x = Mathf.FloorToInt((worldPosition - offset).x / cellSize);
-            y = Mathf.FloorToInt((worldPosition - offset).y / cellSize);
+            x = Mathf.FloorToInt((worldPosition - _offset).x / CellSize);
+            y = Mathf.FloorToInt((worldPosition - _offset).y / CellSize);
         }
 
 
@@ -84,7 +78,7 @@ namespace FickleFrames
         /// <returns></returns>
         public Vector3 GetWorldPosition(int x, int y)
         {
-            return new Vector3(x, y) * cellSize + offset;
+            return new Vector3(x, y) * CellSize + _offset;
         }
 
 
@@ -96,10 +90,10 @@ namespace FickleFrames
         /// <param name="value">Target value</param>
         public void SetValue(int x, int y, TGridType value)
         {
-            if (x >= 0 && y >= 0 && x < width && y < height)
+            if (x >= 0 && y >= 0 && x < Width && y < Height)
             {
-                grid[x, y] = value;
-                textGrid[x, y].text = value.ToString();
+                _grid[x, y] = value;
+                _textGrid[x, y].text = value.ToString();
             }
         }
 
@@ -125,9 +119,9 @@ namespace FickleFrames
         /// <param name="color">Target color</param>
         public void SetTextColor(int x, int y, Color color)
         {
-            if (shouldUseText && x >= 0 && y >= 0 && x < width && y < height)
+            if (_shouldUseText && x >= 0 && y >= 0 && x < Width && y < Height)
             {
-                textGrid[x, y].color = color;
+                _textGrid[x, y].color = color;
             }
         }
 
@@ -153,9 +147,9 @@ namespace FickleFrames
         /// <param name="color">Target color</param>
         public void SetRenderColor(int x, int y, Color color)
         {
-            if (shouldUseRenderer && x >= 0 && y >= 0 && x < width && y < height)
+            if (_shouldUseRenderer && x >= 0 && y >= 0 && x < Width && y < Height)
             {
-                spriteGrid[x, y].color = color;
+                _spriteGrid[x, y].color = color;
             }
         }
 
@@ -180,7 +174,7 @@ namespace FickleFrames
         /// <param name="duration">Default duration is 0 i.e., the grid will be drawn for a single frame</param>
         public void DrawGrid(Color color, float duration = 0)
         {
-            UtilityMethods.DrawGrid(offset, height, width, cellSize, duration, color);
+            UtilityMethods.DrawGrid(_offset, Height, Width, CellSize, duration, color);
         }
 
 
@@ -191,14 +185,14 @@ namespace FickleFrames
         /// <param name="parentTransform">Parent transform which can be used as a handle to keep the scene hierarchy clean</param>
         public void DrawWorldText(Color color = default, Transform parentTransform = null)
         {
-            if (!shouldUseText)
+            if (!_shouldUseText)
                 return;
             if (color == default)
                 color = Color.white;
 
-            for (int x = 0; x < width; ++x)
-                for (int y = 0; y < height; ++y)
-                    textGrid[x, y] = UtilityMethods.CreateWorldText("", grid[x, y].ToString(), parentTransform, GetWorldPosition(x, y) + (Vector3.one * cellSize / 2), Vector2.one * cellSize, color);
+            for (int x = 0; x < Width; ++x)
+                for (int y = 0; y < Height; ++y)
+                    _textGrid[x, y] = UtilityMethods.CreateWorldText("", _grid[x, y].ToString(), parentTransform, GetWorldPosition(x, y) + (Vector3.one * CellSize / 2), Vector2.one * CellSize, color);
         }
 
 
@@ -210,18 +204,18 @@ namespace FickleFrames
         /// <param name="parent">Parent transform which can be used as a handle to keep the scene hierarchy clean</param>
         public void DrawBackground(Sprite sprite = null, Color color = default, Transform parent = null)
         {
-            if (!shouldUseRenderer)
+            if (!_shouldUseRenderer)
                 return;
             if (sprite == null)
                 return;
             if (color == default)
                 color = Color.white;
 
-            for (int x = 0; x < width; ++x)
-                for (int y = 0; y < height; ++y)
-                    spriteGrid[x, y] = UtilityMethods.CreateRenderer("", parent, sprite, GetWorldPosition(x, y) + (Vector3.one * cellSize / 2), Vector3.one * cellSize, color);
+            for (int x = 0; x < Width; ++x)
+                for (int y = 0; y < Height; ++y)
+                    _spriteGrid[x, y] = UtilityMethods.CreateRenderer("", parent, sprite, GetWorldPosition(x, y) + (Vector3.one * CellSize / 2), Vector3.one * CellSize, color);
         }
 
-        #endregion Public Methods
+        #endregion Pulbic Methods
     }
 }

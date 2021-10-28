@@ -5,18 +5,18 @@ namespace FickleFrames.Managers.Internal
     [System.Serializable]
     public class Sound
     {
-        public string clipName;
-        public AudioClip clip = null;
-        public ESoundPlayMode playMode;
-        public bool loop;
+        public string ClipName;
+        public AudioClip Clip = null;
+        public ESoundPlayMode PlayMode;
+        public bool Loop;
         [Range(0, 1)]
-        public float volume;
+        public float Volume;
         [Range(-3, 3)]
-        public float pitch = 1;
+        public float Pitch = 1;
         [Range(0, 1)]
-        public float spatialBlend;
+        public float SpatialBlend;
         [Range(0, 100)]
-        public float delay;
-        public bool shouldPlayOnAwake = false;
+        public float Delay;
+        public bool ShouldPlayOnAwake = false;
     } 
 }

@@ -8,19 +8,21 @@ namespace FickleFrames.Managers
     /// <summary>
     /// Use this Audio Manager singleton class for controlling all the audio in the game
     /// </summary>
-    public class SoundSystem : Singleton<SoundSystem>
+    public class SoundManager : Singleton<SoundManager>
     {
-        #region Private Fields
+        #region Internal
 
+        //********************************************Serialized Fields**************************************************
         [Space(5)]
         [Header("-Audio Manager Settings-")]
-        [SerializeField] private List<SoundClusterContainer> soundContainers = new List<SoundClusterContainer>();
-        private Dictionary<string, Dictionary<string, Sound>> soundLookup = new Dictionary<string, Dictionary<string, Sound>>();
+        [SerializeField] private List<SoundClusterContainer> _soundContainers = new List<SoundClusterContainer>();
 
-        #endregion Private Fields
+        //*********************************************Private Fields****************************************************
+        private Dictionary<string, Dictionary<string, Sound>> _soundLookup = new Dictionary<string, Dictionary<string, Sound>>();
 
         #region Private Methods
 
+        //*********************************************Private Methods***************************************************
         private new void Awake()
         {
             base.Awake();
@@ -33,12 +35,12 @@ namespace FickleFrames.Managers
         /// </summary>
         private void bootstrapLookups()
         {
-            foreach (SoundClusterContainer container in soundContainers)
+            foreach (SoundClusterContainer container in _soundContainers)
             {
                 Dictionary<string, Sound> tempSounds = new Dictionary<string, Sound>();
-                foreach (Sound sound in container.soundClips.sounds)
-                    tempSounds.Add(sound.clipName, sound);
-                soundLookup.Add(container.soundClusterName, tempSounds);
+                foreach (Sound sound in container.SoundClipClusters.Sounds)
+                    tempSounds.Add(sound.ClipName, sound);
+                _soundLookup.Add(container.SoundClusterName, tempSounds);
             }
         }
 
@@ -48,11 +50,11 @@ namespace FickleFrames.Managers
         /// </summary>
         private bool soundFetcher(string containerTag, string clipName, out Sound sound)
         {
-            if (soundLookup.ContainsKey(containerTag))
+            if (_soundLookup.ContainsKey(containerTag))
             {
-                if (soundLookup[containerTag].ContainsKey(clipName))
+                if (_soundLookup[containerTag].ContainsKey(clipName))
                 {
-                    sound = soundLookup[containerTag][clipName];
+                    sound = _soundLookup[containerTag][clipName];
                     return true;
                 }
                 else
@@ -78,17 +80,17 @@ namespace FickleFrames.Managers
         {
             if (source == null)
             {
-                PlaySoundAt(transform.position, sound.clip);
+                PlaySoundAt(transform.position, sound.Clip);
                 return;
             }
 
-            source.loop = sound.loop;
-            source.clip = sound.clip;
-            source.volume = sound.volume;
-            source.pitch = sound.pitch;
-            source.spatialBlend = sound.spatialBlend;
+            source.loop = sound.Loop;
+            source.clip = sound.Clip;
+            source.volume = sound.Volume;
+            source.pitch = sound.Pitch;
+            source.spatialBlend = sound.SpatialBlend;
 
-            switch (sound.playMode)
+            switch (sound.PlayMode)
             {
                 case ESoundPlayMode.Play:
                     source.Play();
@@ -97,7 +99,7 @@ namespace FickleFrames.Managers
                     source.PlayOneShot(source.clip, source.volume);
                     break;
                 case ESoundPlayMode.PlayDelayed:
-                    source.PlayDelayed(sound.delay);
+                    source.PlayDelayed(sound.Delay);
                     break;
             }
         }
@@ -116,8 +118,11 @@ namespace FickleFrames.Managers
 
         #endregion Private Methods
 
+        #endregion Internal
+
         #region Public Methods
 
+        //*********************************************Public Methods****************************************************
         /// <summary>
         /// Overloaded version of PlaySound, this is slightly faster than the previous function
         /// </summary>
@@ -158,7 +163,7 @@ namespace FickleFrames.Managers
             // Try and find the target sound object
             if (!soundFetcher(containerTag, clipName, out sound))
                 return;
-            PlaySoundAt(location, sound.clip);
+            PlaySoundAt(location, sound.Clip);
         }
 
 
