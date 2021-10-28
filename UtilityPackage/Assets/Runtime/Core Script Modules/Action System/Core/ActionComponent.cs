@@ -18,30 +18,28 @@ namespace FickleFrames.Systems
 #endif
         #endregion Editor
 
-        #region Private Fields
+        #region Internal
+
+        //********************************************Serialized Fields**************************************************
 #pragma warning disable 0649
-
-        [SerializeField] private string actionName;
-        [SerializeField] private ActionSlave actionSlave;
-        [SerializeField] private EOnActionBegin onActionBegin;
-        [SerializeField] private bool shouldRegister;
-        [SerializeField] private float actionDelay;
-        [SerializeField] private EOnActionEnd onActionEnd;
-        [SerializeField] private string nextActionName;
-        [SerializeField] private ActionComponent nextAction;
-        [SerializeField] private float destroyDelay;
-
+        [SerializeField] private string _actionName;
+        [SerializeField] private ActionSlave _actionSlave;
+        [SerializeField] private EOnActionBegin _onActionBegin;
+        [SerializeField] private bool _shouldRegister;
+        [SerializeField] private float _actionDelay;
+        [SerializeField] private EOnActionEnd _onActionEnd;
+        [SerializeField] private string _nextActionName;
+        [SerializeField] private ActionComponent _nextAction;
+        [SerializeField] private float _destroyDelay;
 #pragma warning restore 0649
-        #endregion Private Fields
 
-        #region Private Properties
 
-        private IActionParameters passingParams { get; set; } = null;
-
-        #endregion Private Properties
+        //***********************************************Properties******************************************************
+        private IActionParameters _passingParams { get; set; } = null;
 
         #region Private Methods
 
+        //*********************************************Private Methods***************************************************
         /// <summary>
         /// Call base method to prevent unknown behaviour
         /// </summary>
@@ -56,8 +54,8 @@ namespace FickleFrames.Systems
         /// </summary>
         private void OnDestroy()
         {
-            this.DeregisterActionComponent(actionName);
-            ActionManager.DeregisterAction(actionName);
+            this.DeregisterActionComponent(_actionName);
+            ActionManager.DeregisterAction(_actionName);
         }
 
 
@@ -66,7 +64,7 @@ namespace FickleFrames.Systems
         /// </summary>
         private void Start()
         {
-            if (onActionBegin == EOnActionBegin.ExecuteOnStart)
+            if (_onActionBegin == EOnActionBegin.ExecuteOnStart)
                 invokeAction();
         }
 
@@ -76,7 +74,7 @@ namespace FickleFrames.Systems
         /// </summary>
         private void Update()
         {
-            if (onActionBegin == EOnActionBegin.ExecuteOnUpdate)
+            if (_onActionBegin == EOnActionBegin.ExecuteOnUpdate)
                 invokeAction();
         }
 
@@ -86,7 +84,7 @@ namespace FickleFrames.Systems
         /// </summary>
         private void FixedUpdate()
         {
-            if (onActionBegin == EOnActionBegin.ExecuteOnFixedUpdate)
+            if (_onActionBegin == EOnActionBegin.ExecuteOnFixedUpdate)
                 invokeAction();
         }
 
@@ -96,9 +94,9 @@ namespace FickleFrames.Systems
         /// </summary>
         private void bootstrapper()
         {
-            this.RegisterActionComponent(actionName);
-            if (onActionBegin == EOnActionBegin.ExecuteExternally || shouldRegister)
-                ActionManager.RegisterAction(invokeAction, actionName);
+            this.RegisterActionComponent(_actionName);
+            if (_onActionBegin == EOnActionBegin.ExecuteExternally || _shouldRegister)
+                ActionManager.RegisterAction(invokeAction, _actionName);
         }
 
 
@@ -116,17 +114,17 @@ namespace FickleFrames.Systems
         /// </summary>
         private IEnumerator invokeSelf(IActionParameters parameters)
         {
-            if (actionDelay > 0)
-                yield return new WaitForSeconds(actionDelay);
+            if (_actionDelay > 0)
+                yield return new WaitForSeconds(_actionDelay);
 
-            actionSlave?.doAction(parameters);
+            _actionSlave?.DoAction(parameters);
 
-            if (onActionEnd == EOnActionEnd.ExecuteAnotherAction)
+            if (_onActionEnd == EOnActionEnd.ExecuteAnotherAction)
                 invokeNext();
-            else if (onActionEnd == EOnActionEnd.DestroySelf)
+            else if (_onActionEnd == EOnActionEnd.DestroySelf)
             {
-                ActionManager.DeregisterAction(actionName);
-                Destroy(gameObject, destroyDelay);
+                ActionManager.DeregisterAction(_actionName);
+                Destroy(gameObject, _destroyDelay);
             }
         }
 
@@ -136,25 +134,28 @@ namespace FickleFrames.Systems
         /// </summary>
         private void invokeNext()
         {
-            if (passingParams == null)
-                passingParams = new ActionParameters();
-            if (nextAction != null)
-                nextAction.invokeAction(passingParams);
+            if (_passingParams == null)
+                _passingParams = new ActionParameters();
+            if (_nextAction != null)
+                _nextAction.invokeAction(_passingParams);
             else
-                ActionManager.ExecuteAction(nextActionName, passingParams.data, passingParams.source);
+                ActionManager.ExecuteAction(_nextActionName, _passingParams.Data, _passingParams.Source);
         }
 
         #endregion Private Methods
 
+        #endregion Internal
+
         #region Public Methods
 
+        //*********************************************Public Methods****************************************************
         /// <summary>
         /// Call this method to set the data that has to passed to a chained action
         /// </summary>
         /// <param name="data">Data to be passed</param>
         public void SetPassingParameters(object data = null, GameObject source = null)
         {
-            passingParams = new ActionParameters(data, source);
+            _passingParams = new ActionParameters(data, source);
         }
 
 
@@ -164,9 +165,9 @@ namespace FickleFrames.Systems
         /// <param name="newSlave">New slave object</param>
         public void UpdateSlave(ActionSlave newSlave)
         {
-            actionSlave = newSlave;
+            _actionSlave = newSlave;
         }
 
-        #endregion Protected Methods
+        #endregion Public
     }
 }

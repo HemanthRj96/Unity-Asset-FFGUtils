@@ -9,7 +9,7 @@ namespace FickleFrames.Systems
     /// </summary>
     public abstract class ActionSlave : MonoBehaviour, IActionSlave
     {
-        public ActionComponent component { get; set; }
-        public abstract void doAction(IActionParameters parameters);
+        public ActionComponent Component { get; set; }
+        public abstract void DoAction(IActionParameters parameters);
     }
 }

@@ -11,7 +11,7 @@ namespace FickleFrames.Managers.Editor_
 
         private void InspectorUpdate()
         {
-            // sceneAsset and levelName
+            // sceneAsset and LevelName
             propertyField(getProperty("serializedScene"), "Controlled Scene", "Scene that will be controlled by this controller");
             scene = (SceneAsset)getProperty("serializedScene").objectReferenceValue;
             if(scene == null)
@@ -20,15 +20,15 @@ namespace FickleFrames.Managers.Editor_
                 return;
             }
             else
-                getProperty("levelName").stringValue = scene.name;
+                getProperty("LevelName").stringValue = scene.name;
 
 
-            // loadMode
-            propertyField(getProperty("loadMode"), "Scene Load Mode", "How this level should be loaded");
+            // LoadMode
+            propertyField(getProperty("LoadMode"), "Scene Load Mode", "How this level should be loaded");
 
 
-            // physicsMode
-            propertyField(getProperty("physicsMode"), "Physics Mode", "Physics mode for this level");
+            // PhysicsMode
+            propertyField(getProperty("PhysicsMode"), "Physics Mode", "Physics mode for this level");
         }
 
         public override void OnInspectorGUI()

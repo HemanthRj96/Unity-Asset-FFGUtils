@@ -5,7 +5,7 @@ namespace FickleFrames.Systems
 {
     public interface IActionParameters
     {
-        object data { get; set; }
-        GameObject source { get; set; }
+        object Data { get; set; }
+        GameObject Source { get; set; }
     } 
 }

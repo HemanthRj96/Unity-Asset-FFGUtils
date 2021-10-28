@@ -10,24 +10,26 @@ namespace FickleFrames.Systems
     /// </summary>
     public static class ActionManager
     {
-        #region Private Fields
+        #region Internal
 
-        private static Dictionary<string, Action<IActionParameters>> actionCollection = new Dictionary<string, Action<IActionParameters>>();
-        private static Dictionary<string, ActionComponent> componentCollection = new Dictionary<string, ActionComponent>();
+        //*********************************************Private Fields****************************************************
+        private static Dictionary<string, Action<IActionParameters>> s_actionCollection = new Dictionary<string, Action<IActionParameters>>();
+        private static Dictionary<string, ActionComponent> s_componentCollection = new Dictionary<string, ActionComponent>();
 
-        #endregion Private Fields
+        #endregion Internal
 
         #region Public Methods
 
+        //*********************************************Public Methods****************************************************
         /// <summary>
         /// Extension method to register an action component
         /// </summary>
         /// <param name="actionName">Name of the action component</param>
         public static void RegisterActionComponent(this ActionComponent component, string actionName)
         {
-            if (componentCollection.ContainsKey(actionName))
+            if (s_componentCollection.ContainsKey(actionName))
                 return;
-            componentCollection.Add(actionName, component);
+            s_componentCollection.Add(actionName, component);
         }
 
 
@@ -37,8 +39,8 @@ namespace FickleFrames.Systems
         /// <param name="actionName">Name of the action component</param>
         public static void DeregisterActionComponent(this ActionComponent component, string actionName)
         {
-            if (componentCollection.ContainsKey(actionName))
-                componentCollection.Remove(actionName);
+            if (s_componentCollection.ContainsKey(actionName))
+                s_componentCollection.Remove(actionName);
         }
 
 
@@ -48,10 +50,10 @@ namespace FickleFrames.Systems
         /// <param name="shouldSubscribe">Set this as true if you want to subsribe multiple actions under same tag</param>
         public static void RegisterAction(Action<IActionParameters> targetAction, string actionName, bool shouldSubscribe = false)
         {
-            if (actionCollection.ContainsKey(actionName) && shouldSubscribe)
-                actionCollection[actionName] += targetAction;
+            if (s_actionCollection.ContainsKey(actionName) && shouldSubscribe)
+                s_actionCollection[actionName] += targetAction;
             else
-                actionCollection.Add(actionName, targetAction);
+                s_actionCollection.Add(actionName, targetAction);
         }
 
 
@@ -65,14 +67,14 @@ namespace FickleFrames.Systems
             Action<IActionParameters> cachedAction = null;
 
             // Check if the tag exists
-            if (actionCollection.ContainsKey(actionName))
+            if (s_actionCollection.ContainsKey(actionName))
             {
-                if (actionCollection[actionName] == null)
+                if (s_actionCollection[actionName] == null)
                 {
-                    actionCollection.Remove(actionName);
+                    s_actionCollection.Remove(actionName);
                     return;
                 }
-                cachedAction = actionCollection[actionName];
+                cachedAction = s_actionCollection[actionName];
             }
             else
                 return;
@@ -90,10 +92,10 @@ namespace FickleFrames.Systems
         /// </summary>
         public static void DeregisterAction(string actionName)
         {
-            if (actionCollection.ContainsKey(actionName))
+            if (s_actionCollection.ContainsKey(actionName))
             {
-                actionCollection[actionName] = null;
-                actionCollection.Remove(actionName);
+                s_actionCollection[actionName] = null;
+                s_actionCollection.Remove(actionName);
             }
         }
 
@@ -104,11 +106,11 @@ namespace FickleFrames.Systems
         /// <param name="actionName">Name of the action component</param>
         public static ActionComponent FetchActionComponent(string actionName)
         {
-            if (componentCollection.ContainsKey(actionName))
-                return componentCollection[actionName];
+            if (s_componentCollection.ContainsKey(actionName))
+                return s_componentCollection[actionName];
             return null;
         }
 
-        #endregion Public Methods
+        #endregion Public
     }
 }

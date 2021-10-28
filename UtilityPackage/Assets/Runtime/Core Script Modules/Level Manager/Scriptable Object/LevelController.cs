@@ -17,28 +17,28 @@ namespace FickleFrames.Managers.Internal
 #endif
         #endregion Editor
 
-        #region Private Fields
+        #region Internals
 
-        private AsyncOperation loadOperation;
-        private AsyncOperation unloadOperation;
-        private Action<string> onLevelLoad = delegate { };
-        private Action<string> onLevelUnload = delegate { };
-        private Dictionary<string, UnityEngine.Object> gameAssets = new Dictionary<string, UnityEngine.Object>();
-
-        #endregion Private Fields
-
-        #region Public Fields
 #pragma warning disable 0649, 0414
 
-        [SerializeField] public string levelName;
-        [SerializeField] public LoadSceneMode loadMode = LoadSceneMode.Single;
-        [SerializeField] public LocalPhysicsMode physicsMode = LocalPhysicsMode.None;
+        //********************************************Serialized Fields**************************************************
+        [SerializeField] public string LevelName;
+        [SerializeField] public LoadSceneMode LoadMode = LoadSceneMode.Single;
+        [SerializeField] public LocalPhysicsMode PhysicsMode = LocalPhysicsMode.None;
+
+
+        //*********************************************Private Fields****************************************************
+        private AsyncOperation _loadOperation;
+        private AsyncOperation _unloadOperation;
+        private Action<string> _onLevelLoad = delegate { };
+        private Action<string> _onLevelUnload = delegate { };
+        private Dictionary<string, UnityEngine.Object> _gameAssets = new Dictionary<string, UnityEngine.Object>();
 
 #pragma warning restore 0649, 0414
-        #endregion Public Fields
 
         #region Private Methods
 
+        //*********************************************Private Methods***************************************************
         /// <summary>
         /// Release game assets on destroy
         /// </summary>
@@ -53,21 +53,24 @@ namespace FickleFrames.Managers.Internal
         /// </summary>
         private void releaseGameAssets()
         {
-            foreach (var asset in gameAssets)
+            foreach (var asset in _gameAssets)
                 Destroy(asset.Value);
         }
 
         #endregion Private Methods
 
+        #endregion Internals
+
         #region Public Methods
 
+        //*********************************************Public Methods****************************************************
         /// <summary>
         /// Returns true if the scene associated with this controller is loaded
         /// </summary>
         public bool IsLoaded()
         {
             for (int i = 0; i < SceneManager.sceneCount; ++i)
-                if (levelName == SceneManager.GetSceneAt(i).name)
+                if (LevelName == SceneManager.GetSceneAt(i).name)
                     return true;
             return false;
         }
@@ -78,7 +81,7 @@ namespace FickleFrames.Managers.Internal
         /// </summary>
         public bool IsAdditive()
         {
-            return loadMode == LoadSceneMode.Additive;
+            return LoadMode == LoadSceneMode.Additive;
         }
 
 
@@ -88,10 +91,10 @@ namespace FickleFrames.Managers.Internal
         /// <param name="assetName">Name of the asset</param>
         public void AddLevelAsset(string assetName, UnityEngine.Object gameAsset)
         {
-            if (gameAssets.ContainsKey(assetName))
-                gameAssets[assetName] = gameAsset;
+            if (_gameAssets.ContainsKey(assetName))
+                _gameAssets[assetName] = gameAsset;
             else
-                gameAssets.Add(assetName, gameAsset);
+                _gameAssets.Add(assetName, gameAsset);
         }
 
 
@@ -101,10 +104,10 @@ namespace FickleFrames.Managers.Internal
         /// <param name="assetName">Name of the asset</param>
         public TReturn GetLevelAsset<TReturn>(string assetName) where TReturn : UnityEngine.Object
         {
-            if (gameAssets.ContainsKey(assetName))
+            if (_gameAssets.ContainsKey(assetName))
             {
-                if (gameAssets[assetName] is TReturn)
-                    return gameAssets[assetName] as TReturn;
+                if (_gameAssets[assetName] is TReturn)
+                    return _gameAssets[assetName] as TReturn;
                 else return null;
             }
             else return null;
@@ -116,11 +119,11 @@ namespace FickleFrames.Managers.Internal
         /// </summary>
         public IEnumerator LoadLevel()
         {
-            LoadSceneParameters parameters = new LoadSceneParameters(loadMode, physicsMode);
-            loadOperation = SceneManager.LoadSceneAsync(levelName, parameters);
-            while (!loadOperation.isDone)
+            LoadSceneParameters parameters = new LoadSceneParameters(LoadMode, PhysicsMode);
+            _loadOperation = SceneManager.LoadSceneAsync(LevelName, parameters);
+            while (!_loadOperation.isDone)
                 yield return null;
-            onLevelLoad(levelName);
+            _onLevelLoad(LevelName);
         }
 
 
@@ -129,10 +132,10 @@ namespace FickleFrames.Managers.Internal
         /// </summary>
         public IEnumerator UnloadLevel()
         {
-            unloadOperation = SceneManager.UnloadSceneAsync(levelName);
-            while (!unloadOperation.isDone)
+            _unloadOperation = SceneManager.UnloadSceneAsync(LevelName);
+            while (!_unloadOperation.isDone)
                 yield return null;
-            onLevelUnload(levelName);
+            _onLevelUnload(LevelName);
         }
 
 
@@ -141,10 +144,10 @@ namespace FickleFrames.Managers.Internal
         /// </summary>
         public float GetProgress()
         {
-            if (loadOperation != null)
-                return loadOperation.progress;
-            if (unloadOperation != null)
-                return unloadOperation.progress;
+            if (_loadOperation != null)
+                return _loadOperation.progress;
+            if (_unloadOperation != null)
+                return _unloadOperation.progress;
             return -1;
         }
 
@@ -155,9 +158,9 @@ namespace FickleFrames.Managers.Internal
         public void SubscribeToEvents(Action<string> onLevelLoad = null, Action<string> onLevelUnload = null)
         {
             if (onLevelLoad != null)
-                this.onLevelLoad += onLevelLoad;
+                this._onLevelLoad += onLevelLoad;
             if (onLevelUnload != null)
-                this.onLevelUnload += onLevelUnload;
+                this._onLevelUnload += onLevelUnload;
         }
 
         #endregion Public Methods

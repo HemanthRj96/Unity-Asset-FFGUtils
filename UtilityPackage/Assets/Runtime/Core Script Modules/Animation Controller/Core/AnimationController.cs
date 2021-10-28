@@ -7,33 +7,34 @@ namespace FickleFrames.Controllers
     {
         #region Editor
 #if UNITY_EDITOR
-#pragma warning disable 0649, 0414
         [SerializeField] private int selection = 0;
-#pragma warning restore 0649, 0414
 #endif
-#endregion Editor
+        #endregion Editor
 
-        #region Private Fields
+        #region Internal
+
+        //********************************************Serialized Fields**************************************************
 #pragma warning disable 0649, 0414
 
-        [SerializeField] private string animationClipSource = "";
-        [SerializeField] private string animationControllerSavePath = "";
-        [SerializeField] private bool enableAutoUpdate = false;
-        [SerializeField] private Animator animator;
-        [SerializeField] private StateController stateController;
-        private string currentState;
+        [SerializeField] private string _animationClipSource = "";
+        [SerializeField] private string _animationControllerSavePath = "";
+        [SerializeField] private bool _enableAutoUpdate = false;
+        [SerializeField] private Animator _animator;
+        [SerializeField] private StateController _stateController;
+
+
+        //*********************************************Private Fields****************************************************
+        private string _currentState;
 
 #pragma warning restore 0649, 0414
-        #endregion Private Fields
 
-        #region Private Properties
 
-        private bool validAnimator => animator != null;
-
-        #endregion Private Properties
+        //***********************************************Properties******************************************************
+        private bool validAnimator => _animator != null;
 
         #region Private Methods
 
+        //*********************************************Private Methods***************************************************
         /// <summary>
         /// Bootstraps on start
         /// </summary>
@@ -48,14 +49,14 @@ namespace FickleFrames.Controllers
         /// </summary>
         private void bootStrapper()
         {
-            if (stateController == null)
+            if (_stateController == null)
                 return;
 
             // Attach based on animation update
-            if (enableAutoUpdate)
-                stateController.AttachStateChangeEvent(autoAnimationUpdate);
+            if (_enableAutoUpdate)
+                _stateController.AttachStateChangeEvent(autoAnimationUpdate);
             else
-                stateController.AttachStateChangeEvent(manualAnimationUpdate);
+                _stateController.AttachStateChangeEvent(manualAnimationUpdate);
         }
 
 
@@ -64,13 +65,12 @@ namespace FickleFrames.Controllers
         /// </summary>
         private void animationPlayer(string state)
         {
-            if (validAnimator == false || currentState == state)
+            if (validAnimator == false || _currentState == state)
                 return;
 
-            animator.Play(state);
-            currentState = state;
+            _animator.Play(state);
+            _currentState = state;
         }
-
 
         /// <summary>
         /// This function is automatically invoked if automatic animation update is set to true
@@ -82,8 +82,11 @@ namespace FickleFrames.Controllers
 
         #endregion Private Methods
 
+        #endregion Internal
+
         #region Protected Methods
 
+        //********************************************Protected Methods**************************************************
         /// <summary>
         /// Override this method to extend functionality
         /// </summary>
@@ -93,6 +96,7 @@ namespace FickleFrames.Controllers
 
         #region Public Methods
 
+        //*********************************************Public Methods****************************************************
         /// <summary>
         /// Method to play an animation
         /// </summary>

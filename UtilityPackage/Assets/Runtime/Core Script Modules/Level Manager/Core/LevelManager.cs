@@ -6,25 +6,32 @@ using UnityEngine.SceneManagement;
 
 namespace FickleFrames.Managers
 {
+    /// <summary>
+    /// Singleton class which manages all scene loading and scene data manipulations
+    /// </summary>
     public class LevelManager : Singleton<LevelManager>
     {
-        #region Private Fields
+        #region Internals
+
 #pragma warning disable 0649, 0414
 
-        [SerializeField] private string levelControllerPath;
-        [SerializeField] private LevelController[] levelControllers;
+        //********************************************Serialized Fields**************************************************
+        [SerializeField] private string _levelControllerPath;
+        [SerializeField] private LevelController[] _levelControllers;
 
-        private Dictionary<string, LevelController> singleLevels = new Dictionary<string, LevelController>();
-        private Dictionary<string, LevelController> additiveLevels = new Dictionary<string, LevelController>();
-        private List<string> loadedAdditiveLevels = new List<string>();
-        private string currentSingleLevel = "";
-        private string previousSingleLevel = "";
+
+        //*********************************************Private Fields****************************************************
+        private Dictionary<string, LevelController> _singleLevels = new Dictionary<string, LevelController>();
+        private Dictionary<string, LevelController> _additiveLevels = new Dictionary<string, LevelController>();
+        private List<string> _loadedAdditiveLevels = new List<string>();
+        private string _currentSingleLevel = "";
+        private string _previousSingleLevel = "";
 
 #pragma warning restore 0649, 0414
-        #endregion Private Fields
 
         #region Private Methods
 
+        //*********************************************Private Methods***************************************************
         private new void Awake()
         {
             base.Awake();
@@ -36,30 +43,33 @@ namespace FickleFrames.Managers
         /// </summary>
         private void bootstrapper()
         {
-            for (int i = 0; i < levelControllers.Length; ++i)
+            for (int i = 0; i < _levelControllers.Length; ++i)
             {
-                if (levelControllers[i].IsAdditive())
-                    additiveLevels.TryAdd(levelControllers[i].levelName, levelControllers[i]);
+                if (_levelControllers[i].IsAdditive())
+                    _additiveLevels.TryAdd(_levelControllers[i].LevelName, _levelControllers[i]);
                 else
-                    singleLevels.TryAdd(levelControllers[i].levelName, levelControllers[i]);
+                    _singleLevels.TryAdd(_levelControllers[i].LevelName, _levelControllers[i]);
             }
-            currentSingleLevel = SceneManager.GetActiveScene().name;
+            _currentSingleLevel = SceneManager.GetActiveScene().name;
         }
 
         #endregion Private Methods
 
+        #endregion Internals
+
         #region Public Methods
 
+        //*********************************************Public Methods****************************************************
         /// <summary>
         /// Returns a level controller
         /// </summary>
         /// <param name="levelName">Name of the level</param>
         public LevelController GetLevelController(string levelName)
         {
-            if (singleLevels.ContainsKey(levelName))
-                return singleLevels[levelName];
-            else if (additiveLevels.ContainsKey(levelName))
-                return additiveLevels[levelName];
+            if (_singleLevels.ContainsKey(levelName))
+                return _singleLevels[levelName];
+            else if (_additiveLevels.ContainsKey(levelName))
+                return _additiveLevels[levelName];
             return null;
         }
 
@@ -85,17 +95,17 @@ namespace FickleFrames.Managers
                 // Add the level to list
                 if (controller.IsLoaded())
                 {
-                    loadedAdditiveLevels.TryAdd(levelName);
+                    _loadedAdditiveLevels.TryAdd(levelName);
                     return;
                 }
-                loadedAdditiveLevels.TryAdd(levelName);
+                _loadedAdditiveLevels.TryAdd(levelName);
             }
             else
             {
                 if (controller.IsLoaded())
                     return;
-                previousSingleLevel = currentSingleLevel;
-                currentSingleLevel = levelName;
+                _previousSingleLevel = _currentSingleLevel;
+                _currentSingleLevel = levelName;
             }
 
             // Load level
@@ -109,14 +119,14 @@ namespace FickleFrames.Managers
         public void LoadPreviousLevel()
         {
             // Check if there's valid controllers or check if the controller has the level loaded already
-            if (!singleLevels.ContainsKey(previousSingleLevel) || singleLevels[previousSingleLevel].IsLoaded())
+            if (!_singleLevels.ContainsKey(_previousSingleLevel) || _singleLevels[_previousSingleLevel].IsLoaded())
                 return;
             // Swap values
-            string temp = previousSingleLevel;
-            previousSingleLevel = currentSingleLevel;
-            currentSingleLevel = temp;
+            string temp = _previousSingleLevel;
+            _previousSingleLevel = _currentSingleLevel;
+            _currentSingleLevel = temp;
             // Load the previous single level
-            StartCoroutine(singleLevels[currentSingleLevel].LoadLevel());
+            StartCoroutine(_singleLevels[_currentSingleLevel].LoadLevel());
         }
 
 
@@ -127,17 +137,17 @@ namespace FickleFrames.Managers
         public void UnloadLevel(string levelName)
         {
             // Only check in additive scenes as you cannot unload a single scene
-            if (additiveLevels.ContainsKey(levelName))
+            if (_additiveLevels.ContainsKey(levelName))
             {
                 // Check if it's unloaded already if yes then try to remove the value
-                if (!additiveLevels[levelName].IsLoaded())
+                if (!_additiveLevels[levelName].IsLoaded())
                 {
-                    loadedAdditiveLevels.TryRemove(levelName);
+                    _loadedAdditiveLevels.TryRemove(levelName);
                     return;
                 }
                 // Remove the level from list and call unloading routine
-                loadedAdditiveLevels.TryRemove(levelName);
-                StartCoroutine(additiveLevels[levelName].UnloadLevel());
+                _loadedAdditiveLevels.TryRemove(levelName);
+                StartCoroutine(_additiveLevels[levelName].UnloadLevel());
             }
         }
 
@@ -149,8 +159,8 @@ namespace FickleFrames.Managers
         {
             List<string> levels = new List<string>();
 
-            levels.Add(currentSingleLevel);
-            levels.AddRange(loadedAdditiveLevels);
+            levels.Add(_currentSingleLevel);
+            levels.AddRange(_loadedAdditiveLevels);
 
             return levels.ToArray();
         }
@@ -161,7 +171,7 @@ namespace FickleFrames.Managers
         /// </summary>
         public string[] GetAllActiveAdditiveLevels()
         {
-            return loadedAdditiveLevels.ToArray();
+            return _loadedAdditiveLevels.ToArray();
         }
 
         #endregion Public Methods
