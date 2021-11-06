@@ -16,19 +16,19 @@ namespace FickleFrames.Controllers.StateControllerEditor_
         int selection = 0;
 
         bool validDirectory => Directory.Exists(controllerFilepath);
-        SerializedProperty stateArray(int index) => getProperty("_states").GetArrayElementAtIndex(index);
+        SerializedProperty stateArray(int index) => GetProperty("_states").GetArrayElementAtIndex(index);
 
 
         private void InspectorUpdate()
         {
-            space(5);
-            // stateControllerFilepath
-            propertyField(getProperty("stateControllerFilepath"), "Controller File Path", "Path where all controller scriptable objects are saved");
-            controllerFilepath = getProperty("stateControllerFilepath").stringValue;
+            Space(5);
 
+            // stateControllerFilepath
+            PropertyField(GetProperty("stateControllerFilepath"), "Controller File Path", "Path where all controller scriptable objects are saved");
+            controllerFilepath = GetProperty("stateControllerFilepath").stringValue;
             if (controllerFilepath == "")
-                info("Cannot create or load _states statically", MessageType.Warning);
-            else if (!validDirectory && button($"Create directory {controllerFilepath}", 25))
+                Info("Cannot create or load _states statically", MessageType.Warning);
+            else if (!validDirectory && Button($"Create directory {controllerFilepath}", 25))
             {
                 Directory.CreateDirectory(controllerFilepath);
                 AssetDatabase.Refresh();
@@ -37,7 +37,7 @@ namespace FickleFrames.Controllers.StateControllerEditor_
             // Load controllers from directory
             if (validDirectory)
             {
-                if (button("Load Controllers From Directory", 25))
+                if (Button("Load Controllers From Directory", 25))
                 {
                     foreach (string path in Directory.GetFiles(controllerFilepath, "*.asset"))
                     {
@@ -47,7 +47,7 @@ namespace FickleFrames.Controllers.StateControllerEditor_
                         if (state != null)
                         {
                             // Find the empty element index
-                            for (int i = 0; i < getProperty("_states").arraySize; ++i)
+                            for (int i = 0; i < GetProperty("_states").arraySize; ++i)
                             {
                                 string sn = stateArray(i).FindPropertyRelative("StateName").stringValue;
                                 State s = (State)stateArray(i).FindPropertyRelative("State").objectReferenceValue;
@@ -72,10 +72,9 @@ namespace FickleFrames.Controllers.StateControllerEditor_
 
                             if (currentIndex == -1)
                             {
-                                currentIndex = getProperty("_states").arraySize;
-                                getProperty("_states").InsertArrayElementAtIndex(currentIndex);
+                                currentIndex = GetProperty("_states").arraySize;
+                                GetProperty("_states").InsertArrayElementAtIndex(currentIndex);
                             }
-
                             stateArray(currentIndex).FindPropertyRelative("StateName").stringValue = state.name;
                             stateArray(currentIndex).FindPropertyRelative("State").objectReferenceValue = state;
                             currentIndex = -1;
@@ -84,52 +83,51 @@ namespace FickleFrames.Controllers.StateControllerEditor_
                 }
             }
 
-            space(5);
+            Space(5);
 
             // scriptSuffix
             if (validDirectory)
             {
-                propertyField(getProperty("scriptSuffix"), "Script Suffix", "Suffix added to script files as a unique identifier");
-                suffix = getProperty("scriptSuffix").stringValue;
-
+                PropertyField(GetProperty("scriptSuffix"), "Script Suffix", "Suffix added to script files as a unique identifier");
+                suffix = GetProperty("scriptSuffix").stringValue;
                 if (string.IsNullOrEmpty(suffix))
                 {
-                    info("Field empty! Cannot create code file from template!", MessageType.Warning);
+                    Info("Field empty! Cannot create code file from template!", MessageType.Warning);
                     validScript = false;
                 }
                 else if (Char.IsDigit(suffix[0]))
                 {
-                    info("Cannot begin with number!", MessageType.Error);
+                    Info("Cannot begin with number!", MessageType.Error);
                     validScript = false;
                 }
                 else
                     validScript = true;
             }
 
-            space(10);
+            Space(10);
 
             // state array manipulator
-            int index = getProperty("_states").arraySize;
+            int index = GetProperty("_states").arraySize;
 
             EditorGUILayout.BeginHorizontal();
 
-            if (button("Add State"))
-                getProperty("_states").InsertArrayElementAtIndex(index);
+            if (Button("Add State"))
+                GetProperty("_states").InsertArrayElementAtIndex(index);
 
-            if (button("Remove State"))
+            if (Button("Remove State"))
                 if (index > 0)
                 {
-                    getProperty("_states").GetArrayElementAtIndex(index - 1).objectReferenceValue = null;
-                    getProperty("_states").DeleteArrayElementAtIndex(index - 1);
+                    GetProperty("_states").GetArrayElementAtIndex(index - 1).objectReferenceValue = null;
+                    GetProperty("_states").DeleteArrayElementAtIndex(index - 1);
                 }
 
             EditorGUILayout.EndHorizontal();
 
-            space(5);
+            Space(5);
 
             // defaultState
             List<string> entries = new List<string>();
-            for (int i = 0; i < getProperty("_states").arraySize; ++i)
+            for (int i = 0; i < GetProperty("_states").arraySize; ++i)
             {
                 State state = (State)stateArray(i).FindPropertyRelative("State").objectReferenceValue;
                 string stateName = stateArray(i).FindPropertyRelative("StateName").stringValue;
@@ -137,30 +135,30 @@ namespace FickleFrames.Controllers.StateControllerEditor_
                     entries.Add(stateName);
             }
 
-            string defaultState = getProperty("_defaultStateName").stringValue;
+            string defaultState = GetProperty("_defaultStateName").stringValue;
             selection = entries.FindIndex(x => x == defaultState);
             selection = Mathf.Max(0, selection);
 
             if (entries.Count > 0)
-                getProperty("_defaultStateName").stringValue = entries[dropdownList("Default State : ", selection, entries.ToArray())];
+                GetProperty("_defaultStateName").stringValue = entries[DropdownList("Default State : ", selection, entries.ToArray())];
             else
-                getProperty("_defaultStateName").stringValue = "";
+                GetProperty("_defaultStateName").stringValue = "";
 
-            space(10);
+            Space(10);
 
             // print all elements inside stateArray
-            for (int i = 0; i < getProperty("_states").arraySize; ++i)
+            for (int i = 0; i < GetProperty("_states").arraySize; ++i)
             {
                 EditorGUILayout.BeginHorizontal();
 
                 if (GUILayout.Button("X", GUILayout.Width(20)))
                 {
-                    getProperty("_states").GetArrayElementAtIndex(i).objectReferenceValue = null;
-                    getProperty("_states").DeleteArrayElementAtIndex(i);
+                    GetProperty("_states").GetArrayElementAtIndex(i).objectReferenceValue = null;
+                    GetProperty("_states").DeleteArrayElementAtIndex(i);
                     continue;
                 }
-                propertyField(stateArray(i).FindPropertyRelative("StateName"), "", "");
-                propertyField(stateArray(i).FindPropertyRelative("State"), "", "");
+                PropertyField(stateArray(i).FindPropertyRelative("StateName"), "", "");
+                PropertyField(stateArray(i).FindPropertyRelative("State"), "", "");
 
                 EditorGUILayout.EndHorizontal();
 
@@ -173,7 +171,7 @@ namespace FickleFrames.Controllers.StateControllerEditor_
                     createCodeFile(StateName);
                     createScriptableObject(i, StateName);
                 }
-                space(5);
+                Space(5);
             }
         }
 
@@ -191,7 +189,7 @@ namespace FickleFrames.Controllers.StateControllerEditor_
                     return;
                 templateContent = templateFile.text;
                 templateContent = templateContent.Replace($"_FILE_NAME_", $"{StateName}");
-                templateContent = templateContent.Replace($"_GAMEOBJECT_NAME_", $"{root.gameObject.name}");
+                templateContent = templateContent.Replace($"_GAMEOBJECT_NAME_", $"{Root.gameObject.name}");
                 templateContent = templateContent.Replace($"_STATE_NAME_", $"{StateName}");
                 templateContent = templateContent.Replace($"_SCRIPT_NAME_", $"{StateName}_{suffix}");
 

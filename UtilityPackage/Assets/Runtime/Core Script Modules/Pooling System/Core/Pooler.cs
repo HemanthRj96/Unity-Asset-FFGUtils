@@ -13,7 +13,7 @@ namespace FickleFrames.Systems
     {
         #region Internal
 
-        //********************************************Serialized Fields**************************************************
+        /*.............................................Serialized Fields....................................................*/
         [Header("Pooler Settings")]
         [SerializeField] private string _poolerName = default;
         [SerializeField] private bool _doNotDestroyOnLoad = false;
@@ -23,14 +23,14 @@ namespace FickleFrames.Systems
         [Header("Pool Settings")]
         [SerializeField] private List<Pool> _pools = new List<Pool>();
 
-        //*********************************************Private Fields****************************************************
+        /*.............................................Private Fields.......................................................*/
         private List<ObjectPool> _objectPools = new List<ObjectPool>();
         private Dictionary<string, Queue<GameObject>> _mainPoolLookup = new Dictionary<string, Queue<GameObject>>();
         private Dictionary<string, Queue<UnityEngine.Object>> _objectPoolLookup = new Dictionary<string, Queue<UnityEngine.Object>>();
 
         #region Private Methods
 
-        //*********************************************Private Methods***************************************************
+        /*.............................................Private Methods......................................................*/
         /// <summary>
         /// Calls bootstrapper
         /// </summary>
@@ -45,7 +45,7 @@ namespace FickleFrames.Systems
         /// </summary>
         private void OnDestroy()
         {
-            PoolManager.DeletePooler(_poolerName);
+            PoolerManager.DeletePooler(_poolerName);
             ReleaseAllPools();
         }
 
@@ -64,7 +64,7 @@ namespace FickleFrames.Systems
                 _pools[i] = new Pool(_pools[i].PoolName, _pools[i].Prefab, _pools[i].PoolSize);
 
             // Add this pooler to pool manager
-            PoolManager.AddPooler(_poolerName, this);
+            PoolerManager.AddPooler(_poolerName, this);
 
             if (_doNotDestroyOnLoad)
                 DontDestroyOnLoad(this);
@@ -128,6 +128,7 @@ namespace FickleFrames.Systems
 
         #region Public Methods
 
+        /*.............................................Public Methods.......................................................*/
         /// <summary>
         /// Returns UnityEngine.Object object from pool
         /// </summary>

@@ -12,17 +12,17 @@ namespace FickleFrames.Managers
     {
         #region Internal
 
-        //********************************************Serialized Fields**************************************************
+        /*.............................................Serialized Fields....................................................*/
         [Space(5)]
         [Header("-Audio Manager Settings-")]
         [SerializeField] private List<SoundClusterContainer> _soundContainers = new List<SoundClusterContainer>();
 
-        //*********************************************Private Fields****************************************************
+        /*.............................................Private Fields.......................................................*/
         private Dictionary<string, Dictionary<string, Sound>> _soundLookup = new Dictionary<string, Dictionary<string, Sound>>();
 
         #region Private Methods
 
-        //*********************************************Private Methods***************************************************
+        /*.............................................Private Methods......................................................*/
         private new void Awake()
         {
             base.Awake();
@@ -122,7 +122,7 @@ namespace FickleFrames.Managers
 
         #region Public Methods
 
-        //*********************************************Public Methods****************************************************
+        /*.............................................Public Methods.......................................................*/
         /// <summary>
         /// Overloaded version of PlaySound, this is slightly faster than the previous function
         /// </summary>

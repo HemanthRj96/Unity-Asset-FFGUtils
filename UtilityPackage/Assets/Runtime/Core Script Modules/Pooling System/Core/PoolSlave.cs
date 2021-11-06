@@ -8,7 +8,7 @@ namespace FickleFrames.Systems
     {
         #region Private Methods
 
-        //*********************************************Private Methods***************************************************
+        /*.............................................Private Methods......................................................*/
         /// <summary>
         /// Call OnUse() on enable
         /// </summary>
@@ -30,7 +30,7 @@ namespace FickleFrames.Systems
 
         #region Public Methods
 
-        //*********************************************Public Methods****************************************************
+        /*.............................................Public Methods.......................................................*/
         /// <summary>
         /// This method is invoked when this gameObject becomes enabled in the scene
         /// </summary>

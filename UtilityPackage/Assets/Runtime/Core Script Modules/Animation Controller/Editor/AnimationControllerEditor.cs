@@ -24,38 +24,38 @@ namespace FickleFrames.Controllers.Editor_
         private void InpectorUpdate()
         {
             // _animator
-            _animator = root.GetComponent<Animator>();
+            _animator = Root.GetComponent<Animator>();
             if (_animator == null)
             {
-                _animator = root.AddComponent<Animator>();
-                getProperty("_animator").objectReferenceValue = _animator;
+                _animator = Root.AddComponent<Animator>();
+                GetProperty("_animator").objectReferenceValue = _animator;
             }
-            else if (getProperty("_animator").objectReferenceValue == null)
+            else if (GetProperty("_animator").objectReferenceValue == null)
             {
-                getProperty("_animator").objectReferenceValue = _animator;
+                GetProperty("_animator").objectReferenceValue = _animator;
             }
 
 
-            space(10);
-            heading("Animation Clip Settings");
-            space(5);
+            Space(10);
+            Heading("Animation Clip Settings");
+            Space(5);
 
 
             // _animationClipSource
-            propertyField(getProperty("_animationClipSource"), "Animation Clips Source Path", "Filepath to all the animation clips for this gameObject");
-            _animationClipSource = getProperty("_animationClipSource").stringValue;
+            PropertyField(GetProperty("_animationClipSource"), "Animation Clips Source Path", "Filepath to all the animation clips for this gameObject");
+            _animationClipSource = GetProperty("_animationClipSource").stringValue;
 
             if (_animationClipSource == "")
             {
-                space(5);
-                info("This field cannot be empty!!", MessageType.Error);
+                Space(5);
+                Info("This field cannot be empty!!", MessageType.Error);
             }
             else if (!validClipDirectory)
             {
-                space(5);
+                Space(5);
                 GUILayout.BeginHorizontal();
-                info("Directory not found!!", MessageType.Error);
-                if (button("Create directory ?", 37.5f))
+                Info("Directory not found!!", MessageType.Error);
+                if (Button("Create directory ?", 37.5f))
                 {
                     Directory.CreateDirectory(_animationClipSource);
                     AssetDatabase.Refresh();
@@ -64,32 +64,32 @@ namespace FickleFrames.Controllers.Editor_
             }
             else if (Directory.GetFiles(_animationClipSource, "*.anim").Length == 0)
             {
-                space(5);
-                info("Directory is empty, no animation clips found", MessageType.Warning);
+                Space(5);
+                Info("Directory is empty, no animation clips found", MessageType.Warning);
             }
 
 
-            space(10);
-            heading("Animator Controller Settings");
-            space(5);
+            Space(10);
+            Heading("Animator Controller Settings");
+            Space(5);
 
 
             // _animationControllerSavePath
-            propertyField(getProperty("_animationControllerSavePath"), @"Controller Save/Source Path", @"Filepath where the controller has to be saved to/loaded from");
-            _animationControllerSavePath = getProperty("_animationControllerSavePath").stringValue;
+            PropertyField(GetProperty("_animationControllerSavePath"), @"Controller Save/Source Path", @"Filepath where the controller has to be saved to/loaded from");
+            _animationControllerSavePath = GetProperty("_animationControllerSavePath").stringValue;
 
             if (_animationControllerSavePath == "")
             {
-                space(5);
-                info("This field cannot be empty!!", MessageType.Error);
+                Space(5);
+                Info("This field cannot be empty!!", MessageType.Error);
                 return;
             }
             else if (!validControllerDirectory)
             {
-                space(5);
+                Space(5);
                 GUILayout.BeginHorizontal();
-                info("Directory not found!!", MessageType.Error);
-                if (button("Create directory ?", 37.5f))
+                Info("Directory not found!!", MessageType.Error);
+                if (Button("Create directory ?", 37.5f))
                 {
                     Directory.CreateDirectory(_animationControllerSavePath);
                     AssetDatabase.Refresh();
@@ -99,12 +99,12 @@ namespace FickleFrames.Controllers.Editor_
             }
             else if (Directory.GetFiles(_animationControllerSavePath, "*.controller").Length == 0)
             {
-                space(5);
+                Space(5);
                 GUILayout.BeginHorizontal();
-                info("Directory is empty, no controller found", MessageType.Warning);
-                if (button("Create controller?", 37.5f))
+                Info("Directory is empty, no controller found", MessageType.Warning);
+                if (Button("Create controller?", 37.5f))
                 {
-                    controller = AnimatorController.CreateAnimatorControllerAtPath($"{_animationControllerSavePath}/{root.gameObject.name}.controller");
+                    controller = AnimatorController.CreateAnimatorControllerAtPath($"{_animationControllerSavePath}/{Root.gameObject.name}.controller");
                     _animator.runtimeAnimatorController = controller;
                 }
                 GUILayout.EndHorizontal();
@@ -125,27 +125,27 @@ namespace FickleFrames.Controllers.Editor_
             // _enableAutoUpdate
             if (controller == null)
                 return;
-            if (getProperty("_stateController").objectReferenceValue == null)
+            if (GetProperty("_stateController").objectReferenceValue == null)
             {
-                if (root.TryGetComponent(out _stateController))
+                if (Root.TryGetComponent(out _stateController))
                 {
                     shouldEnableAutoUpdate = true;
-                    getProperty("_stateController").objectReferenceValue = _stateController;
+                    GetProperty("_stateController").objectReferenceValue = _stateController;
                 }
                 else
                 {
                     shouldEnableAutoUpdate = false;
-                    getProperty("_enableAutoUpdate").boolValue = false;
-                    getProperty("_stateController").objectReferenceValue = null;
+                    GetProperty("_enableAutoUpdate").boolValue = false;
+                    GetProperty("_stateController").objectReferenceValue = null;
                 }
             }
             else
             {
                 shouldEnableAutoUpdate = true;
-                _stateController = (StateController)getProperty("_stateController").objectReferenceValue;
+                _stateController = (StateController)GetProperty("_stateController").objectReferenceValue;
             }
             EditorGUI.BeginDisabledGroup(!shouldEnableAutoUpdate);
-            propertyField(getProperty("_enableAutoUpdate"), "Enable Auto Update", "If set then this animation controller will work automatically with a state controller component");
+            PropertyField(GetProperty("_enableAutoUpdate"), "Enable Auto Update", "If set then this animation controller will work automatically with a state controller component");
             EditorGUI.EndDisabledGroup();
 
 
@@ -161,10 +161,10 @@ namespace FickleFrames.Controllers.Editor_
             dropDown.AddRange(clips.Select(x => x.name));
 
             EditorGUILayout.BeginHorizontal();
-            int selection = getProperty("selection").intValue;
-            getProperty("selection").intValue = dropdownList("Default Animator State ", selection, dropDown.ToArray());
-            selection = getProperty("selection").intValue;
-            if (button("Update Controller", 17.5f))
+            int selection = GetProperty("selection").intValue;
+            GetProperty("selection").intValue = DropdownList("Default Animator State ", selection, dropDown.ToArray());
+            selection = GetProperty("selection").intValue;
+            if (Button("Update Controller", 17.5f))
             {
                 foreach (var _animatorState in rootState.states)
                     rootState.RemoveState(_animatorState.state);

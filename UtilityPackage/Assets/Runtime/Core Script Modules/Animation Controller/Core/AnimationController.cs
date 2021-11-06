@@ -13,7 +13,7 @@ namespace FickleFrames.Controllers
 
         #region Internal
 
-        //********************************************Serialized Fields**************************************************
+        /*.............................................Serialized Fields....................................................*/
 #pragma warning disable 0649, 0414
 
         [SerializeField] private string _animationClipSource = "";
@@ -23,18 +23,18 @@ namespace FickleFrames.Controllers
         [SerializeField] private StateController _stateController;
 
 
-        //*********************************************Private Fields****************************************************
+        /*.............................................Private Fields.......................................................*/
         private string _currentState;
 
 #pragma warning restore 0649, 0414
 
 
-        //***********************************************Properties******************************************************
+        /*.............................................Properties...........................................................*/
         private bool validAnimator => _animator != null;
 
         #region Private Methods
 
-        //*********************************************Private Methods***************************************************
+        /*.............................................Private Methods......................................................*/
         /// <summary>
         /// Bootstraps on start
         /// </summary>
@@ -86,7 +86,7 @@ namespace FickleFrames.Controllers
 
         #region Protected Methods
 
-        //********************************************Protected Methods**************************************************
+        /*.............................................Protected Methods....................................................*/
         /// <summary>
         /// Override this method to extend functionality
         /// </summary>
@@ -96,7 +96,7 @@ namespace FickleFrames.Controllers
 
         #region Public Methods
 
-        //*********************************************Public Methods****************************************************
+        /*.............................................Public Methods.......................................................*/
         /// <summary>
         /// Method to play an animation
         /// </summary>

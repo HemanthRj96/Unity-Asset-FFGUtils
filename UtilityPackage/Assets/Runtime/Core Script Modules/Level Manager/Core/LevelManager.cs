@@ -15,12 +15,12 @@ namespace FickleFrames.Managers
 
 #pragma warning disable 0649, 0414
 
-        //********************************************Serialized Fields**************************************************
+        /*.............................................Serialized Fields....................................................*/
         [SerializeField] private string _levelControllerPath;
         [SerializeField] private LevelController[] _levelControllers;
 
 
-        //*********************************************Private Fields****************************************************
+        /*.............................................Private Fields.......................................................*/
         private Dictionary<string, LevelController> _singleLevels = new Dictionary<string, LevelController>();
         private Dictionary<string, LevelController> _additiveLevels = new Dictionary<string, LevelController>();
         private List<string> _loadedAdditiveLevels = new List<string>();
@@ -31,7 +31,7 @@ namespace FickleFrames.Managers
 
         #region Private Methods
 
-        //*********************************************Private Methods***************************************************
+        /*.............................................Private Methods......................................................*/
         private new void Awake()
         {
             base.Awake();
@@ -59,7 +59,7 @@ namespace FickleFrames.Managers
 
         #region Public Methods
 
-        //*********************************************Public Methods****************************************************
+        /*.............................................Public Methods.......................................................*/
         /// <summary>
         /// Returns a level controller
         /// </summary>

@@ -12,7 +12,7 @@ namespace FickleFrames.Systems
     {
         #region Internal
 
-        //*********************************************Private Fields****************************************************
+        /*.............................................Private Fields.......................................................*/
         private static Dictionary<string, Action<IActionParameters>> s_actionCollection = new Dictionary<string, Action<IActionParameters>>();
         private static Dictionary<string, ActionComponent> s_componentCollection = new Dictionary<string, ActionComponent>();
 
@@ -20,7 +20,7 @@ namespace FickleFrames.Systems
 
         #region Public Methods
 
-        //*********************************************Public Methods****************************************************
+        /*.............................................Public Methods.......................................................*/
         /// <summary>
         /// Extension method to register an action component
         /// </summary>

@@ -18,26 +18,26 @@ namespace FickleFrames.Controllers
 #pragma warning disable 0649,0414
         [SerializeField] private string stateControllerFilepath;
         [SerializeField] private string scriptSuffix;
-#pragma warning restore 0649,0414
+#pragma warning restore 0649, 0414
 #endif
         #endregion Editor
 
         #region Internal
 
-#pragma warning disable 0649,0414
-        //********************************************Serialized Fields**************************************************
+#pragma warning disable 0649, 0414
+        /*.............................................Serialized Fields....................................................*/
         [SerializeField] private StateContainer[] _states;
         [SerializeField] private string _defaultStateName = "";
 
-        //*********************************************Private Fields****************************************************
+        /*.............................................Private Fields.......................................................*/
         private Dictionary<string, IState> _stateLookup = new Dictionary<string, IState>();
         private string _currentStateName = "";
         private Action<string> _onStateChangeEvent = delegate { };
-#pragma warning restore 0649,0414
+#pragma warning restore 0649, 0414
 
         #region Private Methods
 
-        //*********************************************Private Methods***************************************************
+        /*.............................................Private Methods......................................................*/
         private void Awake()
         {
             bootstrapper();
@@ -103,7 +103,7 @@ namespace FickleFrames.Controllers
 
         #region Protected Methods
 
-        //********************************************Protected Methods**************************************************
+        /*.............................................Protected Methods....................................................*/
         /// <summary>
         /// This method must be implemented since there's no other reason for inheriting this component
         /// </summary>
@@ -120,7 +120,7 @@ namespace FickleFrames.Controllers
 
         #region Public Methods
 
-        //*********************************************Public Methods****************************************************
+        /*.............................................Public Methods.......................................................*/
         /// <summary>
         /// Use this method to attach and subscribe to stateChangeEvent
         /// </summary>

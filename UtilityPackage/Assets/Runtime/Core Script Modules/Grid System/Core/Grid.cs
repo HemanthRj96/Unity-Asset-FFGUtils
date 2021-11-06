@@ -11,7 +11,7 @@ namespace FickleFrames
     {
         #region Internals
 
-        //*********************************************Private Fields****************************************************
+        /*.............................................Private Fields.......................................................*/
         private Vector3 _offset;
         private TGridType[,] _grid;
         private TextMeshPro[,] _textGrid;
@@ -19,12 +19,12 @@ namespace FickleFrames
         bool _shouldUseText = true;
         bool _shouldUseRenderer = true;
 
-        //***********************************************Properties******************************************************
+        /*.............................................Properties...........................................................*/
         public int Height { private set; get; }
         public int Width { private set; get; }
         public float CellSize { private set; get; }
 
-        //**********************************************Constructor******************************************************
+        /*.............................................Constructor..........................................................*/
         /// <summary>
         /// If you don't want to use text object or sprite renderers then set the last two parameters as false
         /// </summary>
@@ -56,7 +56,7 @@ namespace FickleFrames
 
         #region Public Methods
 
-        //*********************************************Public Methods****************************************************
+        /*.............................................Public Methods.......................................................*/
         /// <summary>
         /// Converts world position into grid sections
         /// </summary>

@@ -12,21 +12,21 @@ namespace FickleFrames.Controllers
     {
         #region Internal
 
-        //********************************************Serialized Fields**************************************************
+        /*.............................................Serialized Fields....................................................*/
         [Header("-Base State Settings-")]
         [SerializeField] private EStateUpdateMode _updateMode = EStateUpdateMode.Update;
 
-        //*********************************************Private Fields****************************************************
+        /*.............................................Private Fields.......................................................*/
         private Action _stateUpdate = delegate { };
         private Action _stateFixedUpdate = delegate { };
 
-        //***********************************************Properties******************************************************
+        /*.............................................Properties...........................................................*/
         public Action OnStateUpdate { get { return _stateUpdate; } }
         public Action OnStateFixedUpdate { get { return _stateFixedUpdate; } }
 
         #region Private Methods
 
-        //*********************************************Private Methods***************************************************
+        /*.............................................Private Methods......................................................*/
         /// <summary>
         /// Change the way how the state will be updated
         /// </summary>
@@ -44,6 +44,7 @@ namespace FickleFrames.Controllers
 
         #region Public Methods
 
+        /*.............................................Public Methods.......................................................*/
         /// <summary>
         /// Returns string corresponding to a state
         /// </summary>

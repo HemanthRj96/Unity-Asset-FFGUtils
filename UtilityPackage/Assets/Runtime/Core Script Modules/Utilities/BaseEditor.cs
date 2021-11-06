@@ -2,23 +2,31 @@
 using UnityEngine;
 
 
-public class BaseEditor<TType> : Editor where TType : Object 
+public class BaseEditor<TType> : Editor where TType : Object
 {
-    public TType root => (TType)target;
-    public SerializedProperty getProperty(string propertyName) => serializedObject.FindProperty(propertyName);
-    public void propertyField(SerializedProperty property, string propertyName, string tooltip) => EditorGUILayout.PropertyField(property, new GUIContent(propertyName, tooltip));
-    public void info(string info, MessageType type = MessageType.Info) => EditorGUILayout.HelpBox(info, type);
-    public void propertySlider(SerializedProperty property, float min, float max, string label)=> EditorGUILayout.Slider(property, min, max, label);
-    public void space(float val) => GUILayout.Space(val);
-    public void heading(string label)
+    public TType Root => (TType)target;
+    public SerializedProperty GetProperty(string propertyName) => serializedObject.FindProperty(propertyName);
+    public void PropertyField(SerializedProperty property) => PropertyField(property, "", "");
+    public void PropertyField(SerializedProperty property, string propertyName, string tooltip) => EditorGUILayout.PropertyField(property, new GUIContent(propertyName, tooltip));
+    public void Info(string info, MessageType type = MessageType.Info) => EditorGUILayout.HelpBox(info, type);
+    public void PropertySlider(SerializedProperty property, float min, float max, string label) => EditorGUILayout.Slider(property, min, max, label);
+    public void Space(float val) => GUILayout.Space(val);
+    public void Heading(string label)
     {
-        var style = new GUIStyle(GUI.skin.label) 
-        { 
+        var style = new GUIStyle(GUI.skin.label)
+        {
             alignment = TextAnchor.MiddleCenter,
             fontStyle = FontStyle.Bold
         };
         EditorGUILayout.LabelField(label, style, GUILayout.ExpandWidth(true));
     }
-    public bool button(string content, float height = 20) => GUILayout.Button(content, GUILayout.Height(height));
-    public int dropdownList(string label, int index, string[] choices) => EditorGUILayout.Popup(label, index, choices);
+    public bool Button(string content) => GUILayout.Button(content);
+    public bool Button(string content, float height) => GUILayout.Button(content, GUILayout.Height(height));
+    public bool Button(string content, float height, float width) => GUILayout.Button(content, GUILayout.Height(height), GUILayout.Width(width));
+    public int DropdownList(string label, int index, string[] choices) => EditorGUILayout.Popup(label, index, choices);
+    public void BeginVertical() => EditorGUILayout.BeginVertical();
+    public void EndVertical() => EditorGUILayout.EndVertical();
+    public void BeginHorizontal() => EditorGUILayout.BeginHorizontal();
+    public void EndHorizontal() => EditorGUILayout.EndHorizontal();
+    public void Label(string labelContent) => EditorGUILayout.LabelField(labelContent);
 }

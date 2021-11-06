@@ -20,7 +20,7 @@ namespace FickleFrames.Systems
 
         #region Internal
 
-        //********************************************Serialized Fields**************************************************
+        /*.............................................Serialized Fields....................................................*/
 #pragma warning disable 0649
         [SerializeField] private string _actionName;
         [SerializeField] private ActionSlave _actionSlave;
@@ -34,12 +34,13 @@ namespace FickleFrames.Systems
 #pragma warning restore 0649
 
 
-        //***********************************************Properties******************************************************
+        /*.............................................Properties...........................................................*/
         private IActionParameters _passingParams { get; set; } = null;
+
 
         #region Private Methods
 
-        //*********************************************Private Methods***************************************************
+        /*.............................................Private Methods......................................................*/
         /// <summary>
         /// Call base method to prevent unknown behaviour
         /// </summary>
@@ -148,7 +149,7 @@ namespace FickleFrames.Systems
 
         #region Public Methods
 
-        //*********************************************Public Methods****************************************************
+        /*.............................................Public Methods.......................................................*/
         /// <summary>
         /// Call this method to set the data that has to passed to a chained action
         /// </summary>

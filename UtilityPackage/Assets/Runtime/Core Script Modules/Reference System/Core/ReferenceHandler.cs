@@ -11,7 +11,7 @@ namespace FickleFrames
     {
         #region Internals
 
-        private static Dictionary<string, Object> container = new Dictionary<string, Object>();
+        private static Dictionary<string, Object> s_container = new Dictionary<string, Object>();
 
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace FickleFrames
         /// <param name="tag"></param>
         private static bool DuplicateCheck(string tag)
         {
-            if (container.ContainsKey(tag))
+            if (s_container.ContainsKey(tag))
             {
                 Debug.LogError($"Found duplicate key :{tag}");
                 return true;
@@ -35,7 +35,7 @@ namespace FickleFrames
         /// <param name="value">Target value</param>
         private static string FindKey(Object value)
         {
-            foreach (var temp in container)
+            foreach (var temp in s_container)
                 if (temp.Value == value)
                     return temp.Key;
             return null;
@@ -43,13 +43,15 @@ namespace FickleFrames
 
         #endregion Internals
 
+        #region Public Methods
 
+        /*.............................................Public Methods.......................................................*/
         /// <summary>
         /// Adds an object
         /// </summary>
         public static void Add(Object value)
         {
-            container.Add(value.name, value);
+            s_container.Add(value.name, value);
         }
 
 
@@ -61,7 +63,7 @@ namespace FickleFrames
         {
             if (DuplicateCheck(tag))
                 return;
-            container.Add(tag, value);
+            s_container.Add(tag, value);
         }
 
 
@@ -79,8 +81,8 @@ namespace FickleFrames
         /// </summary>
         public static void Remove(string tag)
         {
-            if (container.ContainsKey(tag))
-                container.Remove(tag);
+            if (s_container.ContainsKey(tag))
+                s_container.Remove(tag);
         }
 
 
@@ -89,9 +91,9 @@ namespace FickleFrames
         /// </summary>
         public static void RemoveAll<T>() where T : class
         {
-            foreach (string tag in container.Keys.ToList())
-                if (container[tag] is T)
-                    container.Remove(tag);
+            foreach (string tag in s_container.Keys.ToList())
+                if (s_container[tag] is T)
+                    s_container.Remove(tag);
         }
 
 
@@ -100,9 +102,9 @@ namespace FickleFrames
         /// </summary>
         public static Object GetReference(string tag)
         {
-            if (!container.ContainsKey(tag))
+            if (!s_container.ContainsKey(tag))
                 return null;
-            return container[tag];
+            return s_container[tag];
         }
 
 
@@ -112,10 +114,10 @@ namespace FickleFrames
         public static bool GetReference<T>(out T value) where T : class
         {
             value = null;
-            foreach (string tag in container.Keys)
-                if (container[tag] is T)
+            foreach (string tag in s_container.Keys)
+                if (s_container[tag] is T)
                 {
-                    value = container[tag] as T;
+                    value = s_container[tag] as T;
                     return true;
                 }
             return false;
@@ -128,9 +130,9 @@ namespace FickleFrames
         public static bool GetReference<T>(string tag, out T value) where T : class
         {
             value = null;
-            if (!container.ContainsKey(tag))
+            if (!s_container.ContainsKey(tag))
                 return false;
-            value = container[tag] as T;
+            value = s_container[tag] as T;
             return true;
         }
 
@@ -143,10 +145,10 @@ namespace FickleFrames
             bool flag = false;
             value = new List<T>();
 
-            foreach (string tag in container.Keys)
-                if (container[tag] is T)
+            foreach (string tag in s_container.Keys)
+                if (s_container[tag] is T)
                 {
-                    value.Add(container[tag] as T);
+                    value.Add(s_container[tag] as T);
                     flag = true;
                 }
             return flag;
@@ -156,12 +158,14 @@ namespace FickleFrames
         /// <summary>
         /// Returns true if the reference exists
         /// </summary>
-        public static bool CheckIfReferenceExists(Object value) => container.ContainsValue(value);
+        public static bool CheckIfReferenceExists(Object value) => s_container.ContainsValue(value);
 
 
         /// <summary>
         /// Returns true if the reference exists
         /// </summary>
-        public static bool CheckIfReferenceExists(string tag) => container.ContainsKey(tag);
+        public static bool CheckIfReferenceExists(string tag) => s_container.ContainsKey(tag);
+
+        #endregion Public Methods
     }
 }
