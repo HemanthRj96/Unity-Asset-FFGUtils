@@ -13,7 +13,6 @@ namespace FickleFrames.Controllers.StateControllerEditor_
         string controllerFilepath;
         string suffix;
         bool validScript = false;
-        int selection = 0;
 
         bool validDirectory => Directory.Exists(controllerFilepath);
         SerializedProperty stateArray(int index) => GetProperty("_states").GetArrayElementAtIndex(index);
@@ -22,6 +21,8 @@ namespace FickleFrames.Controllers.StateControllerEditor_
         private void InspectorUpdate()
         {
             Space(5);
+
+            #region stateControllerFilepath
 
             // stateControllerFilepath
             PropertyField(GetProperty("stateControllerFilepath"), "Controller File Path", "Path where all controller scriptable objects are saved");
@@ -33,6 +34,10 @@ namespace FickleFrames.Controllers.StateControllerEditor_
                 Directory.CreateDirectory(controllerFilepath);
                 AssetDatabase.Refresh();
             }
+
+            #endregion
+
+            #region load controllers from directory
 
             // Load controllers from directory
             if (validDirectory)
@@ -83,7 +88,11 @@ namespace FickleFrames.Controllers.StateControllerEditor_
                 }
             }
 
+            #endregion
+
             Space(5);
+
+            #region scriptSuffix
 
             // scriptSuffix
             if (validDirectory)
@@ -104,7 +113,11 @@ namespace FickleFrames.Controllers.StateControllerEditor_
                     validScript = true;
             }
 
+            #endregion
+
             Space(10);
+
+            #region state array manipulator
 
             // state array manipulator
             int index = GetProperty("_states").arraySize;
@@ -123,6 +136,10 @@ namespace FickleFrames.Controllers.StateControllerEditor_
 
             EditorGUILayout.EndHorizontal();
 
+            #endregion
+
+            #region defaultState
+
             Space(5);
 
             // defaultState
@@ -136,15 +153,18 @@ namespace FickleFrames.Controllers.StateControllerEditor_
             }
 
             string defaultState = GetProperty("_defaultStateName").stringValue;
-            selection = entries.FindIndex(x => x == defaultState);
-            selection = Mathf.Max(0, selection);
+            int selection = Mathf.Max(0, entries.FindIndex(x => x == defaultState));
 
             if (entries.Count > 0)
                 GetProperty("_defaultStateName").stringValue = entries[DropdownList("Default State : ", selection, entries.ToArray())];
             else
                 GetProperty("_defaultStateName").stringValue = "";
 
+            #endregion
+
             Space(10);
+
+            #region print elements inside stateArray
 
             // print all elements inside stateArray
             for (int i = 0; i < GetProperty("_states").arraySize; ++i)
@@ -173,6 +193,8 @@ namespace FickleFrames.Controllers.StateControllerEditor_
                 }
                 Space(5);
             }
+
+            #endregion
         }
 
         private void createCodeFile(string StateName)

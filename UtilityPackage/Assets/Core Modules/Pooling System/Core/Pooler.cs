@@ -56,7 +56,7 @@ namespace FickleFrames.Systems
         private void bootstrapper()
         {
             // Change poolerName if poolerName is empty
-            if (_poolerName == "")
+            if (string.IsNullOrEmpty(_poolerName))
                 _poolerName = gameObject.name;
 
             // Change pool values to default values

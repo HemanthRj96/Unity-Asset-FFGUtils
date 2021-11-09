@@ -2,8 +2,8 @@
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "_FILE_NAME_", menuName = "State Controller/_GAMEOBJECT_NAME_/_STATE_NAME_")]
-public class _SCRIPT_NAME_ : State
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "Fickle Frames/State Controller/#SCRIPTNAME#")]
+public class #SCRIPTNAME# : State
 {
     public override string GetState()
     {
