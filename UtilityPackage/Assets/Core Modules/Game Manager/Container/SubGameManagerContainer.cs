@@ -7,6 +7,6 @@
     public struct SubGameManagerContainer
     {
         public string SubManagerName;
-        public BaseGameManager SubManager;
+        public SubGameManagerBase SubManager;
     }
 }

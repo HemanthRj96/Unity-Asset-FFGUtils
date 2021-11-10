@@ -9,7 +9,7 @@ public class Singleton<T> : MonoBehaviour where T : Singleton<T>
     protected void Awake()
     {
         if (instance != null)
-            Destroy(this);
+            Destroy(gameObject);
         else
         {
             if (doNotDestroyOnLoad)

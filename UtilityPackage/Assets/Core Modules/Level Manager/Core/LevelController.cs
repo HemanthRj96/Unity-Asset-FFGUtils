@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 namespace FickleFrames.Managers.Internal
 {
-    [CreateAssetMenu(fileName = "Level_Controller", menuName = "Scriptable Objects/Level Controller")]
+    [CreateAssetMenu(fileName = "Level_Controller", menuName = "-Fickle Frames-/Controllers/1. Create New Level Controller", order = 0)]
     public class LevelController : ScriptableObject
     {
         #region Editor

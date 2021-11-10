@@ -17,7 +17,6 @@ namespace FickleFrames.Controllers
 #if UNITY_EDITOR
 #pragma warning disable 0649,0414
         [SerializeField] private string stateControllerFilepath;
-        [SerializeField] private string scriptSuffix;
 #pragma warning restore 0649, 0414
 #endif
         #endregion Editor
