@@ -6,14 +6,14 @@ namespace FickleFrames
 {
     public class CustomFileCreator
     {
-        #region Internal
+        /*.............................................Private Fields.......................................................*/
 
-        private static readonly string s_stateControllerTemplateFilePath = @"Assets\Core Modules\Template Script Builder\Template\state_controller_template.cs.txt";
-        private static readonly string s_actionSystemTemplateFilepath = @"Assets\Core Modules\Template Script Builder\Template\action_system_template.cs.txt";
-        private static readonly string s_subGameManagerTemplateFilepath = @"Assets\Core Modules\Template Script Builder\Template\game_manager_template.cs.txt";
-        private const string MENUNAME = "Assets/Create/-Fickle Frames-/";
+        private static readonly string s_stateControllerTemplateFilePath = @"Assets\Core Modules\Custom File Creator\Template\state_controller_template.cs.txt";
+        private static readonly string s_actionSystemTemplateFilepath = @"Assets\Core Modules\Custom File Creator\Template\action_system_template.cs.txt";
+        private static readonly string s_subGameManagerTemplateFilepath = @"Assets\Core Modules\Custom File Creator\Template\game_manager_template.cs.txt";
+        private const string MENUNAME = "Fickle Frames/";
 
-        #region Private Methods
+        /*.............................................Private Methods......................................................*/
 
         /// <summary>
         /// Script builder that creates the scripts in the backend
@@ -25,21 +25,26 @@ namespace FickleFrames
             ProjectWindowUtil.CreateScriptAssetFromTemplateFile(scriptTemplatePath, scriptName);
         }
 
-        #endregion
-
-        #endregion
-
-        #region Public Methods
+        /*.............................................Public Methods.......................................................*/
 
         /// <summary>
         /// Method to create game manager
         /// </summary>
-        [MenuItem(itemName: MENUNAME + "Managers/2. Create A Game Manager", isValidateFunction: false)]
+        [MenuItem(itemName: MENUNAME + "Managers/1. Create A Game Manager", isValidateFunction: false)]
         public static void CreateGameManager()
         {
-            GameObject gameObject = new GameObject("-Game Manager-", typeof(GameManager));
+            new GameObject("-Game Manager-", typeof(GameManager));
         }
 
+
+        /// <summary>
+        /// Method to create level manager
+        /// </summary>
+        [MenuItem(itemName: MENUNAME + "Managers/2. Create A Level Manager", isValidateFunction: false)]
+        public static void CreateLevelManager()
+        {
+            new GameObject("-Level Manager-", typeof(LevelManager));
+        }
 
         /// <summary>
         /// Method to create custom sub game manager from template file
@@ -54,7 +59,7 @@ namespace FickleFrames
         /// <summary>
         /// Method to create custom state from template file
         /// </summary>
-        [MenuItem(itemName: MENUNAME + "Controllers/2. Create New State From Template", isValidateFunction: false)]
+        [MenuItem(itemName: MENUNAME + "Controllers/Create New State From Template", isValidateFunction: false)]
         public static void CreateStateFromTemplate()
         {
             scriptBuilder(s_stateControllerTemplateFilePath, "NewState.cs");
@@ -64,12 +69,10 @@ namespace FickleFrames
         /// <summary>
         /// Method to create custom action component
         /// </summary>
-        [MenuItem(itemName: MENUNAME + "Systems/1. Create New Action Component", isValidateFunction: false)]
+        [MenuItem(itemName: MENUNAME + "Systems/Create New Action Component", isValidateFunction: false)]
         public static void CreateActionComponentFromTemplate()
         {
             scriptBuilder(s_actionSystemTemplateFilepath, "NewActionComponent.cs");
         }
-
-        #endregion
     }
 }

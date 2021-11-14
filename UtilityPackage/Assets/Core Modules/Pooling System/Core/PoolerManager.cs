@@ -9,16 +9,12 @@ namespace FickleFrames.Systems
     /// </summary>
     public static class PoolerManager
     {
-        #region Internal
-
         /*.............................................Private Fields.......................................................*/
+
         private static Dictionary<string, Pooler> _poolerLookup = new Dictionary<string, Pooler>();
 
-        #endregion Internal
-
-        #region Public Methods
-
         /*.............................................Public Methods.......................................................*/
+
         /// <summary>
         /// Adds pooler to the collection, it is automatically called by all Pooler objects
         /// </summary>
@@ -61,7 +57,5 @@ namespace FickleFrames.Systems
             Object.Destroy(_poolerLookup[tag], 1f);
             _poolerLookup.Remove(tag);
         }
-
-        #endregion Public Methods
     }
 }

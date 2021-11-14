@@ -10,19 +10,18 @@ namespace FickleFrames.Managers
     /// </summary>
     public class SoundManager : Singleton<SoundManager>
     {
-        #region Internal
-
         /*.............................................Serialized Fields....................................................*/
+
         [Space(5)]
-        [Header("-Audio Manager Settings-")]
+        [Header("Audio Manager Settings")]
         [SerializeField] private List<SoundClusterContainer> _soundContainers = new List<SoundClusterContainer>();
 
         /*.............................................Private Fields.......................................................*/
+
         private Dictionary<string, Dictionary<string, Sound>> _soundLookup = new Dictionary<string, Dictionary<string, Sound>>();
 
-        #region Private Methods
-
         /*.............................................Private Methods......................................................*/
+
         private new void Awake()
         {
             base.Awake();
@@ -116,13 +115,8 @@ namespace FickleFrames.Managers
             Debug.LogError($"SOUND CLIP : {clipName} NOT FOUND!!");
         }
 
-        #endregion Private Methods
-
-        #endregion Internal
-
-        #region Public Methods
-
         /*.............................................Public Methods.......................................................*/
+
         /// <summary>
         /// Overloaded version of PlaySound, this is slightly faster than the previous function
         /// </summary>
@@ -210,7 +204,5 @@ namespace FickleFrames.Managers
             soundFetcher(containertag, clipName, out sound);
             return sound;
         }
-
-        #endregion Public Methods
     }
 }

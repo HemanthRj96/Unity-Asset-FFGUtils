@@ -97,6 +97,17 @@ public static class ExtensionMethods
     }
 
 
+    /// <summary>
+    /// Returns the value if it exists or null
+    /// </summary>
+    public static TValue GetOrNull<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key) where TValue : class
+    {
+        if (dictionary.ContainsKey(key))
+            return dictionary[key];
+        return null;
+    }
+
+
     #endregion Colleciton Extensions
 
 

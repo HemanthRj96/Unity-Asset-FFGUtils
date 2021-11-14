@@ -15,16 +15,14 @@ namespace FickleFrames.Managers
         #region Internal
 
         /*.............................................Serialized Fields....................................................*/
-#pragma warning disable 0649
+
         [SerializeField] private SubGameManagerContainer[] _subManagers;
 
         /*.............................................Private Fields.......................................................*/
         private static GameManager s_instance = null;
-        private bool _isValid = false;
-        private string _newSubManagerName;
-        private SubGameManagerBase _subManager;
+        private string _cachedSubManagerName = default;
+        private SubGameManagerBase _cachedSubManager = null;
         private Dictionary<string, SubGameManagerBase> _subManagerCollection = new Dictionary<string, SubGameManagerBase>();
-#pragma warning restore 0649
 
 
         #region Private Methods
@@ -39,7 +37,6 @@ namespace FickleFrames.Managers
                 Destroy(gameObject);
             else
             {
-                _isValid = true;
                 s_instance = this;
                 DontDestroyOnLoad(this);
             }
@@ -65,7 +62,7 @@ namespace FickleFrames.Managers
                 }
 
             // Initialize the first memeber inside the collection
-            _subManager = _subManagerCollection.FirstOrDefault().Value;
+            _cachedSubManager = _subManagerCollection.FirstOrDefault().Value;
         }
 
         /// <summary>
@@ -74,29 +71,29 @@ namespace FickleFrames.Managers
         private void gameManagerUpdate()
         {
             // Return if the current sub manager is null
-            if (!_subManager)
+            if (!_cachedSubManager)
             {
                 Debug.LogError($"Sub Manager Failed Initialization / Destroyed!! " +
-                    $"[SubManagerName = {(string.IsNullOrEmpty(_newSubManagerName) ? "-" : _newSubManagerName)}]");
+                    $"[SubManagerName = {(string.IsNullOrEmpty(_cachedSubManagerName) ? "-" : _cachedSubManagerName)}]");
                 return;
             }
 
             // Run sub manager and store the return value
-            _newSubManagerName = _subManager.Run();
+            _cachedSubManagerName = _cachedSubManager.Run();
 
             // The string is empty then don't do anything
-            if (string.IsNullOrEmpty(_newSubManagerName))
+            if (string.IsNullOrEmpty(_cachedSubManagerName))
                 return;
 
             // Otherwise update the _subManager
-            else if (_subManagerCollection.ContainsKey(_newSubManagerName))
-                _subManager = _subManagerCollection[_newSubManagerName];
+            else if (_subManagerCollection.ContainsKey(_cachedSubManagerName))
+                _cachedSubManager = _subManagerCollection[_cachedSubManagerName];
 
             // This condition shouldn't occur unless there's a messup
             else
             {
                 //Handle game manager error
-                Debug.LogError($"Invalid Sub Manager!! [SubManagerName = {_newSubManagerName}]. Please review the code!!");
+                Debug.LogError($"Invalid Sub Manager!! [SubManagerName = {_cachedSubManagerName}]. Please review the code!!");
             }
         }
 

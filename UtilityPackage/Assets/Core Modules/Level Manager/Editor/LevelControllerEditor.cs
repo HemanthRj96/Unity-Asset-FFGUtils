@@ -8,27 +8,38 @@ namespace FickleFrames.Managers.Editor_
     public class LevelControllerEditor : BaseEditor<LevelController>
     {
         SceneAsset scene;
+        SerializedProperty _sceneAsset;
+        SerializedProperty _levelName;
+        SerializedProperty _loadMode;
+        SerializedProperty _physicsMode;
 
         private void InspectorUpdate()
         {
+            _sceneAsset = GetProperty("SerializedScene");
+            _levelName = GetProperty("_levelName");
+            _loadMode = GetProperty("_loadMode");
+            _physicsMode = GetProperty("_physicsMode");
+
             // sceneAsset and LevelName
-            PropertyField(GetProperty("serializedScene"), "Controlled Scene", "Scene that will be controlled by this controller");
-            scene = (SceneAsset)GetProperty("serializedScene").objectReferenceValue;
+            PropertyField(_sceneAsset, "Controlled Scene", "Scene that will be controlled by this controller");
+            scene = (SceneAsset)_sceneAsset.objectReferenceValue;
+
             if(scene == null)
             {
                 Info("This value cannot be null please initialize!!", MessageType.Error);
+                _levelName.stringValue = null;
                 return;
             }
             else
-                GetProperty("LevelName").stringValue = scene.name;
+                _levelName.stringValue = scene.name;
 
 
             // LoadMode
-            PropertyField(GetProperty("LoadMode"), "Scene Load Mode", "How this level should be loaded");
+            PropertyField(_loadMode, "Scene Load Mode", "How this level should be loaded");
 
 
             // PhysicsMode
-            PropertyField(GetProperty("PhysicsMode"), "Physics Mode", "Physics mode for this level");
+            PropertyField(_physicsMode, "Physics Mode", "Physics mode for this level");
         }
 
         public override void OnInspectorGUI()

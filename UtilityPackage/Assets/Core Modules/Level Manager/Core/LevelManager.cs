@@ -9,70 +9,82 @@ namespace FickleFrames.Managers
     /// <summary>
     /// Singleton class which manages all scene loading and scene data manipulations
     /// </summary>
-    public class LevelManager : Singleton<LevelManager>
+    public class LevelManager : MonoBehaviour
     {
-        #region Internals
-
-#pragma warning disable 0649, 0414
-
         /*.............................................Serialized Fields....................................................*/
+
         [SerializeField] private string _levelControllerPath;
         [SerializeField] private LevelController[] _levelControllers;
 
+        /*.............................................Public Fields........................................................*/
+
+        public static LevelManager Instance = null;
 
         /*.............................................Private Fields.......................................................*/
-        private Dictionary<string, LevelController> _singleLevels = new Dictionary<string, LevelController>();
-        private Dictionary<string, LevelController> _additiveLevels = new Dictionary<string, LevelController>();
+
+        private Dictionary<string, LevelController> _levelControllersLookup = new Dictionary<string, LevelController>();
+        private LevelController _cachedLevelController = null;
         private List<string> _loadedAdditiveLevels = new List<string>();
-        private string _currentSingleLevel = "";
-        private string _previousSingleLevel = "";
-
-#pragma warning restore 0649, 0414
-
-        #region Private Methods
+        private string _loadedSingleLevel = "";
 
         /*.............................................Private Methods......................................................*/
-        private new void Awake()
-        {
-            base.Awake();
-            bootstrapper();
-        }
 
         /// <summary>
-        /// Creates collections for quick actions
+        /// Implement singleton pattern
         /// </summary>
-        private void bootstrapper()
+        private void Awake()
         {
-            for (int i = 0; i < _levelControllers.Length; ++i)
+            if (Instance == null)
             {
-                if (_levelControllers[i].IsAdditive())
-                    _additiveLevels.TryAdd(_levelControllers[i].LevelName, _levelControllers[i]);
-                else
-                    _singleLevels.TryAdd(_levelControllers[i].LevelName, _levelControllers[i]);
+                Instance = this;
+                DontDestroyOnLoad(this);
             }
-            _currentSingleLevel = SceneManager.GetActiveScene().name;
+            else
+            {
+                Destroy(gameObject);
+                return;
+            }
         }
 
-        #endregion Private Methods
 
-        #endregion Internals
-
-        #region Public Methods
-
-        /*.............................................Public Methods.......................................................*/
         /// <summary>
-        /// Returns a level controller
+        /// Intializes collections
         /// </summary>
-        /// <param name="levelName">Name of the level</param>
-        public LevelController GetLevelController(string levelName)
+        private void Start()
         {
-            if (_singleLevels.ContainsKey(levelName))
-                return _singleLevels[levelName];
-            else if (_additiveLevels.ContainsKey(levelName))
-                return _additiveLevels[levelName];
+            prepareLookup();
+        }
+
+
+        /// <summary>
+        /// Initializes lookup
+        /// </summary>
+        private void prepareLookup()
+        {
+            foreach (LevelController controller in _levelControllers)
+                if (controller != null)
+                    _levelControllersLookup.Add(controller.LevelName, controller);
+        }
+
+
+        /// <summary>
+        /// Returns a level controller of a target level if it exists
+        /// </summary>
+        /// <param name="levelName">Target level</param>
+        private LevelController fetchLevelController(string levelName)
+        {
+            if (_levelControllersLookup.ContainsKey(levelName))
+            {
+                if (_levelControllersLookup[levelName] != null)
+                    return _levelControllersLookup[levelName];
+                // Remove elements which has null value
+                else
+                    _levelControllersLookup.Remove(levelName);
+            }
             return null;
         }
 
+        /*.............................................Public Methods.......................................................*/
 
         /// <summary>
         /// Loads a target level if it exists
@@ -80,53 +92,36 @@ namespace FickleFrames.Managers
         /// <param name="levelName">Target level name</param>
         public void LoadLevel(string levelName)
         {
-            LevelController controller = GetLevelController(levelName);
+            _cachedLevelController = fetchLevelController(levelName);
 
             // Return if controller not found
-            if (controller == null)
+            if (_cachedLevelController == null)
             {
                 Debug.LogWarning($"Level controller : {levelName} not found!");
                 return;
             }
 
             // Check if the level is additive or not
-            if (controller.IsAdditive())
+            if (_cachedLevelController.IsAdditive)
             {
-                // Add the level to list
-                if (controller.IsLoaded())
-                {
-                    _loadedAdditiveLevels.TryAdd(levelName);
-                    return;
-                }
+                // Check if  it's already loaded
+                for (int i = 0; i < SceneManager.sceneCount; ++i)
+                    if (levelName == SceneManager.GetSceneAt(i).name)
+                    {
+                        _loadedAdditiveLevels.TryAdd(levelName);
+                        return;
+                    }
                 _loadedAdditiveLevels.TryAdd(levelName);
             }
             else
             {
-                if (controller.IsLoaded())
+                if (_cachedLevelController.IsLoaded)
                     return;
-                _previousSingleLevel = _currentSingleLevel;
-                _currentSingleLevel = levelName;
+                _loadedSingleLevel = levelName;
             }
 
             // Load level
-            StartCoroutine(controller.LoadLevel());
-        }
-
-
-        /// <summary>
-        /// Method loads previous level if there's any
-        /// </summary>
-        public void LoadPreviousLevel()
-        {
-            // Check if there's valid controllers or check if the controller has the level loaded already
-            if (!_singleLevels.ContainsKey(_previousSingleLevel) || _singleLevels[_previousSingleLevel].IsLoaded())
-                return;
-            // Swap values
-            string temp = _previousSingleLevel;
-            _previousSingleLevel = _currentSingleLevel;
-            _currentSingleLevel = temp;
-            // Load the previous single level
-            StartCoroutine(_singleLevels[_currentSingleLevel].LoadLevel());
+            StartCoroutine(_cachedLevelController.LoadLevel());
         }
 
 
@@ -136,18 +131,29 @@ namespace FickleFrames.Managers
         /// <param name="levelName">Target level name</param>
         public void UnloadLevel(string levelName)
         {
-            // Only check in additive scenes as you cannot unload a single scene
-            if (_additiveLevels.ContainsKey(levelName))
+            _cachedLevelController = fetchLevelController(levelName);
+
+            // Null check
+            if (_cachedLevelController == null)
             {
-                // Check if it's unloaded already if yes then try to remove the value
-                if (!_additiveLevels[levelName].IsLoaded())
-                {
-                    _loadedAdditiveLevels.TryRemove(levelName);
-                    return;
-                }
-                // Remove the level from list and call unloading routine
-                _loadedAdditiveLevels.TryRemove(levelName);
-                StartCoroutine(_additiveLevels[levelName].UnloadLevel());
+                Debug.LogWarning($"Invalid Level Name : [LevelName : {levelName}]");
+                return;
+            }
+
+            // Check if the scene is additive since they are the scenes that can be unloaded
+            if (_cachedLevelController.IsAdditive)
+            {
+                bool found = false;
+                // Check if the scene is already loaded
+                for (int i = 0; i < SceneManager.sceneCount; ++i)
+                    if (levelName == SceneManager.GetSceneAt(i).name)
+                    {
+                        _loadedAdditiveLevels.TryRemove(levelName);
+                        found = true;
+                    }
+
+                if (found)
+                    _cachedLevelController.UnloadLevel();
             }
         }
 
@@ -159,10 +165,19 @@ namespace FickleFrames.Managers
         {
             List<string> levels = new List<string>();
 
-            levels.Add(_currentSingleLevel);
+            levels.Add(_loadedSingleLevel);
             levels.AddRange(_loadedAdditiveLevels);
 
             return levels.ToArray();
+        }
+
+
+        /// <summary>
+        /// Returns the current single loaded level
+        /// </summary>
+        public string GetCurrentScene()
+        {
+            return _loadedSingleLevel;
         }
 
 
@@ -173,7 +188,5 @@ namespace FickleFrames.Managers
         {
             return _loadedAdditiveLevels.ToArray();
         }
-
-        #endregion Public Methods
     }
-}   
+}

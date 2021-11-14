@@ -11,26 +11,24 @@ namespace FickleFrames.Systems
     /// </summary>
     public class Pooler : MonoBehaviour
     {
-        #region Internal
-
         /*.............................................Serialized Fields....................................................*/
+
         [Header("Pooler Settings")]
         [SerializeField] private string _poolerName = default;
         [SerializeField] private bool _doNotDestroyOnLoad = false;
         [Tooltip("If true then the pool gets created on Awake")]
         [SerializeField] private bool _shouldWarmPoolOnAwake = false;
-
         [Header("Pool Settings")]
-        [SerializeField] private List<Pool> _pools = new List<Pool>();
+        [SerializeField] private List<GameobjectPool> _pools = new List<GameobjectPool>();
 
         /*.............................................Private Fields.......................................................*/
+
         private List<ObjectPool> _objectPools = new List<ObjectPool>();
         private Dictionary<string, Queue<GameObject>> _mainPoolLookup = new Dictionary<string, Queue<GameObject>>();
         private Dictionary<string, Queue<UnityEngine.Object>> _objectPoolLookup = new Dictionary<string, Queue<UnityEngine.Object>>();
 
-        #region Private Methods
-
         /*.............................................Private Methods......................................................*/
+   
         /// <summary>
         /// Calls bootstrapper
         /// </summary>
@@ -61,7 +59,7 @@ namespace FickleFrames.Systems
 
             // Change pool values to default values
             for (int i = 0; i < _pools.Count; ++i)
-                _pools[i] = new Pool(_pools[i].PoolName, _pools[i].Prefab, _pools[i].PoolSize);
+                _pools[i] = new GameobjectPool(_pools[i].PoolName, _pools[i].Prefab, _pools[i].PoolSize);
 
             // Add this pooler to pool manager
             PoolerManager.AddPooler(_poolerName, this);
@@ -122,13 +120,8 @@ namespace FickleFrames.Systems
             return _objectPoolLookup.ContainsKey(poolTag);
         }
 
-        #endregion Private Methods
-
-        #endregion Internal
-
-        #region Public Methods
-
         /*.............................................Public Methods.......................................................*/
+
         /// <summary>
         /// Returns UnityEngine.Object object from pool
         /// </summary>
@@ -220,7 +213,7 @@ namespace FickleFrames.Systems
                 return;
             if (entity is GameObject)
             {
-                _pools.Add(new Pool(poolTag, (GameObject)entity, size));
+                _pools.Add(new GameobjectPool(poolTag, (GameObject)entity, size));
                 if (shouldWarm)
                     WarmPool();
             }
@@ -275,7 +268,5 @@ namespace FickleFrames.Systems
                 _objectPoolLookup.Clear();
             }
         }
-
-        #endregion Public Methods
     }
 }

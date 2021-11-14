@@ -11,10 +11,27 @@ namespace FickleFrames.Managers.Editor_
     public class LevelManagerEditor : BaseEditor<LevelManager>
     {
         string controllerPath;
+        static LevelManager Instance = null;
+
+        SerializedProperty _levelControllerPath;
+        SerializedProperty _levelControllers;
 
         private void InspectorUpdate()
         {
+            if (Instance == null)
+                Instance = Root;
+            else if(!Instance.Equals(Root))
+            {
+                Info("Only a single instance of level manager is allowed, this manager will be removed on awake call", MessageType.Error);
+                return;
+            }
+
+
+            _levelControllerPath = GetProperty("_levelControllerPath");
+            _levelControllers = GetProperty("_levelControllers");
+
             Space(5);
+
 
             // print the details of all level controllers
             if (Button("Clear Levels In Build", 25))
@@ -24,17 +41,17 @@ namespace FickleFrames.Managers.Editor_
             Heading("Level Controller Settings");
             Space(2);
 
-            // doNotDestroyOnLoad
-            PropertyField(GetProperty("doNotDestroyOnLoad"), "Do Not Destroy On Load", "Set this as true if this asset has to persist through scenes");
 
             // _levelControllerPath
             List<LevelController> levelControllerList = new List<LevelController>();
-            PropertyField(GetProperty("_levelControllerPath"), "Level Controller Path", "File path where all level controllers are located");
-            controllerPath = GetProperty("_levelControllerPath").stringValue;
+
+            PropertyField(_levelControllerPath, "Level Controller Path", "File path where all level controllers are located");
+            controllerPath = _levelControllerPath.stringValue;
 
             if (controllerPath == "")
             {
                 Space(5);
+
                 Info("This field cannot be empty", MessageType.Error);
                 return;
             }
@@ -42,13 +59,16 @@ namespace FickleFrames.Managers.Editor_
             if (!Directory.Exists(controllerPath))
             {
                 Space(5);
+
                 EditorGUILayout.BeginHorizontal();
+
                 Info("This directory do not exist!!");
                 if (Button("Create new directory", 37.5f))
                 {
                     Directory.CreateDirectory(controllerPath);
                     AssetDatabase.Refresh();
                 }
+
                 EditorGUILayout.EndHorizontal();
             }
             else
@@ -63,9 +83,10 @@ namespace FickleFrames.Managers.Editor_
                 }
 
                 EditorGUILayout.BeginHorizontal();
+
                 if (Button("Truncate Database", 25))
                 {
-                    GetProperty("_levelControllers").ClearArray();
+                    _levelControllers.ClearArray();
                     levelControllerList.Clear();
                 }
                 if (Button("Refresh Database", 25))
@@ -73,9 +94,9 @@ namespace FickleFrames.Managers.Editor_
                     foreach (LevelController controller in levelControllerList)
                     {
                         int foundIndex = -1;
-                        for (int i = 0; i < GetProperty("_levelControllers").arraySize; ++i)
+                        for (int i = 0; i < _levelControllers.arraySize; ++i)
                         {
-                            LevelController temp = (LevelController)GetProperty("_levelControllers").GetArrayElementAtIndex(i).objectReferenceValue;
+                            LevelController temp = (LevelController)_levelControllers.GetArrayElementAtIndex(i).objectReferenceValue;
                             if (temp == null)
                             {
                                 foundIndex = i;
@@ -92,22 +113,24 @@ namespace FickleFrames.Managers.Editor_
                             continue;
                         else if (foundIndex == -1)
                         {
-                            int index = GetProperty("_levelControllers").arraySize;
-                            GetProperty("_levelControllers").InsertArrayElementAtIndex(index);
-                            GetProperty("_levelControllers").GetArrayElementAtIndex(index).objectReferenceValue = controller;
+                            int index = _levelControllers.arraySize;
+                            _levelControllers.InsertArrayElementAtIndex(index);
+                            _levelControllers.GetArrayElementAtIndex(index).objectReferenceValue = controller;
                         }
                         else
-                            GetProperty("_levelControllers").GetArrayElementAtIndex(foundIndex).objectReferenceValue = controller;
+                            _levelControllers.GetArrayElementAtIndex(foundIndex).objectReferenceValue = controller;
                     }
                 }
+
                 EditorGUILayout.EndHorizontal();
 
                 if (levelControllerList.Count == 0)
                     Info($"No level controllers in {controllerPath}", MessageType.Warning);
             }
 
+
             // Print all levels
-            if (GetProperty("_levelControllers").arraySize == 0)
+            if (_levelControllers.arraySize == 0)
                 return;
 
             List<EditorBuildSettingsScene> scenesInBuild = new List<EditorBuildSettingsScene>();
@@ -117,32 +140,34 @@ namespace FickleFrames.Managers.Editor_
             Heading("Loaded Level Controllers");
             Space(15);
 
-            for (int index = 0; index < GetProperty("_levelControllers").arraySize; ++index)
+            for (int index = 0; index < _levelControllers.arraySize; ++index)
             {
-                LevelController controller = (LevelController)GetProperty("_levelControllers").GetArrayElementAtIndex(index).objectReferenceValue;
+                LevelController controller = (LevelController)_levelControllers.GetArrayElementAtIndex(index).objectReferenceValue;
+
                 if (controller == null)
                     continue;
 
-                SceneAsset sceneAsset = controller.serializedScene;
+                SceneAsset sceneAsset = controller.SerializedScene;
                 string levelName = sceneAsset == null ? null : sceneAsset.name;
                 bool sceneFound = scenesInBuild.Find(x => Path.GetFileNameWithoutExtension(x.path) == levelName) != null;
 
                 EditorGUILayout.BeginHorizontal();
 
-                if (GUILayout.Button("X", GUILayout.Height(80), GUILayout.Width(20)))
+                if (GUILayout.Button("X", GUILayout.Height(60), GUILayout.Width(20)))
                 {
-                    GetProperty("_levelControllers").GetArrayElementAtIndex(index).objectReferenceValue = null;
-                    GetProperty("_levelControllers").DeleteArrayElementAtIndex(index);
+                    _levelControllers.GetArrayElementAtIndex(index).DeleteCommand();
 
                     if (sceneFound)
                         scenesInBuild.Remove(scenesInBuild.Find(scene => Path.GetFileNameWithoutExtension(scene.path) == levelName));
                     continue;
                 }
+                
                 EditorGUILayout.BeginVertical();
+
                 EditorGUILayout.LabelField("Level Name : ", string.IsNullOrEmpty(levelName) ? "-" : levelName);
                 EditorGUILayout.LabelField("Level Controller Name : ", controller.name);
-                EditorGUILayout.LabelField("Level Load Mode : ", controller.LoadMode.ToString());
-                EditorGUILayout.LabelField("Level Physics Mode : ", controller.PhysicsMode.ToString());
+                EditorGUILayout.LabelField("Level Load Mode : ", controller.IsAdditive ? "Additive" : "Single");
+
                 EditorGUILayout.EndVertical();
 
                 EditorGUILayout.EndHorizontal();

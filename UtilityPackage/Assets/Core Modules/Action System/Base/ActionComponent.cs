@@ -24,10 +24,6 @@ namespace FickleFrames.Systems
         [SerializeField] private ActionSettings _actionSettings;
 #pragma warning restore 0649
 
-        /*.............................................Private Fields.......................................................*/
-        private float timer = 0;
-        private bool timerSet = false;
-
         /*.............................................Private Properties...................................................*/
         protected IActionData _outgoingData { get; set; } = new ActionData();
         protected IActionData _cachedData { get; set; } = new ActionData();

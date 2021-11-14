@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 
+
 namespace FickleFrames.Systems.Internal
 {
     [System.Serializable]
-    public struct Pool
+    public struct GameobjectPool
     {
-        public Pool(string poolName, GameObject prefab, int poolSize)
+        public GameobjectPool(string poolName, GameObject prefab, int poolSize)
         {
             if (poolSize == 0)
                 poolSize = 2;
@@ -21,19 +22,4 @@ namespace FickleFrames.Systems.Internal
         public GameObject Prefab;
         public int PoolSize;
     }
-
-    [System.Serializable]
-    public struct ObjectPool
-    {
-        public ObjectPool(string poolTag, Object entity, int poolSize)
-        {
-            PoolTag = poolTag;
-            Entity = entity;
-            PoolSize = poolSize;
-        }
-
-        public string PoolTag;
-        public Object Entity;
-        public int PoolSize;
-    } 
 }
