@@ -15,9 +15,8 @@ namespace FickleFrames.Utility
 
     public class PreBuildAnimationRecorder : Singleton<PreBuildAnimationRecorder>
     {
-        #region Internals
-
         /*.............................................Serialized Fields....................................................*/
+
         [Space(3)]
         [Header("-Save Settings-")]
         [Tooltip("Input a unique that will be used to save data into PlayerPrefs")]
@@ -44,6 +43,7 @@ namespace FickleFrames.Utility
         [SerializeField] private KeyCode _deleteRecord = KeyCode.Mouse2;
 
         /*.............................................Private Fields.......................................................*/
+       
         private bool _shouldRecord = false;
         private bool _isRecorderReady = false;
         private int _index = 0;
@@ -53,13 +53,13 @@ namespace FickleFrames.Utility
         private const string DEFAULT_KEY_SUFFIX = "Animation_Recorder";
 
         /*.............................................Properties...........................................................*/
+        
         private bool subjectReady => _targetGameObject != null;
         private string key => DEFAULT_KEY_SUFFIX + $"_{_playerPrefsKey}";
         private string saveName => _clipFileSaveName + $"_{_index}";
 
-        #region Private Methods
-       
         /*.............................................Private Methods......................................................*/
+
         /// <summary>
         /// Get key when this gameObject is active
         /// </summary>
@@ -274,13 +274,8 @@ namespace FickleFrames.Utility
                 AssetDatabase.DeleteAsset(_saveAnimationClipsTo + clip.name + ".anim");
         }
 
-        #endregion Private Method
-
-        #endregion Internals
-
-        #region Public Methods
-
         /*.............................................Public Methods.......................................................*/
+
         /// <summary>
         /// Method to control recorder externally
         /// </summary>
@@ -313,7 +308,5 @@ namespace FickleFrames.Utility
             if (targetGameObject != null)
                 this._targetGameObject = targetGameObject;
         }
-
-        #endregion Public Methods
     }
 }

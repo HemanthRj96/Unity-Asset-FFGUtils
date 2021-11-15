@@ -1,5 +1,4 @@
 ﻿
-
 1. classes or structs			  - "PascalCasing"
 2. interface					  - "PascalCasing" + prefixing the name with an I for Interfaces
 3. public memebers(all)			  - "PascalCasing"
