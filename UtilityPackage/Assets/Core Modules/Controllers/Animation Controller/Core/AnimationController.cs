@@ -7,17 +7,21 @@ namespace FickleFrames.Controllers
     {
         #region Editor
 #if UNITY_EDITOR
+#pragma warning disable 0414
         [SerializeField] private int selection = 0;
+#pragma warning restore 0414
 #endif
         #endregion Editor
 
         /*.............................................Serialized Fields....................................................*/
 
+#pragma warning disable 0414
         [SerializeField] private string _animationClipSource = "";
         [SerializeField] private string _animationControllerSavePath = "";
         [SerializeField] private bool _enableAutoUpdate = false;
         [SerializeField] private Animator _animator = null;
         [SerializeField] private StateController _stateController = null;
+#pragma warning restore 0414
 
         /*.............................................Private Fields.......................................................*/
 

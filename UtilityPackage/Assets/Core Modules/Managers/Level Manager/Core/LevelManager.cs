@@ -13,8 +13,10 @@ namespace FickleFrames.Managers
     {
         /*.............................................Serialized Fields....................................................*/
 
-        [SerializeField] private string _levelControllerPath;
-        [SerializeField] private LevelController[] _levelControllers;
+#pragma warning disable 0414
+        [SerializeField] private string _levelControllerPath = default;
+        [SerializeField] private LevelController[] _levelControllers = default;
+#pragma warning restore 0414
 
         /*.............................................Public Fields........................................................*/
 

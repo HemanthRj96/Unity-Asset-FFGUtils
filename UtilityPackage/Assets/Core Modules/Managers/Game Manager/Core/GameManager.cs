@@ -14,7 +14,7 @@ namespace FickleFrames.Managers
     {
         /*.............................................Serialized Fields....................................................*/
 
-        [SerializeField] private SubGameManagerContainer[] _subManagers;
+        [SerializeField] private SubGameManagerContainer[] _subManagers = default;
 
         /*.............................................Private Fields.......................................................*/
 

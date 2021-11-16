@@ -23,7 +23,7 @@ namespace FickleFrames.Controllers
 
         /*.............................................Serialized Fields....................................................*/
 
-        [SerializeField] private StateContainer[] _states;
+        [SerializeField] private StateContainer[] _states = default;
         [SerializeField] private string _defaultStateName = "";
 
         /*.............................................Private Fields.......................................................*/
