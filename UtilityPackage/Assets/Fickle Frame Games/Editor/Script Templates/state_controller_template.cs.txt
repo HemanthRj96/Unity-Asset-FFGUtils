@@ -1,0 +1,17 @@
+﻿using FickleFrameGames.Controllers;
+using UnityEngine;
+
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "Fickle Frame Games/State Controller/#SCRIPTNAME#")]
+public class #SCRIPTNAME# : State
+{
+    public override string GetState()
+    {
+        return default;
+    }
+
+    public override void StateUpdate()
+    {
+
+    }
+}
