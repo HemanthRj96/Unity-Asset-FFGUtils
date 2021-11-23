@@ -73,6 +73,13 @@ namespace FickleFrameGames.Systems
                     return -1;
                 return _elapsedTime * 100 / _timerDuration;
             }
+
+            public void AddTime(float time)
+            {
+                _timerDuration += time;
+            }
+
+            public void DeleteTimer() => stopTimer();
         }
 
         /*.............................................Private Fields.......................................................*/
@@ -159,6 +166,26 @@ namespace FickleFrameGames.Systems
 
 
         /// <summary>
+        /// Returns true if a timer with the target timer exists
+        /// </summary>
+        /// <param name="timerTag">Unique tag for the timer</param>
+        public static bool IsValidTimer(string timerTag)
+        {
+            return s_timerLookup.ContainsKey(timerTag);
+        }
+
+
+        /// <summary>
+        /// Method to delete timer
+        /// </summary>
+        /// <param name="timerTag">Unnique name of the timer</param>
+        public static void StopTimer(string timerTag)
+        {
+            getTimer(timerTag)?.DeleteTimer();
+        }
+
+
+        /// <summary>
         /// Pauses timer
         /// </summary>
         /// <param name="timerTag">Unique name of the timer</param>
@@ -208,6 +235,19 @@ namespace FickleFrameGames.Systems
                 return -1;
             else
                 return timer.GetElapsedPercentage();
+        }
+
+
+        /// <summary>
+        /// Method to add additional time to the timer duration
+        /// </summary>
+        /// <param name="timerTag">Unique name of the timer</param>
+        /// <param name="additionalTime">Additional amount of time</param>
+        public static void AddTime(string timerTag, float additionalTime)
+        {
+            var timer = getTimer(timerTag);
+            if (timer != null)
+                timer.AddTime(additionalTime);
         }
     }
 }

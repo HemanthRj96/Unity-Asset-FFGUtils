@@ -40,7 +40,7 @@ namespace FickleFrameGames.Systems
             if (dontDestroyOnLoad)
                 DontDestroyOnLoad(this);
             if (_actionSettings.ActionExecutionMode == EActionExecutionMode.ExecuteExternally || _actionSettings.ShouldRegister)
-                ActionSystem.RegisterAction(commitDelayedAction, _actionSettings.ActionName);
+                ActionSystem.CreateListener(commitDelayedAction, _actionSettings.ActionName);
         }
 
 
@@ -67,11 +67,11 @@ namespace FickleFrameGames.Systems
                 if (_actionSettings.NextAction != null)
                     _actionSettings.NextAction.commitDelayedAction(_outgoingData);
                 else
-                    ActionSystem.ExecuteAction(_actionSettings.NextActionName, _outgoingData.Data, _outgoingData.Source);
+                    ActionSystem.InvokeRemoteListener(_actionSettings.NextActionName, _outgoingData.Data, _outgoingData.Source);
             }
             else if (_actionSettings.OnActionExecutionEnd == EOnActionExecutionEnd.DestroySelf)
             {
-                ActionSystem.DeregisterAction(_actionSettings.ActionName);
+                ActionSystem.DeleteListener(_actionSettings.ActionName);
                 Destroy(gameObject, _actionSettings.DestroyDelay);
             }
         }
@@ -122,7 +122,7 @@ namespace FickleFrameGames.Systems
         /// </summary>
         protected virtual void OnDestroy()
         {
-            ActionSystem.DeregisterAction(_actionSettings.ActionName);
+            ActionSystem.DeleteListener(_actionSettings.ActionName);
         }
 
 

@@ -88,6 +88,24 @@ public static class ExtensionMethods
 
 
     /// <summary>
+    /// Removes a value from dictionary if found and returns true if found and false otherwise
+    /// </summary>
+    /// <param name="dictionary"></param>
+    /// <param name="value">Target value</param>
+    public static bool TryRemoveValue<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TValue value)
+    {
+        bool found = false;
+        foreach (var temp in dictionary)
+            if (temp.Value.Equals(value))
+            {
+                found = true;
+                dictionary.Remove(temp.Key);
+            }
+        return found;
+    }
+
+
+    /// <summary>
     /// Adds key and value if it doesn't exist
     /// </summary>
     public static void TryAdd<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)

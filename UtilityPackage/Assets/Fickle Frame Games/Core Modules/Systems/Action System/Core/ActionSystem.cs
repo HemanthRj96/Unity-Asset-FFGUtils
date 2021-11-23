@@ -12,17 +12,8 @@ namespace FickleFrameGames.Systems
     {
         /*.............................................Private Fields.......................................................*/
 
-        private static Dictionary<string, Action<IActionData>> s_actionCollection = new Dictionary<string, Action<IActionData>>();
-        private static IActionData s_actionData = null;
-
-        /*.............................................Private Methods......................................................*/
-
-        /// <summary>
-        /// Method to construct data
-        /// </summary>
-        /// <param name="actionData">Target data</param>
-        /// <param name="gameObject">Target gameobject</param>
-        private static void constructData(IActionData actionData) => s_actionData = actionData;
+        private static Dictionary<string, Action<IActionData>> s_actionListener = new Dictionary<string, Action<IActionData>>();
+        private static Dictionary<string, Action<IActionData>> s_actionBroadcaster = new Dictionary<string, Action<IActionData>>();
 
         /*.............................................Public Methods.......................................................*/
 
@@ -30,19 +21,33 @@ namespace FickleFrameGames.Systems
         /// Method to register an action
         /// </summary>
         /// <param name="multipleSubscription">Set this as true if you want to subsribe multiple actions under same tag</param>
-        public static void RegisterAction(Action<IActionData> targetAction, string actionName, bool multipleSubscription = false)
+        public static void CreateListener(Action<IActionData> listenerMethod, string listenerName, bool multipleSubscription = false)
         {
-            if (s_actionCollection.ContainsKey(actionName))
+            if (s_actionListener.ContainsKey(listenerName))
             {
                 if (multipleSubscription)
-                    s_actionCollection[actionName] += targetAction;
+                    s_actionListener[listenerName] += listenerMethod;
                 else
-                    Debug.LogWarning($"Action already exists!! [Action Name = {actionName}] Set multipleSubscription as true " +
+                    Debug.LogWarning($"Action already exists!! [Action Name = {listenerName}] Set multipleSubscription as true " +
                         $"if this behaviour was intended");
                 return;
             }
             else
-                s_actionCollection.Add(actionName, targetAction);
+                s_actionListener.Add(listenerName, listenerMethod);
+        }
+
+
+        /// <summary>
+        /// Deregister action from actionManager
+        /// </summary>
+        /// <param name="actionName">Target action name</param>
+        public static void DeleteListener(string actionName)
+        {
+            if (s_actionListener.ContainsKey(actionName))
+            {
+                s_actionListener[actionName] = null;
+                s_actionListener.Remove(actionName);
+            }
         }
 
 
@@ -51,44 +56,66 @@ namespace FickleFrameGames.Systems
         /// </summary>
         /// <param name="data">Data to be passed</param>
         /// <param name="gameObject">Instigating GameObject(self)</param>
-        public static void ExecuteAction(string actionName, object data = null, GameObject gameObject = null)
+        public static void InvokeRemoteListener(string actionName, object data = null, GameObject gameObject = null)
         {
-            Action<IActionData> cachedAction = null;
 
-            // Check if the tag exists
-            if (s_actionCollection.ContainsKey(actionName))
+            if (!s_actionListener.ContainsKey(actionName) || s_actionListener[actionName] == null)
             {
-                if (s_actionCollection[actionName] == null)
-                    s_actionCollection.Remove(actionName);
-                cachedAction = s_actionCollection[actionName];
-            }
-            else
-            {
-                Debug.LogWarning($"Action Not Found!! [Action Name = {actionName}]");
+                s_actionListener.TryRemove(actionName);
                 return;
             }
 
-            // Construct data if there's any data available otherwise flush the cached data
-            if (data != null || gameObject != null)
-                constructData(new ActionData(data, gameObject));
-            else
-                s_actionData = null;
-
-            cachedAction.Invoke(s_actionData);
+            s_actionListener[actionName].Invoke(new ActionData(data, gameObject));
         }
 
 
         /// <summary>
-        /// Deregister action from actionManager
+        /// Method to register a broadcaster
         /// </summary>
-        /// <param name="actionName">Target action name</param>
-        public static void DeregisterAction(string actionName)
+        /// <param name="broadcasterName">Unique broadcaster name</param>
+        public static void CreateBroadcaster(string broadcasterName)
         {
-            if (s_actionCollection.ContainsKey(actionName))
+            if (!s_actionBroadcaster.ContainsKey(broadcasterName))
             {
-                s_actionCollection[actionName] = null;
-                s_actionCollection.Remove(actionName);
+                Action<IActionData> action = delegate { };
+                s_actionBroadcaster.Add(broadcasterName, action);
             }
+        }
+
+
+        /// <summary>
+        /// Method to delete broadcaster
+        /// </summary>
+        /// <param name="broadcasterName">Target broadcaster name</param>
+        public static void DeleteBroadcaster(string broadcasterName)
+        {
+            if (s_actionBroadcaster.ContainsKey(broadcasterName))
+            {
+                s_actionBroadcaster[broadcasterName] = null;
+                s_actionBroadcaster.Remove(broadcasterName);
+            }
+        }
+
+
+        /// <summary>
+        /// Method to subscribe to a broadcaster
+        /// </summary>
+        /// <param name="broadcasterName">Broadcaster name</param>
+        public static void SubscribeToBroadcaster(string broadcasterName, Action<IActionData> listeningMethod)
+        {
+            if (s_actionBroadcaster.ContainsKey(broadcasterName))
+                s_actionBroadcaster[broadcasterName] += listeningMethod;
+        }
+
+
+        /// <summary>
+        /// Method to create a braodcast call to all listeners
+        /// </summary>
+        /// <param name="actionName">Broadcaster name</param>
+        public static void InvokeBroadcastCall(string actionName, object data = null, GameObject source = null)
+        {
+            if (s_actionBroadcaster.ContainsKey(actionName))
+                s_actionBroadcaster[actionName]?.Invoke(new ActionData(data, source));
         }
     }
 }
