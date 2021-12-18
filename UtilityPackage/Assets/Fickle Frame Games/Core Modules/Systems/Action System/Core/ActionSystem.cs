@@ -12,8 +12,8 @@ namespace FickleFrameGames.Systems
     {
         /*.............................................Private Fields.......................................................*/
 
-        private static Dictionary<string, Action<IActionData>> s_actionListener = new Dictionary<string, Action<IActionData>>();
-        private static Dictionary<string, Action<IActionData>> s_actionBroadcaster = new Dictionary<string, Action<IActionData>>();
+        private static Dictionary<string, Action<IActionMessage>> s_actionListener = new Dictionary<string, Action<IActionMessage>>();
+        private static Dictionary<string, Action<IActionMessage>> s_actionBroadcaster = new Dictionary<string, Action<IActionMessage>>();
 
         /*.............................................Public Methods.......................................................*/
 
@@ -21,7 +21,7 @@ namespace FickleFrameGames.Systems
         /// Method to register an action
         /// </summary>
         /// <param name="multipleSubscription">Set this as true if you want to subsribe multiple actions under same tag</param>
-        public static void CreateListener(Action<IActionData> listenerMethod, string listenerName, bool multipleSubscription = false)
+        public static void CreateListener(Action<IActionMessage> listenerMethod, string listenerName, bool multipleSubscription = false)
         {
             if (s_actionListener.ContainsKey(listenerName))
             {
@@ -77,7 +77,7 @@ namespace FickleFrameGames.Systems
         {
             if (!s_actionBroadcaster.ContainsKey(broadcasterName))
             {
-                Action<IActionData> action = delegate { };
+                Action<IActionMessage> action = delegate { };
                 s_actionBroadcaster.Add(broadcasterName, action);
             }
         }
@@ -101,7 +101,7 @@ namespace FickleFrameGames.Systems
         /// Method to subscribe to a broadcaster
         /// </summary>
         /// <param name="broadcasterName">Broadcaster name</param>
-        public static void SubscribeToBroadcaster(string broadcasterName, Action<IActionData> listeningMethod)
+        public static void SubscribeToBroadcaster(string broadcasterName, Action<IActionMessage> listeningMethod)
         {
             if (s_actionBroadcaster.ContainsKey(broadcasterName))
                 s_actionBroadcaster[broadcasterName] += listeningMethod;

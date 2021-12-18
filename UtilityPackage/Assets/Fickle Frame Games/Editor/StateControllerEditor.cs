@@ -10,23 +10,28 @@ public class StateControllerEditor : BaseEditor<StateController>
 {
     string controllerFilepath;
     ReorderableList list;
-    SerializedProperty _states;
 
     bool validDirectory => Directory.Exists(controllerFilepath);
-    SerializedProperty stateArray(int index) => GetProperty("_states").GetArrayElementAtIndex(index);
-
 
     private void InspectorUpdate()
     {
+        SerializedProperty stateControllerFilepath = GetProperty("_stateControllerFilepath");
+        SerializedProperty states = GetProperty("_states");
+        SerializedProperty stateArray(int index) => states.GetArrayElementAtIndex(index);
+        SerializedProperty defaultState = GetProperty("_defaultStateName");
+        SerializedProperty stateSharedData = GetProperty("_data");
+        SerializedProperty stateSyncInput = GetProperty("_input");
+
         Space(5);
 
         #region stateControllerFilepath
 
         // stateControllerFilepath
-        PropertyField(GetProperty("stateControllerFilepath"), "Controller File Path", "Path where all controller scriptable objects are saved");
-        controllerFilepath = GetProperty("stateControllerFilepath").stringValue;
+        PropertyField(stateControllerFilepath, "Controller File Path", "Path where all controller scriptable objects are saved");
+        controllerFilepath = stateControllerFilepath.stringValue;
+
         if (controllerFilepath == "")
-            Info("Cannot create or load _states statically", MessageType.Warning);
+            Info("Invalid filepath, please provide a valid filepath", MessageType.Warning);
         else if (!validDirectory && Button($"Create directory {controllerFilepath}", 25))
         {
             Directory.CreateDirectory(controllerFilepath);
@@ -34,6 +39,24 @@ public class StateControllerEditor : BaseEditor<StateController>
         }
 
         #endregion
+
+        Space(8);
+
+        #region StateSyncData and StateSyncInput
+
+        if (stateSharedData.objectReferenceValue == null)
+        {
+            PropertyField(stateSharedData, "Synchronised State Data :", "Data that is shared across all the states");
+            Info("This field cannot empty, inorder for the states to work properly shared data asset is required", MessageType.Warning);
+        }
+
+        if (stateSyncInput.objectReferenceValue == null)
+        {
+            PropertyField(stateSyncInput, "Synchronised State Input :", "This is the input handler for this controller");
+            Info("This field cannot empty, inorder for the states to work properly shared data asset is required", MessageType.Warning);
+        }
+
+        #endregion 
 
         #region load controllers from directory
 
@@ -44,16 +67,17 @@ public class StateControllerEditor : BaseEditor<StateController>
             {
                 foreach (string path in Directory.GetFiles(controllerFilepath, "*.asset"))
                 {
-                    FickleFrameGames.Controllers.State state = AssetDatabase.LoadAssetAtPath<FickleFrameGames.Controllers.State>(path);
+                    var state = AssetDatabase.LoadAssetAtPath<FickleFrameGames.Controllers.State>(path);
                     int currentIndex = -1;
 
                     if (state != null)
                     {
                         // Find the empty element index
-                        for (int i = 0; i < GetProperty("_states").arraySize; ++i)
+                        for (int i = 0; i < states.arraySize; ++i)
                         {
                             string sn = stateArray(i).FindPropertyRelative("StateName").stringValue;
-                            FickleFrameGames.Controllers.State s = (FickleFrameGames.Controllers.State)stateArray(i).FindPropertyRelative("State").objectReferenceValue;
+                            FickleFrameGames.Controllers.State s =
+                                (FickleFrameGames.Controllers.State)stateArray(i).FindPropertyRelative("State").objectReferenceValue;
 
                             if (string.IsNullOrEmpty(sn) && s == null)
                             {
@@ -75,8 +99,8 @@ public class StateControllerEditor : BaseEditor<StateController>
 
                         if (currentIndex == -1)
                         {
-                            currentIndex = GetProperty("_states").arraySize;
-                            GetProperty("_states").InsertArrayElementAtIndex(currentIndex);
+                            currentIndex = states.arraySize;
+                            states.InsertArrayElementAtIndex(currentIndex);
                         }
                         stateArray(currentIndex).FindPropertyRelative("StateName").stringValue = state.name;
                         stateArray(currentIndex).FindPropertyRelative("State").objectReferenceValue = state;
@@ -96,23 +120,24 @@ public class StateControllerEditor : BaseEditor<StateController>
 
         // defaultState
         bool flag = false;
-        string _defaultState = default;
-        for (int i = GetProperty("_states").arraySize - 1; i >= 0; --i)
+        string firstArrElem = null;
+        for (int i = states.arraySize - 1; i >= 0; --i)
         {
-            FickleFrameGames.Controllers.State state = (FickleFrameGames.Controllers.State)stateArray(i).FindPropertyRelative("State").objectReferenceValue;
+            var state = (FickleFrameGames.Controllers.State)stateArray(i).FindPropertyRelative("State").objectReferenceValue;
             string stateName = stateArray(i).FindPropertyRelative("StateName").stringValue;
+
             if (state != null && stateName != null)
             {
                 flag = true;
-                _defaultState = stateName;
+                firstArrElem = stateName;
             }
         }
 
-        GetProperty("_defaultStateName").stringValue = flag ? _defaultState : "";
+        defaultState.stringValue = flag ? firstArrElem : "";
         EditorGUI.BeginDisabledGroup(true);
         PropertyField
             (
-                GetProperty("_defaultStateName"),
+                defaultState,
                 "Default State Name : ", "This is the entry point or the default state this controller would be in upon update, " +
                 "the default state is basically the first valid entry in the state controller list"
             );
@@ -139,12 +164,11 @@ public class StateControllerEditor : BaseEditor<StateController>
 
     private void OnEnable()
     {
-        _states = GetProperty("_states");
-        list = new ReorderableList(serializedObject, _states, true, true, true, true);
+        var states = GetProperty("_states");
+        list = new ReorderableList(serializedObject, states, true, true, true, true);
         list.drawHeaderCallback = drawHeader;
         list.drawElementCallback = drawElement;
     }
-
 
     private void drawHeader(Rect rect)
     {

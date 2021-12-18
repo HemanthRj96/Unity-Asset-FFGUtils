@@ -5,15 +5,16 @@ using UnityEngine;
 namespace FickleFrameGames.Systems
 {
     /// <summary>
-    /// Component class which should be attached to gameObjects that provides multiple ways of running custom codes and 
-    /// linking to another action component creating a chain of infinite number of custom actions
+    /// Component should only be used by inheritance of this base class
     /// </summary>
     public abstract class ActionComponent : MonoBehaviour
     {
         #region Editor
 #if UNITY_EDITOR
         [HideInInspector] public bool isChained = false;
+        // Custom property drawer
         [HideInInspector] public ActionComponent chainedComponent = null;
+
         public EActionExecutionMode actionExecutionMode => _actionSettings.ActionExecutionMode;
 #endif
         #endregion Editor
@@ -27,8 +28,8 @@ namespace FickleFrameGames.Systems
 
         /*.............................................Private Properties...................................................*/
 
-        protected IActionData _outgoingData { get; set; } = new ActionData();
-        protected IActionData _cachedData { get; set; } = new ActionData();
+        protected IActionMessage _outgoingData { get; set; } = new ActionData();
+        protected IActionMessage _cachedData { get; set; } = new ActionData();
 
         /*.............................................Private Methods......................................................*/
 
@@ -48,7 +49,7 @@ namespace FickleFrameGames.Systems
         /// Method to invoke action with delay
         /// </summary>
         /// <param name="actionData"></param>
-        private void commitDelayedAction(IActionData actionData = null)
+        private void commitDelayedAction(IActionMessage actionData = null)
         {
             _cachedData = actionData;
             Invoke(nameof(commitAction), _actionSettings.ActionDelay);
@@ -140,28 +141,6 @@ namespace FickleFrameGames.Systems
         /// Function must be implemented that runs all the custom logic for this action component
         /// </summary>
         /// <param name="parameters">Parameters passed</param>
-        protected abstract void doAction(IActionData parameters);
-
-        /*.............................................Public Methods.......................................................*/
-
-        /// <summary>
-        /// Method to override delay time of this action
-        /// </summary>
-        /// <param name="newDelay">New delay time</param>
-        public void OverrideDelayTime(float newDelay)
-        {
-            newDelay = Mathf.Clamp(newDelay, 0, 120);
-            _actionSettings.ActionDelay = newDelay;
-        }
-
-
-        /// <summary>
-        /// Returns the current delay time of this action
-        /// </summary>
-        /// <returns>Delay time</returns>
-        public float GetCurrentDelayTime()
-        {
-            return _actionSettings.ActionDelay;
-        }
+        protected abstract void doAction(IActionMessage parameters);
     }
 }

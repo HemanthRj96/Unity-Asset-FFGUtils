@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -26,16 +27,6 @@ public static class ExtensionMethods
     {
         for (int i = 0; i < list.Count; ++i)
             Debug.Log($"Item #{i} : {list[i]}");
-    }
-
-
-    /// <summary>
-    /// Removes an item if it exists
-    /// </summary>
-    public static void TryRemove<TType>(this List<TType> list, TType item)
-    {
-        if (list.Contains(item))
-            list.Remove(item);
     }
 
 
@@ -95,7 +86,7 @@ public static class ExtensionMethods
     public static bool TryRemoveValue<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TValue value)
     {
         bool found = false;
-        foreach (var temp in dictionary)
+        foreach (var temp in dictionary.ToList())
             if (temp.Value.Equals(value))
             {
                 found = true;

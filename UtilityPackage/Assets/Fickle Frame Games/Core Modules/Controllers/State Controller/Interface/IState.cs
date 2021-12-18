@@ -8,7 +8,6 @@ namespace FickleFrameGames.Controllers
         Action OnStateUpdate { get; }
         Action OnStateFixedUpdate { get; }
 
-        string GetState();
         void StateUpdate();
     } 
 }

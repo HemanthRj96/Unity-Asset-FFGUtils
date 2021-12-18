@@ -135,7 +135,7 @@ namespace FickleFrameGames.Managers
             // Check if the scene is additive since they are the scenes that can be unloaded
             if (_cachedLevelController.IsAdditive && _cachedLevelController.IsLoaded)
             {
-                _loadedAdditiveLevels.TryRemove(levelName);
+                _loadedAdditiveLevels.Remove(levelName);
                 StartCoroutine(_cachedLevelController.UnloadLevel());
             }
         }

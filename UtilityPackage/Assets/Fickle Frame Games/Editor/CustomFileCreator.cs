@@ -3,7 +3,7 @@ using FickleFrameGames.Systems;
 using UnityEditor;
 using UnityEngine;
 
-public class CustomFileCreator
+public static class CustomFileCreator
 {
     /*.............................................Private Fields.......................................................*/
 
@@ -11,6 +11,8 @@ public class CustomFileCreator
     private static readonly string s_stateControllerTemplateFilePath = _FILE_PATH_ + "state_controller_template.cs.txt";
     private static readonly string s_actionSystemTemplateFilepath = _FILE_PATH_ + "action_system_template.cs.txt";
     private static readonly string s_subGameManagerTemplateFilepath = _FILE_PATH_ + "game_manager_template.cs.txt";
+    private static readonly string s_stateSharedDataTemplateFilepath = _FILE_PATH_ + "state_shared_data_template.cs.txt";
+    private static readonly string s_stateSyncInputTemplateFilepath = _FILE_PATH_ + "state_sync_input_template.cs.txt";
 
     /*.............................................Private Methods......................................................*/
 
@@ -73,6 +75,26 @@ public class CustomFileCreator
     public static void CreateStateFromTemplate()
     {
         scriptBuilder(s_stateControllerTemplateFilePath, "NewState.cs");
+    }
+
+
+    /// <summary>
+    /// Method to create state sync data from template file
+    /// </summary>
+    [MenuItem(itemName: "Assets/Create/Fickle Frame Games/Create New State Shared Data From Template [Type: StateSharedData, FileType: C# script]", isValidateFunction: false)]
+    public static void CreateStateSyncDataFromTemplate()
+    {
+        scriptBuilder(s_stateSharedDataTemplateFilepath, "NewStateSharedData.cs");
+    }
+
+
+    /// <summary>
+    /// Method to create state synchronised input from template file
+    /// </summary>
+    [MenuItem(itemName: "Assets/Create/Fickle Frame Games/Create New State Sync Input From Template [Type: StateSyncInput, FileType: C# script", isValidateFunction: false)]
+    public static void CreateStateSyncInputFromTemplate()
+    {
+        scriptBuilder(s_stateSyncInputTemplateFilepath, "NewStateSyncInput.cs");
     }
 
 

@@ -1,0 +1,13 @@
+﻿using FickleFrameGames.Controllers;
+using UnityEngine;
+
+
+[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "Fickle Frame Games/State Controller/Synced Input/#SCRIPTNAME#")]
+public class #SCRIPTNAME# : StateSyncInput
+{
+	public override string InputUpdate()
+	{
+		// Put all logic for the input here and return the string corresponding to the name of the states 
+		return null;
+	}
+}

@@ -50,16 +50,25 @@ public static class UtilityMethods
     /// </summary>
     public static void DrawGrid(Vector2 origin, int height, int width, float cellSize, float duration = 0f, Color color = default)
     {
-        Vector2 corner = origin + (new Vector2(width, height) * cellSize);
+        DrawGrid(origin, height, width, new Vector2(cellSize, cellSize), duration, color);
+    }
+
+
+    /// <summary>
+    /// Call this method to draw a grid of a specific height, width, cellsize and duration
+    /// </summary>
+    public static void DrawGrid(Vector2 origin, int height, int width, Vector2 cellSize, float duration = 0f, Color color = default)
+    {
+        Vector2 corner = origin + new Vector2(width * cellSize.x, height * cellSize.y);
         DrawRectangle(origin, corner, duration, color);
 
         // Horizontal lines
         for (int h = 1; h < height; ++h)
-            DrawLine(origin + (Vector2.up * h * cellSize), new Vector2(corner.x, origin.y) + (Vector2.up * h * cellSize), duration);
+            DrawLine(origin + (Vector2.up * h * cellSize.y), new Vector2(corner.x, origin.y) + (Vector2.up * h * cellSize.y), duration, color);
 
         // Vertical lines
         for (int w = 1; w < width; ++w)
-            DrawLine(origin + (Vector2.right * w * cellSize), new Vector2(origin.x, corner.y) + (Vector2.right * w * cellSize), duration);
+            DrawLine(origin + (Vector2.right * w * cellSize.x), new Vector2(origin.x, corner.y) + (Vector2.right * w * cellSize.x), duration, color);
     }
 
 

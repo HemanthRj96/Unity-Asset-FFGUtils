@@ -3,7 +3,7 @@
 
 namespace FickleFrameGames.Systems
 {
-    public interface IActionData
+    public interface IActionMessage
     {
         object Data { get; set; }
         GameObject Source { get; set; }

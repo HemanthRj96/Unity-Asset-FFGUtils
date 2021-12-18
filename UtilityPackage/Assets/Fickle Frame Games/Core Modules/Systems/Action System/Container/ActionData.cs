@@ -6,7 +6,7 @@ namespace FickleFrameGames.Systems
     /// <summary>
     /// Container struct used to parse data that has to be passed
     /// </summary>
-    public struct ActionData : IActionData
+    public struct ActionData : IActionMessage
     {
         public ActionData(object data = null, GameObject source = null)
         {

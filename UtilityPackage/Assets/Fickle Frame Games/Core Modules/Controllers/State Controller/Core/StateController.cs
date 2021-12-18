@@ -16,7 +16,7 @@ namespace FickleFrameGames.Controllers
         #region Editor
 #if UNITY_EDITOR
 #pragma warning disable 0649,0414
-        [SerializeField] private string stateControllerFilepath;
+        [SerializeField] private string _stateControllerFilepath;
 #pragma warning restore 0649, 0414
 #endif
         #endregion Editor
@@ -24,6 +24,8 @@ namespace FickleFrameGames.Controllers
         /*.............................................Serialized Fields....................................................*/
 
         [SerializeField] private StateContainer[] _states = default;
+        [SerializeField] private StateSharedData _data = null;
+        [SerializeField] private StateSyncInput _input = null;
         [SerializeField] private string _defaultStateName = "";
 
         /*.............................................Private Fields.......................................................*/
@@ -31,13 +33,11 @@ namespace FickleFrameGames.Controllers
         private Dictionary<string, IState> _stateLookup = new Dictionary<string, IState>();
         private string _currentStateName = "";
         private Action<string> _onStateChangeEvent = delegate { };
+        private bool _canUse = false;
 
         /*.............................................Private Methods......................................................*/
 
-        private void Awake()
-        {
-            bootstrapper();
-        }
+        private void Awake() => bootstrapper();
 
 
         /// <summary>
@@ -47,7 +47,17 @@ namespace FickleFrameGames.Controllers
         {
             foreach (StateContainer state in _states)
                 if (state.StateName != "" && state.State != null)
+                {
                     _stateLookup.Add(state.StateName, state.State);
+                    state.State.ParentController = this;
+                    state.State.SharedData = _data;
+                }
+            if (_data == null || _input == null)
+            {
+                Debug.LogWarning("Missing data please check the inspector of this gameObject!!");
+                _canUse = false;
+            }
+            _currentStateName = _defaultStateName;
         }
 
 
@@ -56,16 +66,10 @@ namespace FickleFrameGames.Controllers
         /// </summary>
         private IState getActiveState()
         {
-            if (_stateLookup.Count == 0)
+            string newStateName = _input.InputUpdate();
+
+            if (_stateLookup.Count == 0 || !_stateLookup.ContainsKey(newStateName) || string.IsNullOrEmpty(_defaultStateName))
                 return null;
-
-            // This shouldn't happen
-            if (_defaultStateName == "")
-                _defaultStateName = _stateLookup.Keys.ToList()[0];
-            if (_currentStateName == "")
-                _currentStateName = _defaultStateName;
-
-            string newStateName = _stateLookup[_currentStateName]?.GetState();
 
             if (_currentStateName != newStateName)
                 _onStateChangeEvent(newStateName);
@@ -81,6 +85,9 @@ namespace FickleFrameGames.Controllers
         /// </summary>
         private void Update()
         {
+            if (!_canUse)
+                return;
+
             NewUpdate();
             getActiveState()?.OnStateUpdate();
         }
@@ -91,6 +98,9 @@ namespace FickleFrameGames.Controllers
         /// </summary>
         private void FixedUpdate()
         {
+            if (!_canUse)
+                return;
+
             NewFixedUpdate();
             getActiveState()?.OnStateFixedUpdate();
         }
@@ -101,6 +111,7 @@ namespace FickleFrameGames.Controllers
         /// This method must be implemented since there's no other reason for inheriting this component
         /// </summary>
         protected virtual void NewUpdate() { }
+
 
         /// <summary>
         /// This method must be implemented since there's no other reason for inheriting this component
@@ -117,6 +128,25 @@ namespace FickleFrameGames.Controllers
         {
             if (targetEvent != null)
                 _onStateChangeEvent += targetEvent;
+        }
+
+
+        /// <summary>
+        /// Returns all the states controlled by this StateController
+        /// </summary>
+        public List<StateContainer> GetStates()
+        {
+            List<StateContainer> stateContainers = new List<StateContainer>();
+
+            foreach(var temp in _stateLookup.ToList())
+            {
+                stateContainers.Add(new StateContainer 
+                {
+                    StateName = temp.Key,
+                    State = temp.Value as State
+                });
+            }
+            return stateContainers;
         }
     }
 }

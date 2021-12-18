@@ -5,5 +5,5 @@
         DoNothing,
         ExecuteAnotherAction,
         DestroySelf,
-    } 
+    }
 }

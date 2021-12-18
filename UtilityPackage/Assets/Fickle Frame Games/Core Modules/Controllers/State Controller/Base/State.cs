@@ -19,9 +19,21 @@ namespace FickleFrameGames.Controllers
 
         private Action _stateUpdate = delegate { };
         private Action _stateFixedUpdate = delegate { };
+        private StateController _stateController = null;
+        private StateSharedData _data = null;
 
         /*.............................................Properties...........................................................*/
 
+        public StateController ParentController
+        {
+            get { return _stateController; }
+            set { if (_stateController == null) _stateController = value; }
+        }
+        public StateSharedData SharedData
+        {
+            get { return _data; }
+            set { if (_data == null) _data = value; }
+        }
         public Action OnStateUpdate { get { return _stateUpdate; } }
         public Action OnStateFixedUpdate { get { return _stateFixedUpdate; } }
 
@@ -39,12 +51,6 @@ namespace FickleFrameGames.Controllers
         }
 
         /*.............................................Public Methods.......................................................*/
-
-        /// <summary>
-        /// Returns string corresponding to a state
-        /// </summary>
-        public abstract string GetState();
-
 
         /// <summary>
         /// State update logic

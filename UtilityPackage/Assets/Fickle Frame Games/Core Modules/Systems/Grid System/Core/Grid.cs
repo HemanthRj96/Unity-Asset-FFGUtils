@@ -1,8 +1,9 @@
-﻿using TMPro;
+﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 
-namespace FickleFrameGames
+namespace FickleFrameGames.Systems
 {
     /// <summary>
     /// Use this class to create grids of custom types
@@ -23,29 +24,29 @@ namespace FickleFrameGames
 
         public int Height { private set; get; }
         public int Width { private set; get; }
-        public float CellSize { private set; get; }
+        public Vector2 CellSize { private set; get; }
 
         /*.............................................Constructor..........................................................*/
 
         /// <summary>
         /// If you don't want to use text object or sprite renderers then set the last two parameters as false
         /// </summary>
-        public Grid(Vector3 offset, int height, int width, float cellSize, bool shouldUseText = true, bool shouldUseRenderer = true)
+        public Grid(Vector3 offset, int height, int width, Vector2 cellSize, bool shouldUseText = true, bool shouldUseRenderer = true)
         {
             if (offset == default)
                 offset = Vector3.zero;
 
             height = Mathf.Max(height, 0);
             width = Mathf.Max(width, 0);
-            cellSize = Mathf.Max(cellSize, 0.1f);
+            cellSize = new Vector2(Mathf.Max(cellSize.x, 0.001f), Mathf.Max(cellSize.y, 0.001f));
 
-            this._offset = offset;
-            this.Height = height;
-            this.Width = width;
-            this.CellSize = cellSize;
+            _offset = offset;
+            Height = height;
+            Width = width;
+            CellSize = cellSize;
 
-            this._shouldUseText = shouldUseText;
-            this._shouldUseRenderer = shouldUseRenderer;
+            _shouldUseText = shouldUseText;
+            _shouldUseRenderer = shouldUseRenderer;
 
             _grid = new TGridType[width, height];
             if (shouldUseText)
@@ -64,8 +65,8 @@ namespace FickleFrameGames
         /// <param name="y">Out parameter for y</param>
         public void GetXY(Vector3 worldPosition, out int x, out int y)
         {
-            x = Mathf.FloorToInt((worldPosition - _offset).x / CellSize);
-            y = Mathf.FloorToInt((worldPosition - _offset).y / CellSize);
+            x = Mathf.FloorToInt((worldPosition - _offset).x / CellSize.x);
+            y = Mathf.FloorToInt((worldPosition - _offset).y / CellSize.y);
         }
 
 
@@ -77,7 +78,69 @@ namespace FickleFrameGames
         /// <returns></returns>
         public Vector3 GetWorldPosition(int x, int y)
         {
-            return new Vector3(x, y) * CellSize + _offset;
+            return new Vector3(x * CellSize.x, y * CellSize.y) + _offset;
+        }
+
+
+        /// <summary>
+        /// Returns a list of all cell centers
+        /// </summary>
+        public List<Vector3> GetCellCenters()
+        {
+            List<Vector3> cellCenters = new List<Vector3>();
+            for (int y = 0; y < Height; ++y)
+                for (int x = 0; x < Width; ++x)
+                    cellCenters.Add(GetCellCenter(x, y));
+            return cellCenters;
+        }
+
+
+        /// <summary>
+        /// Returns the center of a cell
+        /// </summary>
+        /// <param name="x">X value of a cell</param>
+        /// <param name="y">Y value of a cell</param>
+        /// <returns></returns>
+        public Vector3 GetCellCenter(int x, int y)
+        {
+            return (GetWorldPosition(x, y) + new Vector3(CellSize.x, CellSize.y) / 2);
+        }
+
+
+        /// <summary>
+        /// Returns the center of a cell
+        /// </summary>
+        /// <param name="worldPosition">World position of the cell</param>
+        /// <returns></returns>
+        public Vector3 GetCellCenter(Vector3 worldPosition)
+        {
+            GetXY(worldPosition, out int x, out int y);
+            return GetCellCenter(x, y);
+        }
+
+
+        /// <summary>
+        /// Returns the value from the grid cell
+        /// </summary>
+        /// <param name="x">X section</param>
+        /// <param name="y">Y section</param>
+        public TGridType GetValue(int x, int y)
+        {
+            if (x >= 0 && x < Width && y >= 0 && y < Height)
+                return _grid[x, y];
+            return default;
+        }
+
+
+        /// <summary>
+        /// Returns the value from the grid cell
+        /// </summary>
+        /// <param name="x">X section</param>
+        /// <param name="y">Y section</param>
+        public TGridType GetValue(Vector2 worldPosition)
+        {
+            GetXY(worldPosition, out int x, out int y);
+            return GetValue(x, y);
         }
 
 
@@ -104,8 +167,7 @@ namespace FickleFrameGames
         /// <param name="value">Target value</param>
         public void SetValue(Vector3 worldPosition, TGridType value)
         {
-            int x, y;
-            GetXY(worldPosition, out x, out y);
+            GetXY(worldPosition, out int x, out int y);
             SetValue(x, y, value);
         }
 
@@ -191,7 +253,15 @@ namespace FickleFrameGames
 
             for (int x = 0; x < Width; ++x)
                 for (int y = 0; y < Height; ++y)
-                    _textGrid[x, y] = UtilityMethods.CreateWorldText("", _grid[x, y].ToString(), parentTransform, GetWorldPosition(x, y) + (Vector3.one * CellSize / 2), Vector2.one * CellSize, color);
+                    _textGrid[x, y] = UtilityMethods.CreateWorldText
+                        (
+                            "",
+                            _grid[x, y].ToString(),
+                            parentTransform,
+                            GetWorldPosition(x, y) + new Vector3(CellSize.x, CellSize.y) / 2,
+                            CellSize, 
+                            color
+                        );
         }
 
 
@@ -212,7 +282,15 @@ namespace FickleFrameGames
 
             for (int x = 0; x < Width; ++x)
                 for (int y = 0; y < Height; ++y)
-                    _spriteGrid[x, y] = UtilityMethods.CreateRenderer("", parent, sprite, GetWorldPosition(x, y) + (Vector3.one * CellSize / 2), Vector3.one * CellSize, color);
+                    _spriteGrid[x, y] = UtilityMethods.CreateRenderer
+                        (
+                            "",
+                            parent,
+                            sprite,
+                            GetWorldPosition(x, y) + new Vector3(CellSize.x, CellSize.y) / 2,
+                            CellSize, 
+                            color
+                        );
         }
     }
 }
