@@ -21,13 +21,15 @@ public class StateControllerEditor : BaseEditor<StateController>
         SerializedProperty defaultState = GetProperty("_defaultStateName");
         SerializedProperty stateSharedData = GetProperty("_data");
         SerializedProperty stateSyncInput = GetProperty("_input");
+        bool dataSet = false;
+        bool inputSet = false;
 
         Space(5);
 
         #region stateControllerFilepath
 
         // stateControllerFilepath
-        PropertyField(stateControllerFilepath, "Controller File Path", "Path where all controller scriptable objects are saved");
+        PropertyField(stateControllerFilepath, "Controller File Path", "Path where all state controller objects for this StateController component are saved");
         controllerFilepath = stateControllerFilepath.stringValue;
 
         if (controllerFilepath == "")
@@ -38,22 +40,65 @@ public class StateControllerEditor : BaseEditor<StateController>
             AssetDatabase.Refresh();
         }
 
+        if (!validDirectory)
+            return;
+
         #endregion
 
         Space(8);
 
         #region StateSyncData and StateSyncInput
 
-        if (stateSharedData.objectReferenceValue == null)
+        dataSet = stateSharedData.objectReferenceValue != null;
+        inputSet = stateSyncInput.objectReferenceValue != null;
+
+        if (!dataSet || !inputSet)
         {
-            PropertyField(stateSharedData, "Synchronised State Data :", "Data that is shared across all the states");
-            Info("This field cannot empty, inorder for the states to work properly shared data asset is required", MessageType.Warning);
+            foreach (string path in Directory.GetFiles(controllerFilepath, "*.asset"))
+            {
+                StateSharedData data;
+                StateSyncInput input;
+
+                if (!dataSet)
+                {
+                    data = AssetDatabase.LoadAssetAtPath<StateSharedData>(path);
+                    if (data != null)
+                    {
+                        stateSharedData.objectReferenceValue = data;
+                        dataSet = true;
+                    }
+                }
+                if(!inputSet)
+                {
+                    input = AssetDatabase.LoadAssetAtPath<StateSyncInput>(path);
+                    if(input != null)
+                    {
+                        stateSyncInput.objectReferenceValue = input;
+                        inputSet = true;
+                    }
+                }
+                if (inputSet && dataSet)
+                    break;
+            }
         }
 
-        if (stateSyncInput.objectReferenceValue == null)
+        if (!dataSet || !inputSet)
         {
-            PropertyField(stateSyncInput, "Synchronised State Input :", "This is the input handler for this controller");
-            Info("This field cannot empty, inorder for the states to work properly shared data asset is required", MessageType.Warning);
+            if (inputSet == false)
+                Info(
+                        "StateSyncInput is not set! To resolve this error create a StateSyncInput scriptable object inside " +
+                        $"the current Filepath ({controllerFilepath}) that is if you have already created a custom " +
+                        "StateSyncInput script. If not then create a new script from Context Menu",
+                        MessageType.Error
+                    );
+            if(dataSet == false)
+                Info(
+                        "StateSharedData is not set! To resolve this error create a StateSharedData scriptable object inside " +
+                        $"the current Filepath ({controllerFilepath}) that is if you have already created a custom " +
+                        "StateSharedData script. If not then create a new script from Context Menu",
+                        MessageType.Error
+                    );
+            return;
         }
 
         #endregion 
@@ -195,5 +240,4 @@ public class StateControllerEditor : BaseEditor<StateController>
                 GUIContent.none
             );
     }
-
 }

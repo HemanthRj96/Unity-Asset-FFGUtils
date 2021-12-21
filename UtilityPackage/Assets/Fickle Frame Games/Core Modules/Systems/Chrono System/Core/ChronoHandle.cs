@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace FickleFrameGames.Systems
 {
+    /// <summary>
+    /// Handle to a timer used to get overall progress, pause, resume, add and deduct time from the timer
+    /// </summary>
     public class ChronoHandle
     {
         /*.............................................Constructor..........................................................*/
@@ -33,7 +36,7 @@ namespace FickleFrameGames.Systems
         /*.............................................Properties...........................................................*/
 
         /// <summary>
-        /// Don't read this prperty if you don't know what you're doing
+        /// Don't read this property if you don't know what you're doing
         /// </summary>
         public Action Tick { get { return tick; } }
 

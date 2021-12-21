@@ -12,7 +12,7 @@ namespace FickleFrameGames.Controllers
     {
         /*.............................................Serialized Fields....................................................*/
 
-        [Header("-Base State Settings-")]
+        [Header("Native State Settings")]
         [SerializeField] private EStateUpdateMode _updateMode = EStateUpdateMode.Update;
 
         /*.............................................Private Fields.......................................................*/
@@ -29,12 +29,15 @@ namespace FickleFrameGames.Controllers
             get { return _stateController; }
             set { if (_stateController == null) _stateController = value; }
         }
+
         public StateSharedData SharedData
         {
             get { return _data; }
             set { if (_data == null) _data = value; }
         }
+
         public Action OnStateUpdate { get { return _stateUpdate; } }
+
         public Action OnStateFixedUpdate { get { return _stateFixedUpdate; } }
 
         /*.............................................Private Methods......................................................*/
@@ -51,6 +54,18 @@ namespace FickleFrameGames.Controllers
         }
 
         /*.............................................Public Methods.......................................................*/
+
+        /// <summary>
+        /// Override this method to perform any operations upon awake
+        /// </summary>
+        public virtual void StateAwake() { }
+
+
+        /// <summary>
+        /// Override this method to perfom any operations upon start
+        /// </summary>
+        public virtual void StateStart() { }
+
 
         /// <summary>
         /// State update logic

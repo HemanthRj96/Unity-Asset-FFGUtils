@@ -17,6 +17,7 @@ namespace FickleFrameGames.Systems
             public event Action OnUpdate = delegate { };
 
             private void Update() => OnUpdate();
+
             public void MakePersistent() => DontDestroyOnLoad(this);
         }
 
@@ -34,14 +35,14 @@ namespace FickleFrameGames.Systems
             // Check if hook exists
             if (s_hook == null)
             {
-                var gameobject = new GameObject(":ChronoSystem-MonobehaviourHook:", typeof(MonoBehaviourHook));
+                var gameobject = new GameObject("-ChronoSystem-MonobehaviourHook-", typeof(MonoBehaviourHook));
                 s_hook = gameobject.GetComponent<MonoBehaviourHook>();
                 s_hook.MakePersistent();
             }
 
-            var instance = new ChronoHandle(callback, duration, mode);
-            s_hook.OnUpdate += instance.Tick;
-            return instance;
+            var handle = new ChronoHandle(callback, duration, mode);
+            s_hook.OnUpdate += handle.Tick;
+            return handle;
         }
 
         /*.............................................Public Methods.......................................................*/

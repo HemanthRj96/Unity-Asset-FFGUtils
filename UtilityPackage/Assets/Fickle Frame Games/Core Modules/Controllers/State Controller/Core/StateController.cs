@@ -11,7 +11,7 @@ namespace FickleFrameGames.Controllers
     /// This class should be attached as a component to the target player that has to controlled 
     /// using inputs
     /// </summary>
-    public class StateController : MonoBehaviour
+    public sealed class StateController : MonoBehaviour
     {
         #region Editor
 #if UNITY_EDITOR
@@ -32,12 +32,53 @@ namespace FickleFrameGames.Controllers
 
         private Dictionary<string, IState> _stateLookup = new Dictionary<string, IState>();
         private string _currentStateName = "";
+        private bool _canUse = true;
         private Action<string> _onStateChangeEvent = delegate { };
-        private bool _canUse = false;
+        private Action _stateAwakeInvoker = delegate { };
+        private Action _stateStartInvoker = delegate { };
 
         /*.............................................Private Methods......................................................*/
 
-        private void Awake() => bootstrapper();
+
+        /// <summary>
+        /// Initializes and invokes StateAwake in correct order
+        /// </summary>
+        private void Awake()
+        {
+            bootstrapper();
+            awakers();
+        }
+
+
+        /// <summary>
+        /// Invoke StateStart in correct order
+        /// </summary>
+        private void Start()
+        {
+            starters();
+        }
+
+
+        /// <summary>
+        /// Call base method before everything
+        /// </summary>
+        private void Update()
+        {
+            if (!_canUse)
+                return;
+            getActiveState()?.OnStateUpdate();
+        }
+
+
+        /// <summary>
+        /// Call base method before everything
+        /// </summary>
+        private void FixedUpdate()
+        {
+            if (!_canUse)
+                return;
+            getActiveState()?.OnStateFixedUpdate();
+        }
 
 
         /// <summary>
@@ -45,19 +86,32 @@ namespace FickleFrameGames.Controllers
         /// </summary>
         private void bootstrapper()
         {
-            foreach (StateContainer state in _states)
-                if (state.StateName != "" && state.State != null)
-                {
-                    _stateLookup.Add(state.StateName, state.State);
-                    state.State.ParentController = this;
-                    state.State.SharedData = _data;
-                }
-            if (_data == null || _input == null)
+            if (_data == null || _input == null || String.IsNullOrEmpty(_defaultStateName))
             {
                 Debug.LogWarning("Missing data please check the inspector of this gameObject!!");
                 _canUse = false;
+                return;
             }
+            else
+            {
+                _data.ParentController = this;
+                _input.ParentController = this;
+            }
+
+            foreach (StateContainer s in _states)
+                if (s.StateName != "" && s.State != null)
+                {
+                    _stateLookup.Add(s.StateName, s.State);
+                    s.State.ParentController = this;
+                    s.State.SharedData = _data;
+                    _stateAwakeInvoker += s.State.StateAwake;
+                    _stateStartInvoker += s.State.StateStart;
+                }
+
             _currentStateName = _defaultStateName;
+
+            _data.StateAwake();
+            _input.StateAwake();
         }
 
 
@@ -81,50 +135,33 @@ namespace FickleFrameGames.Controllers
 
 
         /// <summary>
-        /// Call base method before everything
+        /// Helper method to call StateAwake in correct order
         /// </summary>
-        private void Update()
+        private void awakers()
         {
-            if (!_canUse)
-                return;
-
-            NewUpdate();
-            getActiveState()?.OnStateUpdate();
+            _data.StateAwake();
+            _input.StateAwake();
+            _stateAwakeInvoker();
         }
 
 
         /// <summary>
-        /// Call base method before everything
+        /// Helper method to call StateStart in correct order
         /// </summary>
-        private void FixedUpdate()
+        private void starters()
         {
-            if (!_canUse)
-                return;
-
-            NewFixedUpdate();
-            getActiveState()?.OnStateFixedUpdate();
+            _data.StateStart();
+            _input.StateStart();
+            _stateStartInvoker();
         }
-
-        /*.............................................Protected Methods....................................................*/
-
-        /// <summary>
-        /// This method must be implemented since there's no other reason for inheriting this component
-        /// </summary>
-        protected virtual void NewUpdate() { }
-
-
-        /// <summary>
-        /// This method must be implemented since there's no other reason for inheriting this component
-        /// </summary>
-        protected virtual void NewFixedUpdate() { }
 
         /*.............................................Public Methods.......................................................*/
 
         /// <summary>
-        /// Use this method to attach and subscribe to stateChangeEvent
+        /// Use this method to attach an action which invokes eerytime when state changes
         /// </summary>
         /// <param name="targetEvent">The target event</param>
-        public void AttachStateChangeEvent(Action<string> targetEvent)
+        public void SubscribeToStateChangeEvent(Action<string> targetEvent)
         {
             if (targetEvent != null)
                 _onStateChangeEvent += targetEvent;

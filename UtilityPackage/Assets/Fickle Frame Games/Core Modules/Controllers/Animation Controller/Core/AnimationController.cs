@@ -52,9 +52,9 @@ namespace FickleFrameGames.Controllers
 
             // Attach based on animation update
             if (_enableAutoUpdate)
-                _stateController.AttachStateChangeEvent(autoAnimationUpdate);
+                _stateController.SubscribeToStateChangeEvent(autoAnimationUpdate);
             else
-                _stateController.AttachStateChangeEvent(manualAnimationUpdate);
+                _stateController.SubscribeToStateChangeEvent(manualAnimationUpdate);
         }
 
 
