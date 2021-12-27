@@ -5,15 +5,15 @@ FFG Utility Assets is an asset bundle used for making your game developement lot
 
 Details about all the assets are given below :
 
-- [Controllers](#Controllers)
-    - [Animation Controller](#Animation_Controller)
-    - [State Controller](#State_Controller)
-- [Managers](#Managers)
+- [Controllers](#controllers)
+    - [Animation Controller](#animation_controller)
+    - [State Controller](#state_controller)
+- [Managers](#managers)
     - Game Manager
     - Level Manager
     - Prefab Manager
     - Sound Manager
-- [Systems](#Systems)
+- [Systems](#systems)
     - Action System
     - Chrono System
     - Grid System
@@ -24,8 +24,8 @@ Details about all the assets are given below :
     - UI System
 
 Modules aren't the only feature this asset provides but it also incorporates utility methods, extension methods, useful context menu options. They are shown below :
-- [Other Utilities](#Other_Utilities)
-- [Context Menu Options](#Context_Menu_Options)
+- [Other Utilities](#other_utilities)
+- [Context Menu Options](#context_menu_options)
 
 
 # Controllers
@@ -51,7 +51,7 @@ object that is common. For example :- _playerSpeed or _jumpingForce
 
 **StateSyncInput** is a scriptable object which is where all user input based conditions or general logical conditions should be put inside.
 
-**State** is a scriptable object which holds all the update logic. **State** can be created by selecting from [Context Menu](#Context_Menu_Options). Once a **State** is made from a file template then the setup includes setting up the update mode (FixedUpdate/Update)
+**State** is a scriptable object which holds all the update logic. **State** can be created by selecting from [Context Menu](#context_menu_options). Once a **State** is made from a file template then the setup includes setting up the update mode (FixedUpdate/Update)
 
 # Managers
 
