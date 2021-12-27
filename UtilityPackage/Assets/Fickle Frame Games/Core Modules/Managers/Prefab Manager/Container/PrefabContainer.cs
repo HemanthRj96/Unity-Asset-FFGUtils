@@ -3,7 +3,7 @@
 /// <summary>
 /// Container used by PrefabManager to store information about prefab
 /// </summary>
-namespace FickleFrameGames.Managers.Internal
+namespace FFG.Managers.Internal
 {
     [System.Serializable]
     public class PrefabContainer

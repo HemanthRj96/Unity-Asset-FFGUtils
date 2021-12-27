@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
 
-namespace FickleFrameGames.Controllers
+namespace FFG.Controllers
 {
-    public class AnimationController : MonoBehaviour
+    public sealed class AnimationController : MonoBehaviour
     {
         #region Editor
 #if UNITY_EDITOR
@@ -53,8 +53,6 @@ namespace FickleFrameGames.Controllers
             // Attach based on animation update
             if (_enableAutoUpdate)
                 _stateController.SubscribeToStateChangeEvent(autoAnimationUpdate);
-            else
-                _stateController.SubscribeToStateChangeEvent(manualAnimationUpdate);
         }
 
 
@@ -78,23 +76,13 @@ namespace FickleFrameGames.Controllers
             animationPlayer(newState);
         }
 
-        /*.............................................Protected Methods....................................................*/
-
-        /// <summary>
-        /// Override this method to extend functionality
-        /// </summary>
-        protected virtual void manualAnimationUpdate(string stateName) 
-        {
-            // Put any manual updation code here
-        }
-
         /*.............................................Public Methods.......................................................*/
 
         /// <summary>
         /// Method to play an animation
         /// </summary>
         /// <param name="state">Target animation state to be played</param>
-        public virtual void PlayState(string state)
+        public void PlayState(string state)
         {
             animationPlayer(state);
         }
@@ -105,7 +93,7 @@ namespace FickleFrameGames.Controllers
         /// </summary>
         /// <param name="condition">Should be true to play animation</param>
         /// <param name="state">Target animation state to be played</param>
-        public virtual void PlayStateIf(bool condition, string state)
+        public void PlayStateIf(bool condition, string state)
         {
             if (condition)
                 animationPlayer(state);

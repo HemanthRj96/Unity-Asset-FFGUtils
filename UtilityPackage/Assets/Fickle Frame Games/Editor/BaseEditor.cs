@@ -5,6 +5,16 @@ using UnityEngine;
 public class BaseEditor<TType> : Editor where TType : Object
 {
     public TType Root => (TType)target;
+
+    public override void OnInspectorGUI()
+    {
+        serializedObject.Update();
+        InspectorUpdate();
+        serializedObject.ApplyModifiedProperties();
+    }
+
+    public virtual void InspectorUpdate() {  }
+
     public SerializedProperty GetProperty(string propertyName) 
         => serializedObject.FindProperty(propertyName);
 

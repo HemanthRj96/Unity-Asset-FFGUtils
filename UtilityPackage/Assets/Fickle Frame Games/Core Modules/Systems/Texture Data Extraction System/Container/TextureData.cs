@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace FickleFrameGames.Systems
+namespace FFG.Systems
 {
     /// <summary>
     /// Data container to hold color value and color coordinates of a 2D texture map

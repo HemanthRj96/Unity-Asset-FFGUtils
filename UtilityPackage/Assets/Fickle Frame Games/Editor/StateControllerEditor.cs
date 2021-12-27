@@ -2,7 +2,7 @@
 using UnityEditor;
 using System.IO;
 using UnityEditorInternal;
-using FickleFrameGames.Controllers;
+using FFG.Controllers;
 
 
 [CustomEditor(typeof(StateController))]
@@ -112,7 +112,7 @@ public class StateControllerEditor : BaseEditor<StateController>
             {
                 foreach (string path in Directory.GetFiles(controllerFilepath, "*.asset"))
                 {
-                    var state = AssetDatabase.LoadAssetAtPath<FickleFrameGames.Controllers.State>(path);
+                    var state = AssetDatabase.LoadAssetAtPath<FFG.Controllers.State>(path);
                     int currentIndex = -1;
 
                     if (state != null)
@@ -121,8 +121,8 @@ public class StateControllerEditor : BaseEditor<StateController>
                         for (int i = 0; i < states.arraySize; ++i)
                         {
                             string sn = stateArray(i).FindPropertyRelative("StateName").stringValue;
-                            FickleFrameGames.Controllers.State s =
-                                (FickleFrameGames.Controllers.State)stateArray(i).FindPropertyRelative("State").objectReferenceValue;
+                            FFG.Controllers.State s =
+                                (FFG.Controllers.State)stateArray(i).FindPropertyRelative("State").objectReferenceValue;
 
                             if (string.IsNullOrEmpty(sn) && s == null)
                             {
@@ -168,7 +168,7 @@ public class StateControllerEditor : BaseEditor<StateController>
         string firstArrElem = null;
         for (int i = states.arraySize - 1; i >= 0; --i)
         {
-            var state = (FickleFrameGames.Controllers.State)stateArray(i).FindPropertyRelative("State").objectReferenceValue;
+            var state = (FFG.Controllers.State)stateArray(i).FindPropertyRelative("State").objectReferenceValue;
             string stateName = stateArray(i).FindPropertyRelative("StateName").stringValue;
 
             if (state != null && stateName != null)

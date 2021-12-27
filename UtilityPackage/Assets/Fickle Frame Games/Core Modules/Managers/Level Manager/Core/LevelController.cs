@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
-namespace FickleFrameGames.Managers.Internal
+namespace FFG.Managers.Internal
 {
     [CreateAssetMenu(fileName = "Level_Controller", menuName = "Fickle Frame Games/Create New Level Controller [Type: ScriptableObject, FileType: Asset]")]
     public class LevelController : ScriptableObject

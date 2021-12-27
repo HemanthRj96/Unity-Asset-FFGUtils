@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 
 
-namespace FickleFrameGames.Systems
+namespace FFG.Systems
 {
     /// <summary>
     /// Use this class to create grids of custom types

@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 
-namespace FickleFrameGames.Systems
+namespace FFG.Systems
 {
     /// <summary>
     /// Class used to get color value and the texture coordinates of these unique colors

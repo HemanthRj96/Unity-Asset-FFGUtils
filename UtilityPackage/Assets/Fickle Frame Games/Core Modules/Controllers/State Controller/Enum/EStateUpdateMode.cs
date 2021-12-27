@@ -1,4 +1,4 @@
-﻿namespace FickleFrameGames.Controllers.Internals
+﻿namespace FFG.Controllers.Internals
 {
     public enum EStateUpdateMode
     {

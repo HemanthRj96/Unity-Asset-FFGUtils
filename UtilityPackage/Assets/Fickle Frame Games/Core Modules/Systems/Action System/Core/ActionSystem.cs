@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace FickleFrameGames.Systems
+namespace FFG.Systems
 {
     /// <summary>
     /// System used to register/deregister/execute custom actions

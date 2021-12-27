@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace FickleFrameGames.Systems
+namespace FFG.Systems
 {
     /// <summary>
     /// Handle to a timer used to get overall progress, pause, resume, add and deduct time from the timer

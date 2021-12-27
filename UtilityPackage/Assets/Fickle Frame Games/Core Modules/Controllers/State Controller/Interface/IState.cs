@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace FickleFrameGames.Controllers
+namespace FFG.Controllers
 {
     public interface IState
     {

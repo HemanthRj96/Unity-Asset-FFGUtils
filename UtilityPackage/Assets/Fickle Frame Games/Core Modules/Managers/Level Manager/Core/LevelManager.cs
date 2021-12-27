@@ -1,10 +1,10 @@
-﻿using FickleFrameGames.Managers.Internal;
+﻿using FFG.Managers.Internal;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
-namespace FickleFrameGames.Managers
+namespace FFG.Managers
 {
     /// <summary>
     /// Singleton class which manages all scene loading and scene data manipulations

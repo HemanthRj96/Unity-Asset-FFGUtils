@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace FickleFrameGames.Systems
+namespace FFG.Systems
 {
     /// <summary>
     /// Container struct used to parse data that has to be passed

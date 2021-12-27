@@ -1,4 +1,4 @@
-﻿namespace FickleFrameGames.Managers.Internal
+﻿namespace FFG.Managers.Internal
 {
     /// <summary>
     /// Container class to parse SubGameManager data

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FickleFrameGames.Controllers
+namespace FFG.Controllers
 {
     public class StateSharedData : ScriptableObject
     {

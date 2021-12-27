@@ -4,7 +4,7 @@ using UnityEditor.Animations;
 using System.IO;
 
 
-namespace FickleFrameGames.Utility
+namespace FFG.Utility
 {
     public enum ERecorderAction
     {

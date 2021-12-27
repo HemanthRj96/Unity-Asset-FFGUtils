@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FickleFrameGames.Systems.Internal
+namespace FFG.Systems.Internal
 {
     [System.Serializable]
     public class ActionSettings

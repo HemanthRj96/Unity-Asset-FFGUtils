@@ -1,4 +1,4 @@
-﻿namespace FickleFrameGames.Managers.Internal
+﻿namespace FFG.Managers.Internal
 {
     public enum ESoundPlayMode
     {

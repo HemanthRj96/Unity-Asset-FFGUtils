@@ -1,10 +1,10 @@
-﻿using FickleFrameGames.Systems.Internal;
+﻿using FFG.Systems.Internal;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 
-namespace FickleFrameGames.Systems
+namespace FFG.Systems
 {
     /// <summary>
     /// Pooler class can create any type of object pools

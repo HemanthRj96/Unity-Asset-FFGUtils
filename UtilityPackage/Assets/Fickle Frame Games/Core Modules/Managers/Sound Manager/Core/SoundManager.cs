@@ -1,9 +1,9 @@
-﻿using FickleFrameGames.Managers.Internal;
+﻿using FFG.Managers.Internal;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace FickleFrameGames.Managers
+namespace FFG.Managers
 {
     /// <summary>
     /// Use this Audio Manager singleton class for controlling all the audio in the game

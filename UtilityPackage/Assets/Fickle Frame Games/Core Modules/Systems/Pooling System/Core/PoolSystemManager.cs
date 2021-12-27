@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace FickleFrameGames.Systems
+namespace FFG.Systems
 {
     /// <summary>
     /// Statc class that manages all the poolers inside the game

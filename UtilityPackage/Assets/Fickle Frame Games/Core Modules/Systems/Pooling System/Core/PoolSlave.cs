@@ -1,8 +1,8 @@
-﻿using FickleFrameGames.Systems.Internal;
+﻿using FFG.Systems.Internal;
 using UnityEngine;
 
 
-namespace FickleFrameGames.Systems
+namespace FFG.Systems
 {
     public abstract class PoolSlave : MonoBehaviour, IPoolSlave
     {

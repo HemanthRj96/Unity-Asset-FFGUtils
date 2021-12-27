@@ -1,5 +1,5 @@
-﻿using FickleFrameGames.Managers;
-using FickleFrameGames.Managers.Internal;
+﻿using FFG.Managers;
+using FFG.Managers.Internal;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;

@@ -1,9 +1,9 @@
-﻿using FickleFrameGames.Controllers.Internals;
+﻿using FFG.Controllers.Internals;
 using System;
 using UnityEngine;
 
 
-namespace FickleFrameGames.Controllers
+namespace FFG.Controllers
 {
     /// <summary>
     /// Base class of state, inherit this class to create custom states

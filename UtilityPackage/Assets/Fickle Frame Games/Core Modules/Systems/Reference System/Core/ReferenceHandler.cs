@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace FickleFrameGames
+namespace FFG
 {
     /// <summary>
     /// This class is used to dynamically store and retrieve references at any point

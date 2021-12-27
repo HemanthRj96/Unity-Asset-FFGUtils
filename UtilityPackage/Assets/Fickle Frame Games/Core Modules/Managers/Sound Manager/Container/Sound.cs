@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FickleFrameGames.Managers.Internal
+namespace FFG.Managers.Internal
 {
     [System.Serializable]
     public class Sound

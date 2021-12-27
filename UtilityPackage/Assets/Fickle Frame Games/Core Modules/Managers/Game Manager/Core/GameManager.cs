@@ -1,11 +1,11 @@
-﻿using FickleFrameGames.Managers.Internal;
+﻿using FFG.Managers.Internal;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
 
 
-namespace FickleFrameGames.Managers
+namespace FFG.Managers
 {
     /// <summary>
     /// Singleton class which controls all the game state through it's sub game managers

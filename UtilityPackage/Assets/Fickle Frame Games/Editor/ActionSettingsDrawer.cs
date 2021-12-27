@@ -1,5 +1,5 @@
-﻿using FickleFrameGames.Systems;
-using FickleFrameGames.Systems.Internal;
+﻿using FFG.Systems;
+using FFG.Systems.Internal;
 using UnityEditor;
 using UnityEngine;
 

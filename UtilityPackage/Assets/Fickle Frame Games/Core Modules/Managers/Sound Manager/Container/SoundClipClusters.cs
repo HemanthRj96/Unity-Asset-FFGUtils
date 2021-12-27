@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace FickleFrameGames.Managers.Internal
+namespace FFG.Managers.Internal
 {
     [CreateAssetMenu(fileName = "Sound_Clip_Cluster", menuName = "Fickle Frame Games/Create New Sound Clip Cluster [Type: ScriptableObject, FileType: Asset]", order = 10)]
     public class SoundClipClusters : ScriptableObject

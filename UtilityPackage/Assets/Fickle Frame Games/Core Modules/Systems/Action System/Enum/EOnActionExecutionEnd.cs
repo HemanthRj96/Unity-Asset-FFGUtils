@@ -1,4 +1,4 @@
-﻿namespace FickleFrameGames.Systems.Internal
+﻿namespace FFG.Systems.Internal
 {
     public enum EOnActionExecutionEnd
     {

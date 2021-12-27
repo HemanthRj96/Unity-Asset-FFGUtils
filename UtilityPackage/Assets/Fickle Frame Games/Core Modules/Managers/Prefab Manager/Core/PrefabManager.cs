@@ -1,9 +1,9 @@
-﻿using FickleFrameGames.Managers.Internal;
+﻿using FFG.Managers.Internal;
 using System.Linq;
 using UnityEngine;
 
 
-namespace FickleFrameGames.Managers
+namespace FFG.Managers
 {
     [CreateAssetMenu(menuName = "Fickle Frame Games/Create New PrefabManager [Type: ScriptableObject, FileType: Asset]")]
     public class PrefabManager : ScriptableObject

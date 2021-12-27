@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FickleFrameGames.Controllers
+namespace FFG.Controllers
 {
     public abstract class StateSyncInput : ScriptableObject
     {

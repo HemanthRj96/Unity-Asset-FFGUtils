@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-namespace FickleFrameGames.Systems
+namespace FFG.Systems
 {
     public interface IActionMessage
     {

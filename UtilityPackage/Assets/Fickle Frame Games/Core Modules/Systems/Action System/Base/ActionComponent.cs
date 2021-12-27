@@ -1,8 +1,8 @@
-﻿using FickleFrameGames.Systems.Internal;
+﻿using FFG.Systems.Internal;
 using UnityEngine;
 
 
-namespace FickleFrameGames.Systems
+namespace FFG.Systems
 {
     /// <summary>
     /// Component should only be used by inheritance of this base class

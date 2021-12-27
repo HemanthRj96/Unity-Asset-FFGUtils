@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FickleFrameGames.Managers
+namespace FFG.Managers
 {
     public abstract class SubGameManagerBase : MonoBehaviour
     {

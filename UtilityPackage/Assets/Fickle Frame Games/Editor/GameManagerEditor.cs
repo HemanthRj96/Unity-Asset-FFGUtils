@@ -1,4 +1,4 @@
-﻿using FickleFrameGames.Managers;
+﻿using FFG.Managers;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;

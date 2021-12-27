@@ -1,4 +1,4 @@
-﻿namespace FickleFrameGames.Managers
+﻿namespace FFG.Managers
 {
     public enum ESubManagerState
     {

@@ -1,11 +1,11 @@
-﻿using FickleFrameGames.Controllers.Internals;
+﻿using FFG.Controllers.Internals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 
-namespace FickleFrameGames.Controllers
+namespace FFG.Controllers
 {
     /// <summary>
     /// This class should be attached as a component to the target player that has to controlled 

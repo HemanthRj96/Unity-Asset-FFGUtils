@@ -4,7 +4,7 @@ using System.IO;
 using UnityEditor.Animations;
 using System.Collections.Generic;
 using System.Linq;
-using FickleFrameGames.Controllers;
+using FFG.Controllers;
 
 [CustomEditor(typeof(AnimationController))]
 public class AnimationControllerEditor : BaseEditor<AnimationController>
