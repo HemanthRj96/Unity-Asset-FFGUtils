@@ -5,15 +5,15 @@ FFG Utility Assets is an asset bundle used for making your game developement lot
 
 Details about all the assets are given below :
 
-- [Controllers](#_Controllers)
+- [Controllers](#Controllers)
     - Animation Controller
     - State Controller
-- [Managers](#_Managers)
+- [Managers](#Managers)
     - Game Manager
     - Level Manager
     - Prefab Manager
     - Sound Manager
-- [Systems](#_Systems)
+- [Systems](#Systems)
     - Action System
     - Chrono System
     - Grid System
@@ -22,7 +22,7 @@ Details about all the assets are given below :
     - Texture Data Extraction System
     - Transform Recording System
     - UI System
-- [Other Utilities](#_Other_Utilities)
+- [Other Utilities](#Other_Utilities)
 
 
 # Controllers
