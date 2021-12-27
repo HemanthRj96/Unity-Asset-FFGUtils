@@ -6,8 +6,8 @@ FFG Utility Assets is an asset bundle used for making your game developement lot
 Details about all the assets are given below :
 
 - [Controllers](#Controllers)
-    - [Animation Controller](###Animation_Controller)
-    - [State Controller](###State_Controller)
+    - [Animation Controller](#Animation_Controller)
+    - [State Controller](#State_Controller)
 - [Managers](#Managers)
     - Game Manager
     - Level Manager
