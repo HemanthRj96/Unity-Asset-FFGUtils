@@ -1,0 +1,31 @@
+﻿using FFG.Managers;
+
+
+public class #SCRIPTNAME# : SubGameManagerBase
+{
+    /// <summary>
+    /// This method gets invoked along with update
+    /// </summary>
+    protected override void OnBegin()
+    {
+        // Any one time logic can be done here
+    }
+
+    /// <summary>
+    /// This method is invoked when the OnUpdate method returns 'Done' state
+    /// </summary>
+    /// <returns>The name of the next sub-game manager or default value if this sub-game manager has to be invoked again</returns>
+    protected override string OnEnd()
+    {
+        return default;
+    }
+
+    /// <summary>
+    /// This method represents the gameloop as it gets invoked on every update and all essential game logic goes in here
+    /// </summary>
+    /// <returns>Return 'Done' if OnUpdate has to be stopped and 'Running' to keep this method running</returns>
+    protected override ESubManagerState OnUpdate()
+    {
+        return ESubManagerState.Running;
+    }
+}
