@@ -41,7 +41,7 @@ namespace FFG.Systems
             if (dontDestroyOnLoad)
                 DontDestroyOnLoad(this);
             if (_actionSettings.ActionExecutionMode == EActionExecutionMode.ExecuteExternally || _actionSettings.ShouldRegister)
-                ActionSystem.CreateListener(commitDelayedAction, _actionSettings.ActionName);
+                ActionSystem.CreateRemoteAction(commitDelayedAction, _actionSettings.ActionName);
         }
 
 
@@ -68,11 +68,11 @@ namespace FFG.Systems
                 if (_actionSettings.NextAction != null)
                     _actionSettings.NextAction.commitDelayedAction(_outgoingData);
                 else
-                    ActionSystem.InvokeRemoteListener(_actionSettings.NextActionName, _outgoingData.Data, _outgoingData.Source);
+                    ActionSystem.InvokeRemoteAction(_actionSettings.NextActionName, _outgoingData.Data, _outgoingData.Source);
             }
             else if (_actionSettings.OnActionExecutionEnd == EOnActionExecutionEnd.DestroySelf)
             {
-                ActionSystem.DeleteListener(_actionSettings.ActionName);
+                ActionSystem.DeleteRemoteAction(_actionSettings.ActionName);
                 Destroy(gameObject, _actionSettings.DestroyDelay);
             }
         }
@@ -123,7 +123,7 @@ namespace FFG.Systems
         /// </summary>
         protected virtual void OnDestroy()
         {
-            ActionSystem.DeleteListener(_actionSettings.ActionName);
+            ActionSystem.DeleteRemoteAction(_actionSettings.ActionName);
         }
 
 

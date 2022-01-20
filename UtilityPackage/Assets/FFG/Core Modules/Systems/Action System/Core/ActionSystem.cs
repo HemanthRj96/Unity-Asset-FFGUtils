@@ -18,54 +18,57 @@ namespace FFG.Systems
         /*.............................................Public Methods.......................................................*/
 
         /// <summary>
-        /// Method to register an action
+        /// Method to create a remote action that can be invoked using the remote action name 
         /// </summary>
-        /// <param name="multipleSubscription">Set this as true if you want to subsribe multiple actions under same tag</param>
-        public static void CreateListener(Action<IActionMessage> listenerMethod, string listenerName, bool multipleSubscription = false)
+        /// <param name="remoteAction">Target remote action</param>
+        /// <param name="remoteActionName">Name for this remote action</param>
+        /// <param name="multipleSubscription">Enable multiple remote listeners under the same listener name</param>
+        public static void CreateRemoteAction(Action<IActionMessage> remoteAction, string remoteActionName, bool multipleSubscription = false)
         {
-            if (s_actionListener.ContainsKey(listenerName))
+            if (s_actionListener.ContainsKey(remoteActionName))
             {
                 if (multipleSubscription)
-                    s_actionListener[listenerName] += listenerMethod;
+                    s_actionListener[remoteActionName] += remoteAction;
                 else
-                    Debug.LogWarning($"Action already exists!! [Action Name = {listenerName}] Set multipleSubscription as true " +
+                    Debug.LogWarning($"Action already exists!! [Action Name = {remoteActionName}] Set multipleSubscription as true " +
                         $"if this behaviour was intended");
                 return;
             }
             else
-                s_actionListener.Add(listenerName, listenerMethod);
+                s_actionListener.Add(remoteActionName, remoteAction);
         }
 
 
         /// <summary>
-        /// Deregister action from actionManager
+        /// Method to delete a remote action
         /// </summary>
-        /// <param name="actionName">Target action name</param>
-        public static void DeleteListener(string actionName)
+        /// <param name="remoteActionName">Target remote action to be removed</param>
+        public static void DeleteRemoteAction(string remoteActionName)
         {
-            if (s_actionListener.ContainsKey(actionName))
+            if (s_actionListener.ContainsKey(remoteActionName))
             {
-                s_actionListener[actionName] = null;
-                s_actionListener.Remove(actionName);
+                s_actionListener[remoteActionName] = null;
+                s_actionListener.Remove(remoteActionName);
             }
         }
 
 
         /// <summary>
-        /// Executes an action with a valid actionName
+        /// Invokes a remote action
         /// </summary>
+        /// <param name="remoteActionName">Name of the remote action to be invoked</param>
         /// <param name="data">Data to be passed</param>
         /// <param name="gameObject">Instigating GameObject(self)</param>
-        public static void InvokeRemoteListener(string actionName, object data = null, GameObject gameObject = null)
+        public static void InvokeRemoteAction(string remoteActionName, object data = null, GameObject gameObject = null)
         {
 
-            if (!s_actionListener.ContainsKey(actionName) || s_actionListener[actionName] == null)
+            if (!s_actionListener.ContainsKey(remoteActionName) || s_actionListener[remoteActionName] == null)
             {
-                s_actionListener.TryRemove(actionName);
+                s_actionListener.TryRemove(remoteActionName);
                 return;
             }
 
-            s_actionListener[actionName].Invoke(new ActionData(data, gameObject));
+            s_actionListener[remoteActionName].Invoke(new ActionData(data, gameObject));
         }
 
 
@@ -73,7 +76,7 @@ namespace FFG.Systems
         /// Method to register a broadcaster
         /// </summary>
         /// <param name="broadcasterName">Unique broadcaster name</param>
-        public static void CreateBroadcaster(string broadcasterName)
+        public static void CreateBroadcasterAction(string broadcasterName)
         {
             if (!s_actionBroadcaster.ContainsKey(broadcasterName))
             {
@@ -87,7 +90,7 @@ namespace FFG.Systems
         /// Method to delete broadcaster
         /// </summary>
         /// <param name="broadcasterName">Target broadcaster name</param>
-        public static void DeleteBroadcaster(string broadcasterName)
+        public static void DeleteBroadcasterAction(string broadcasterName)
         {
             if (s_actionBroadcaster.ContainsKey(broadcasterName))
             {
@@ -98,10 +101,11 @@ namespace FFG.Systems
 
 
         /// <summary>
-        /// Method to subscribe to a broadcaster
+        /// Method to subscribe to a broadcaster action
         /// </summary>
-        /// <param name="broadcasterName">Broadcaster name</param>
-        public static void SubscribeToBroadcaster(string broadcasterName, Action<IActionMessage> listeningMethod)
+        /// <param name="broadcasterName">Target name of the action</param>
+        /// <param name="listeningMethod">Target method to listen</param>
+        public static void SubscribeToBroadcasterAction(string broadcasterName, Action<IActionMessage> listeningMethod)
         {
             if (s_actionBroadcaster.ContainsKey(broadcasterName))
                 s_actionBroadcaster[broadcasterName] += listeningMethod;
@@ -109,9 +113,11 @@ namespace FFG.Systems
 
 
         /// <summary>
-        /// Method to create a braodcast call to all listeners
+        /// Method to invoke a broadcast call
         /// </summary>
-        /// <param name="actionName">Broadcaster name</param>
+        /// <param name="actionName">Target name of the action</param>
+        /// <param name="data">Optional data to be sent</param>
+        /// <param name="source">Gameobject invoking the broadcast call</param>
         public static void InvokeBroadcastCall(string actionName, object data = null, GameObject source = null)
         {
             if (s_actionBroadcaster.ContainsKey(actionName))
