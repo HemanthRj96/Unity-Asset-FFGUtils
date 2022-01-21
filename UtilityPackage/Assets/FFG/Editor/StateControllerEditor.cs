@@ -13,12 +13,11 @@ public class StateControllerEditor : BaseEditor<StateController>
 
     bool validDirectory => Directory.Exists(controllerFilepath);
 
-    private void InspectorUpdate()
+    public override void InspectorUpdate()
     {
         SerializedProperty stateControllerFilepath = GetProperty("_stateControllerFilepath");
         SerializedProperty states = GetProperty("_states");
         SerializedProperty stateArray(int index) => states.GetArrayElementAtIndex(index);
-        SerializedProperty defaultState = GetProperty("_defaultStateName");
         SerializedProperty stateSharedData = GetProperty("_data");
         SerializedProperty stateSyncInput = GetProperty("_input");
         bool dataSet = false;
@@ -154,39 +153,6 @@ public class StateControllerEditor : BaseEditor<StateController>
                 }
             }
         }
-
-        #endregion
-
-        Space(10);
-
-        #region defaultState
-
-        Space(5);
-
-        // defaultState
-        bool flag = false;
-        string firstArrElem = null;
-        for (int i = states.arraySize - 1; i >= 0; --i)
-        {
-            var state = (FFG.Controllers.State)stateArray(i).FindPropertyRelative("State").objectReferenceValue;
-            string stateName = stateArray(i).FindPropertyRelative("StateName").stringValue;
-
-            if (state != null && stateName != null)
-            {
-                flag = true;
-                firstArrElem = stateName;
-            }
-        }
-
-        defaultState.stringValue = flag ? firstArrElem : "";
-        EditorGUI.BeginDisabledGroup(true);
-        PropertyField
-            (
-                defaultState,
-                "Default State Name : ", "This is the entry point or the default state this controller would be in upon update, " +
-                "the default state is basically the first valid entry in the state controller list"
-            );
-        EditorGUI.EndDisabledGroup();
 
         #endregion
 

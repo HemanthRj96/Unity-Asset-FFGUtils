@@ -26,14 +26,15 @@ namespace FFG.Controllers
         [SerializeField] private StateContainer[] _states = default;
         [SerializeField] private StateSharedData _data = null;
         [SerializeField] private StateSyncInput _input = null;
-        [SerializeField] private string _defaultStateName = "";
 
         /*.............................................Private Fields.......................................................*/
 
         private Dictionary<string, IState> _stateLookup = new Dictionary<string, IState>();
-        private string _currentStateName = "";
-        private bool _canUse = true;
+
+        private string _activeState = null;
+
         private Action<string> _onStateChangeEvent = delegate { };
+
         private Action _stateAwakeInvoker = delegate { };
         private Action _stateStartInvoker = delegate { };
 
@@ -43,42 +44,25 @@ namespace FFG.Controllers
         /// <summary>
         /// Initializes and invokes StateAwake in correct order
         /// </summary>
-        private void Awake()
-        {
-            bootstrapper();
-            awakers();
-        }
+        private void Awake() => bootstrapper();
 
 
         /// <summary>
         /// Invoke StateStart in correct order
         /// </summary>
-        private void Start()
-        {
-            starters();
-        }
+        private void Start() => starters();
 
 
         /// <summary>
         /// Call base method before everything
         /// </summary>
-        private void Update()
-        {
-            if (!_canUse)
-                return;
-            getActiveState()?.OnStateUpdate();
-        }
+        private void Update() => getState()?.OnStateUpdate();
 
 
         /// <summary>
         /// Call base method before everything
         /// </summary>
-        private void FixedUpdate()
-        {
-            if (!_canUse)
-                return;
-            getActiveState()?.OnStateFixedUpdate();
-        }
+        private void FixedUpdate() => getState()?.OnStateFixedUpdate();
 
 
         /// <summary>
@@ -86,51 +70,51 @@ namespace FFG.Controllers
         /// </summary>
         private void bootstrapper()
         {
-            if (_data == null || _input == null || String.IsNullOrEmpty(_defaultStateName))
+            if (_data == null || _input == null)
             {
-                Debug.LogWarning("Missing data please check the inspector of this gameObject!!");
-                _canUse = false;
-                return;
+                Debug.LogWarning("Missing values SharedData/SyncInput, check inspector!! Initializing with default values!!");
+                _data = ScriptableObject.CreateInstance<StateSharedData>();
+                _input = ScriptableObject.CreateInstance<StateSyncInput>();
             }
-            else
-            {
-                _data.ParentController = this;
-                _input.ParentController = this;
-            }
+
+            _data.ParentController = this;
+            _input.ParentController = this;
 
             foreach (StateContainer s in _states)
                 if (s.StateName != "" && s.State != null)
                 {
                     _stateLookup.Add(s.StateName, s.State);
+
                     s.State.ParentController = this;
                     s.State.SharedData = _data;
+
                     _stateAwakeInvoker += s.State.StateAwake;
                     _stateStartInvoker += s.State.StateStart;
                 }
 
-            _currentStateName = _defaultStateName;
-
             _data.StateAwake();
             _input.StateAwake();
+
+            awakers();
         }
 
 
         /// <summary>
         /// Helper method returns an IState object and calls onStateChangeEvent
         /// </summary>
-        private IState getActiveState()
+        private IState getState()
         {
-            string newStateName = _input.InputUpdate();
+            string newState = _input.InputUpdate();
 
-            if (_stateLookup.Count == 0 || !_stateLookup.ContainsKey(newStateName) || string.IsNullOrEmpty(_defaultStateName))
+            if (string.IsNullOrEmpty(newState) || !_stateLookup.ContainsKey(newState))
                 return null;
 
-            if (_currentStateName != newStateName)
-                _onStateChangeEvent(newStateName);
+            if (newState != _activeState)
+                _onStateChangeEvent.Invoke(newState);
 
-            _currentStateName = newStateName;
-
-            return _stateLookup[_currentStateName];
+            _activeState = newState;
+            
+            return _stateLookup[_activeState];
         }
 
 
@@ -175,15 +159,37 @@ namespace FFG.Controllers
         {
             List<StateContainer> stateContainers = new List<StateContainer>();
 
-            foreach(var temp in _stateLookup.ToList())
+            foreach (var temp in _stateLookup.ToList())
             {
-                stateContainers.Add(new StateContainer 
+                stateContainers.Add(new StateContainer
                 {
                     StateName = temp.Key,
                     State = temp.Value as State
                 });
             }
             return stateContainers.ToArray();
+        }
+
+
+        /// <summary>
+        /// Method to change state synchronized input on runtime
+        /// </summary>
+        /// <param name="newInput">Target new sync input</param>
+        public void ChangeSynchronizedInput(StateSyncInput newInput)
+        {
+            if (newInput == null)
+                return;
+            else if (newInput.ParentController == null)
+            {
+                newInput.ParentController = this;
+                _input = newInput;
+                newInput.StateAwake();
+                newInput.StateStart();
+            }
+            else if (newInput.ParentController != null && newInput.ParentController == this)
+                _input = newInput;
+            else
+                return;
         }
     }
 }

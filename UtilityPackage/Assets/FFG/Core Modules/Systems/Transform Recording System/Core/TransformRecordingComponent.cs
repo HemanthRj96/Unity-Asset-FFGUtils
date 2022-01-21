@@ -12,6 +12,9 @@ namespace FFG.Systems
         Stopped
     }
 
+    /// <summary>
+    /// This is a component used to record a gameObject during runtime
+    /// </summary>
     public class TransformRecordingComponent : MonoBehaviour
     {
         /*.............................................Serialized Fields....................................................*/
@@ -32,7 +35,9 @@ namespace FFG.Systems
         private KeyCode _replayKey;
 
         [SerializeField]
-        private string _savePath;
+        private string _filepath;
+        [SerializeField]
+        private string _filename;
 
         /*.............................................Private Fields.......................................................*/
 
@@ -62,6 +67,7 @@ namespace FFG.Systems
                 StartCoroutine(recorder());
         }
 
+
         /// <summary>
         /// Check for the inputs
         /// </summary>
@@ -84,6 +90,7 @@ namespace FFG.Systems
                 Replay();
         }
 
+
         /// <summary>
         /// Recorder function routine
         /// </summary>
@@ -93,6 +100,7 @@ namespace FFG.Systems
             {
                 yield return new WaitForSeconds(1 / _recordRate);
 
+                //Active recording
                 if (_states == ERecorderStates.Active)
                 {
                     if (_isNewRecording)
@@ -113,15 +121,22 @@ namespace FFG.Systems
                     else
                         _transformData.Record(_anotherTransform, Time.time - _startTime - _totalPauseTime);
                 }
+
+                // Recording stopped
                 else if (_states == ERecorderStates.Stopped)
                 {
                     _isNewRecording = true;
                     _endTime = Time.time - _startTime - _totalPauseTime;
                     _transformData.SetTimeStamp(new Vector2(_startTime, _endTime));
-                    AnalogTransformDataSaver.SaveData(_transformData, Application.dataPath + $"/{_savePath}/save.txt");
+
+                    // Write data
+                    TransformDataSaver.WriteData(_transformData, Application.persistentDataPath + $"/{_filepath}", _filename);
+
                     _transformData = null;
                     break;
                 }
+
+                // Recording paused
                 else if (_states == ERecorderStates.Paused)
                 {
                     if (!_isNewRecording && _pauseTime == -1)
@@ -130,6 +145,7 @@ namespace FFG.Systems
                 }
             }
         }
+
 
         /// <summary>
         /// Replaying function routine
@@ -143,7 +159,8 @@ namespace FFG.Systems
 
             if (_transformData == null)
             {
-                _transformData = AnalogTransformDataSaver.GetData(Application.dataPath + $"/{_savePath}/save.txt");
+                _transformData = TransformDataSaver.ReadData(Application.persistentDataPath + $"/{_filepath}", _filename);
+
                 if (_transformData == null)
                 {
                     startTime = -1;
@@ -201,6 +218,7 @@ namespace FFG.Systems
             _states = ERecorderStates.Active;
         }
 
+
         /// <summary>
         /// Call this method to pause the recording
         /// </summary>
@@ -211,6 +229,7 @@ namespace FFG.Systems
             _states = ERecorderStates.Paused;
         }
 
+
         /// <summary>
         /// Call this method to stop the recording
         /// </summary>
@@ -220,6 +239,7 @@ namespace FFG.Systems
                 _anotherTransform = targetTransform;
             _states = ERecorderStates.Stopped;
         }
+
 
         /// <summary>
         /// Call this method to replay the recording
