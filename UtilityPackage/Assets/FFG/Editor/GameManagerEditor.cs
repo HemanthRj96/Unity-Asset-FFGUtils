@@ -1,4 +1,4 @@
-﻿using FFG.Managers;
+﻿using FFG.GameManager;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;

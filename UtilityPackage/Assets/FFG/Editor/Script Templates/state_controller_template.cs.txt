@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "FFG/State Controller/States/#SCRIPTNAME#")]
 public class #SCRIPTNAME# : State
 {
-    public override void StateUpdate()
+    public override void StateUpdate(object inputData)
     {
         // Put any kind of logic that should be run inside this update loop
     }

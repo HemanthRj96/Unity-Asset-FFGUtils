@@ -1,7 +1,8 @@
-﻿using FFG.Managers;
-using FFG.Systems;
+﻿using FFG.GameManager;
+using FFG.Managers;
 using UnityEditor;
 using UnityEngine;
+
 
 public static class CustomFileCreator
 {
@@ -11,7 +12,6 @@ public static class CustomFileCreator
     private static readonly string s_stateControllerTemplateFilePath = _FILE_PATH_ + "state_controller_template.cs.txt";
     private static readonly string s_actionSystemTemplateFilepath = _FILE_PATH_ + "action_system_template.cs.txt";
     private static readonly string s_subGameManagerTemplateFilepath = _FILE_PATH_ + "game_manager_template.cs.txt";
-    private static readonly string s_stateSharedDataTemplateFilepath = _FILE_PATH_ + "state_shared_data_template.cs.txt";
     private static readonly string s_stateSyncInputTemplateFilepath = _FILE_PATH_ + "state_sync_input_template.cs.txt";
 
     /*.............................................Private Methods......................................................*/
@@ -62,48 +62,30 @@ public static class CustomFileCreator
     /// Method to create custom sub game manager from template file
     /// </summary>
     [MenuItem(itemName: "Assets/Create/FFG/Create New Sub-Game Manager [Type: SubGameManagerBase, FileType: C# script]", isValidateFunction: false)]
-    public static void CreateSubGameManager()
-    {
-        scriptBuilder(s_subGameManagerTemplateFilepath, "NewSubGameManager.cs");
-    }
+    public static void CreateSubGameManager() 
+        => scriptBuilder(s_subGameManagerTemplateFilepath, "NewSubGameManager.cs");
 
 
     /// <summary>
     /// Method to create custom state from template file
     /// </summary>
     [MenuItem(itemName: "Assets/Create/FFG/Create New State From Template [Type: State, FileType: C# script]", isValidateFunction: false)]
-    public static void CreateStateFromTemplate()
-    {
-        scriptBuilder(s_stateControllerTemplateFilePath, "NewState.cs");
-    }
-
-
-    /// <summary>
-    /// Method to create state sync data from template file
-    /// </summary>
-    [MenuItem(itemName: "Assets/Create/FFG/Create New State Shared Data From Template [Type: StateSharedData, FileType: C# script]", isValidateFunction: false)]
-    public static void CreateStateSyncDataFromTemplate()
-    {
-        scriptBuilder(s_stateSharedDataTemplateFilepath, "NewStateSharedData.cs");
-    }
+    public static void CreateStateFromTemplate() 
+        => scriptBuilder(s_stateControllerTemplateFilePath, "NewState.cs");
 
 
     /// <summary>
     /// Method to create state synchronised input from template file
     /// </summary>
     [MenuItem(itemName: "Assets/Create/FFG/Create New State Sync Input From Template [Type: StateSyncInput, FileType: C# script", isValidateFunction: false)]
-    public static void CreateStateSyncInputFromTemplate()
-    {
-        scriptBuilder(s_stateSyncInputTemplateFilepath, "NewStateSyncInput.cs");
-    }
+    public static void CreateStateSyncInputFromTemplate() 
+        => scriptBuilder(s_stateSyncInputTemplateFilepath, "NewStateSyncInput.cs");
 
 
     /// <summary>
     /// Method to create custom action component
     /// </summary>
     [MenuItem(itemName: "Assets/Create/FFG/Create New Action Component [Type: ActionComponent, FileType: C# script]", isValidateFunction: false)]
-    public static void CreateActionComponentFromTemplate()
-    {
-        scriptBuilder(s_actionSystemTemplateFilepath, "NewActionComponent.cs");
-    }
+    public static void CreateActionComponentFromTemplate() 
+        => scriptBuilder(s_actionSystemTemplateFilepath, "NewActionComponent.cs");
 }

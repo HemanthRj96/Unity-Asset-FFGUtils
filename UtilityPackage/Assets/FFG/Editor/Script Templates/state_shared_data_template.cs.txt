@@ -1,9 +1,0 @@
-﻿using FFG.Controllers;
-using UnityEngine;
-
-
-[CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "FFG/State Controller/Shared Data/#SCRIPTNAME#")]
-public class #SCRIPTNAME# : StateSharedData
-{
-	// Put all data that is commonly used by all state objects in here
-}

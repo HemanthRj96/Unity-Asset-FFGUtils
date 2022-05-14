@@ -1,11 +1,12 @@
 ﻿using FFG.Controllers;
 using UnityEngine;
+using System;
 
 
 [CreateAssetMenu(fileName = "#SCRIPTNAME#", menuName = "FFG/State Controller/Synced Input/#SCRIPTNAME#")]
 public class #SCRIPTNAME# : StateSyncInput
 {
-	public override string InputUpdate()
+	public override Tuple<List<string>,object> GetInputs()
 	{
 		// Put all logic for the input here and return the string corresponding to the name of the states 
 		return null;

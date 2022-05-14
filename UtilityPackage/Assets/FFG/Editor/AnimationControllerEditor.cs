@@ -4,7 +4,8 @@ using System.IO;
 using UnityEditor.Animations;
 using System.Collections.Generic;
 using System.Linq;
-using FFG.Controllers;
+using FFG;
+
 
 [CustomEditor(typeof(AnimationController))]
 public class AnimationControllerEditor : BaseEditor<AnimationController>
@@ -23,7 +24,6 @@ public class AnimationControllerEditor : BaseEditor<AnimationController>
     AnimatorController _controllerCache;
     string _clipSourceCache;
     string _controllerSourceCache;
-    StateController _stateControllerCache;
 
     private void InpectorUpdate()
     {
@@ -143,39 +143,6 @@ public class AnimationControllerEditor : BaseEditor<AnimationController>
         }
 
         #endregion Animation Controller Save Path
-
-        #region Enable Auto Update
-
-        // _enableAutoUpdate
-        bool shouldEnableAutoUpdate = false;
-        if (_controllerCache == null)
-            return;
-        if (_stateController.objectReferenceValue == null)
-        {
-            if (Root.TryGetComponent(out _stateControllerCache))
-            {
-                shouldEnableAutoUpdate = true;
-                _stateController.objectReferenceValue = _stateControllerCache;
-            }
-            else
-            {
-                shouldEnableAutoUpdate = false;
-                _enableAutoUpdate.boolValue = false;
-                _stateController.objectReferenceValue = null;
-            }
-        }
-        else
-        {
-            shouldEnableAutoUpdate = true;
-            _stateControllerCache = (StateController)_stateController.objectReferenceValue;
-        }
-        EditorGUI.BeginDisabledGroup(!shouldEnableAutoUpdate);
-
-        PropertyField(_enableAutoUpdate, "Enable Auto Update", "If set then this animation controller will work automatically with a state controller component");
-
-        EditorGUI.EndDisabledGroup();
-
-        #endregion Enable Auto Update
 
         #region Updating Animator Controller
 
